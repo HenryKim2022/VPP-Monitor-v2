@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Projects_Model extends Model
+{
+    use HasFactory, SoftDeletes;
+
+    protected $table = 'tb_projects'; // Replace with the actual table name
+    protected $primaryKey = 'id_project';
+    public $incrementing = false;   // Manually input id_project tr input field
+
+    protected $fillable = [
+        'id_project',
+        'na_project',
+        'start_project',
+        'deadline_project',
+        'id_client',
+        'id_karyawan',
+        'id_team'
+    ];
+
+    protected $dates = ['deleted_at']; // Specify the column for soft deletes
+
+
+
+
+    public function client()
+    {
+        return $this->belongsTo(Kustomer_Model::class, 'id_client');
+    }
+    public function pcoordinator()
+    {
+        return $this->belongsTo(Karyawan_Model::class, 'id_karyawan');
+    }
+    public function team()
+    {
+        return $this->belongsTo(Team_Model::class, 'id_team');
+    }
+    public function karyawan()
+    {
+        return $this->belongsTo(Karyawan_Model::class, 'id_karyawan');
+    }
+
+
+
+
+    public function monitor()
+    {
+        return $this->hasMany(Monitoring_Model::class, 'id_project');
+    }
+
+
+    public function prjstatus_beta()
+    {
+        $total = 0;
+        $totalActual = 0;
+        if ($this->monitor->isNotEmpty()) {
+            foreach ($this->monitor as $monitor) {
+                foreach ($this->monitor as $monitor) {
+                    if ($monitor->qty && $monitor->task) {
+                        $qty = $monitor->qty;
+                        $up = $monitor->task->last_task_progress_update(
+                            $monitor->id_monitoring,
+                        );
+                        $total = ($qty * $up) / 100;
+                        $totalActual += $total;
+                    }
+                }
+            }
+        }
+        return $totalActual >= 100 ? 'FINISH' : 'ONGOING';
+    }
+
+
+
+    public function task()
+    {
+        return $this->hasMany(DaftarTask_Model::class, 'id_project');
+    }
+
+
+
+
+    public function worksheet()
+    {
+        return $this->hasMany(DaftarWS_Model::class, 'id_project');
+    }
+}
