@@ -19,6 +19,14 @@ To set up the project locally, ensure you have the following prerequisites:
 - PHP 8.2
 - Composer
 
+## Depedencies
+
+# To use the project do:
+
+- Composer install to generate /vendor/*.*
+```
+composer install
+```
 
 # Error Handling
 
