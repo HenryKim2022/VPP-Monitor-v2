@@ -904,7 +904,7 @@ $relatedTasks = collect($prjmondws->task)->filter(
                                                                     </button>
                                                                 </form>
                                                             @else
-                                                                <form
+                                                                {{-- <form
                                                                     class="row g-2 needs-validation d-flex justify-content-center"
                                                                     method="POST"
                                                                     action="{{ route('m.ws.status.unlock') }}"
@@ -912,13 +912,14 @@ $relatedTasks = collect($prjmondws->task)->filter(
                                                                     @csrf
                                                                     <input type="hidden" id="unlock-ws_id"
                                                                         name="unlock-ws_id"
-                                                                        value="{{ $ws->id_ws }}" />
-                                                                    <button id="confirmSave"
+                                                                        value="{{ $ws->id_ws }}" /> --}}
+                                                                    <button
+                                                                    {{-- id="confirmSave" --}}
                                                                         class="btn bg-success rounded small text-white"
                                                                         style="padding: 0.4rem">
                                                                         <i class="fas fa-user-lock fa-sm"></i>
                                                                     </button>
-                                                                </form>
+                                                                {{-- </form> --}}
                                                             @endif
                                                         @else
                                                             @php

@@ -22,12 +22,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\CheckExpiredWorksheetsJob;
-use Barryvdh\DomPDF\Facade\Pdf; // Import the PDF facade directly
+use Barryvdh\DomPDF\Facade\Pdf;
+use Mpdf\Mpdf;
+use TCPDF;
+use Exception;
 
 
-
-
-class BackupTaskController extends Controller
+class TaskController extends Controller
 {
     //
     public function add_task(Request $request)
@@ -530,42 +531,141 @@ class BackupTaskController extends Controller
         $wsID = $request->input('print-ws_id');
         $wsDate = Carbon::parse($request->input('print-ws_date'));
 
+
         // Load worksheet with necessary relationships
-        $worksheet = DaftarWS_Model::with([
+        $loadDataWS = DaftarWS_Model::with([
+            'project',
             'project.client',
             'karyawan',
-            'task.monitor' => function ($query) use ($projectID) {
+            'task' => function ($query) use ($projectID) {
                 $query->where('id_project', $projectID);
             }
         ])
             ->where('id_ws', $wsID)
             ->whereDate('working_date_ws', $wsDate)
             ->first();
-
-        if (!$worksheet) {
-            return back()->with('error', 'Worksheet not found');
+        // Get monitoring records for the tasks of the worksheet
+        $loadDataWS->task->flatMap(function ($task) {
+            return $task->monitor;
+        });
+        if (!$loadDataWS) {
+            return back()->with('n_error', 'Worksheet not found');
         }
 
-        // Check if PDF generation is requested
-        // if ($request->input('view') === 'pdf') {
-            // return $this->returnDOMPDF($worksheet, $wsID);
-        // } else {
-            return $this->returnNormalView($worksheet);
-        // }
+
+        // return $this->returnTCPDF($loadDataWS, $wsID, $projectID);     //<--- this DOmPDFMetohod (ignore)
+        return $this->returnDOMPDF($loadDataWS, $wsID, $projectID);     //<--- this DOmPDFMetohod (ignore)
+        // return $this->returnNormalView($loadDataWS, $projectID);     //<--- this ignore
+        // return $this->returnMPDF($loadDataWS, $wsID, $projectID);    //<--- this ignore
     }
+
+
+    private function returnTCPDF($worksheet, $wsID, $projectID)
+    {
+        try {
+            $project = Projects_Model::with(['client', 'pcoordinator', 'team', 'monitor', 'task', 'worksheet'])
+            ->where('id_project', $projectID)
+            ->first();
+
+            // Create a new PDF document
+            $pdf = new TCPDF();
+
+            // Set document information
+            $pdf->SetCreator(PDF_CREATOR);
+            $pdf->SetAuthor('Your Name');
+            $pdf->SetTitle('Daily Worksheet - ' . $worksheet->project->id_project);
+            $pdf->SetSubject('Daily Worksheet');
+            $pdf->SetKeywords('TCPDF, PDF, worksheet, project');
+
+            // Set default header data
+            $pdf->SetHeaderData('', 0, 'Daily Worksheet', 'Project: ' . $worksheet->project->id_project);
+
+            // Set header and footer fonts
+            $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+            $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+            // Set margins
+            $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+            $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+            $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+            // Set auto page breaks
+            $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+            // Add a page
+            $pdf->AddPage();
+
+            // Render the view and pass the worksheet data
+            $html = view('pages.userpanels.pm_printtaskws', [
+                'project' => $project,
+                'title' => "Daily Worksheet - " . $worksheet->project->id_project,
+                'loadDataWS' => $worksheet
+            ])->render();
+
+            // Write HTML content to the PDF
+            $pdf->writeHTML($html, true, false, true, false, '');
+
+            // Output the PDF document
+            $pdf->Output('worksheet.pdf', 'I'); // 'I' for inline display, 'D' for download, 'F' for saving to file
+        } catch (Exception $e) {
+            return back()->with('error', 'PDF generation failed: ' . $e->getMessage());
+        }
+    }
+
+
+    private function returnMPDF($worksheet, $wsID, $projectID)
+    {
+        try {
+            // Configure mPDF with image compression settings
+            $mpdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => 'A4-L',
+                'imageDPI' => 150, // Set the DPI for images (higher means better quality, but larger size)
+                'imageQuality' => 80, // Set the quality of images (0-100, where 100 is the best quality)
+            ]);
+
+            $project = Projects_Model::with(['client', 'pcoordinator', 'team', 'monitor', 'task', 'worksheet'])
+                ->where('id_project', $projectID)
+                ->first();
+
+            // Render the view and pass the worksheet data
+            $html = view('pages.userpanels.pm_printtaskws', [
+                'project' => $project,
+                'title' => "Daily Worksheet - " . $worksheet->project->id_project,
+                'loadDataWS' => $worksheet
+            ])->render();
+
+            $mpdf->WriteHTML($html);
+            return $mpdf->Output('worksheet.pdf', 'I'); // 'D' for download, 'I' for inline display
+        } catch (\Mpdf\MpdfException $e) {
+            return back()->with('error', 'PDF generation failed: ' . $e->getMessage());
+        }
+    }
+
+
 
     function cmToMm($cm)
     {
         return $cm * 10; // 1 cm = 10 mm
     }
 
-    private function returnDOMPDF($worksheet, $wsID)
+    private function returnDOMPDF($worksheet, $wsID, $projectID)
     {
+        $project = Projects_Model::with(['client', 'pcoordinator', 'team', 'monitor', 'task', 'worksheet'])
+            ->where('id_project', $projectID)
+            ->first();
+
+        if (!$project) {
+            abort(404, 'Project not found.'); // Or handle the error differently
+        }
+
         // Render the view as a string (HTML)
         $html = view('pages.userpanels.pm_printtaskws', [
+            'project' => $project,
             'title' => "Daily Worksheet - " . $worksheet->project->id_project,
-            'worksheet' => $worksheet
+            'loadDataWS' => $worksheet
         ])->render();
+
 
         // Generate PDF from the HTML string
         $pdf = PDF::loadHTML($html);
@@ -588,12 +688,17 @@ class BackupTaskController extends Controller
     }
 
 
-    private function returnNormalView($worksheet)
+
+    private function returnNormalView($worksheet, $projectID)
     {
+        $project = Projects_Model::with(['client', 'pcoordinator', 'team', 'monitor', 'task', 'worksheet'])
+            ->where('id_project', $projectID)
+            ->first();
         // Return a view instead of generating a PDF
         return view('pages.userpanels.pm_printtaskws', [
+            'project' => $project,
             'title' => "Daily Worksheet - " . $worksheet->project->id_project,
-            'worksheet' => $worksheet
+            'loadDataWS' => $worksheet
         ]);
     }
 }

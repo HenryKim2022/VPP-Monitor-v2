@@ -530,7 +530,7 @@ class TaskController extends Controller
         $projectID = $request->input('print-prj_id');
         $wsID = $request->input('print-ws_id');
         $wsDate = Carbon::parse($request->input('print-ws_date'));
-
+        $printAct = $request->input('print-act');
 
         // Load worksheet with necessary relationships
         $loadDataWS = DaftarWS_Model::with([
@@ -548,15 +548,27 @@ class TaskController extends Controller
         $loadDataWS->task->flatMap(function ($task) {
             return $task->monitor;
         });
+
+
         if (!$loadDataWS) {
             return back()->with('n_error', 'Worksheet not found');
         }
 
+        if ($printAct == 'dom') {
+            return $this->returnDOMPDF($loadDataWS, $wsID, $projectID);
+        } else {
+            return $this->returnNormalView($loadDataWS, $projectID, 'pure');     //<--- this pure (ignore)
+        }
 
-        // return $this->returnTCPDF($loadDataWS, $wsID, $projectID);     //<--- this DOmPDFMetohod (ignore)
-        return $this->returnDOMPDF($loadDataWS, $wsID, $projectID);     //<--- this DOmPDFMetohod (ignore)
-        // return $this->returnNormalView($loadDataWS, $projectID);     //<--- this ignore
-        // return $this->returnMPDF($loadDataWS, $wsID, $projectID);    //<--- this ignore
+
+        // BELOW NOT USED
+
+        // return $this->returnDOMPDF($loadDataWS, $wsID, $projectID);     //<--- this (ignore)
+        // return $this->returnDOMPDF_ver2($loadDataWS, $wsID, $projectID);     //<--- this (ignore)
+        // return $this->returnNormalView($loadDataWS, $projectID);     //<--- this notpure (ignore)
+        // return $this->returnNormalView($loadDataWS, $projectID, 'pure');     //<--- this pure (ignore)
+        // return $this->returnTCPDF($loadDataWS, $wsID, $projectID);     //<--- this (ignore)
+        // return $this->returnMPDF($loadDataWS, $wsID, $projectID);    //<--- this (ignore) ERR: DivisionByZeroError
     }
 
 
@@ -564,15 +576,15 @@ class TaskController extends Controller
     {
         try {
             $project = Projects_Model::with(['client', 'pcoordinator', 'team', 'monitor', 'task', 'worksheet'])
-            ->where('id_project', $projectID)
-            ->first();
+                ->where('id_project', $projectID)
+                ->first();
 
             // Create a new PDF document
             $pdf = new TCPDF();
 
             // Set document information
             $pdf->SetCreator(PDF_CREATOR);
-            $pdf->SetAuthor('Your Name');
+            $pdf->SetAuthor('PT. Vertech Perdana');
             $pdf->SetTitle('Daily Worksheet - ' . $worksheet->project->id_project);
             $pdf->SetSubject('Daily Worksheet');
             $pdf->SetKeywords('TCPDF, PDF, worksheet, project');
@@ -617,7 +629,7 @@ class TaskController extends Controller
     {
         try {
             // Configure mPDF with image compression settings
-            $mpdf = new Mpdf([
+            $mpdf = new \Mpdf\Mpdf([
                 'mode' => 'utf-8',
                 'format' => 'A4-L',
                 'imageDPI' => 150, // Set the DPI for images (higher means better quality, but larger size)
@@ -635,6 +647,10 @@ class TaskController extends Controller
                 'loadDataWS' => $worksheet
             ])->render();
 
+            // TEMPORARY FOR TESTING - REMOVE AFTER TESTING
+            // return $html; // Return the HTML instead of generating the PDF
+
+
             $mpdf->WriteHTML($html);
             return $mpdf->Output('worksheet.pdf', 'I'); // 'D' for download, 'I' for inline display
         } catch (\Mpdf\MpdfException $e) {
@@ -648,6 +664,8 @@ class TaskController extends Controller
     {
         return $cm * 10; // 1 cm = 10 mm
     }
+
+
 
     private function returnDOMPDF($worksheet, $wsID, $projectID)
     {
@@ -677,10 +695,59 @@ class TaskController extends Controller
             'isPhpEnabled' => true,
             'isRemoteEnabled' => true,
             'defaultFont' => 'Arial',
-            'margin_top' => $this->cmToMm(1),
-            'margin_right' => $this->cmToMm(1),
-            'margin_bottom' => $this->cmToMm(1),
-            'margin_left' => $this->cmToMm(1)
+            'margin_top' => $this->cmToMm(0.2),
+            'margin_right' => $this->cmToMm(0.2),
+            'margin_bottom' => $this->cmToMm(0.2),
+            'margin_left' => $this->cmToMm(0.6),
+            'dpi' => 96,
+            'isFontSubsettingEnabled' => true,
+            'isHtml5ParserEnabled' => true,
+            'debugPng' => false,
+            'debugKeepTemp' => false,
+            'debugFontSize' => 0,
+            'debugKeepTemp' => false,
+            'debugKern' => false,
+            'debugFontDir' => false,
+            'debugCss' => false,
+        ]);
+
+        // Return the PDF for download or streaming
+        return $pdf->stream("worksheet-{$wsID}.pdf");
+    }
+
+
+    private function returnDOMPDF_ver2($worksheet, $wsID, $projectID)
+    {
+        // Fetch the project with related models
+        $project = Projects_Model::with(['client', 'pcoordinator', 'team', 'monitor', 'task', 'worksheet'])
+            ->where('id_project', $projectID)
+            ->first();
+
+        if (!$project) {
+            abort(404, 'Project not found.'); // Handle the error if project is not found
+        }
+
+        // Prepare data for the view
+        $data = [
+            'project' => $project,
+            'title' => "Daily Worksheet - " . $worksheet->project->id_project,
+            'loadDataWS' => $worksheet
+        ];
+
+        // Load the view and pass the data to it
+        $pdf = PDF::loadView('pages.userpanels.pm_printtaskws_pureview', $data);
+
+        // Optional: Configure PDF settings
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isPhpEnabled' => true,
+            'isRemoteEnabled' => true,
+            'defaultFont' => 'Arial',
+            'margin_top' => $this->cmToMm(0.2),
+            'margin_right' => $this->cmToMm(0.2),
+            'margin_bottom' => $this->cmToMm(0.2),
+            'margin_left' => $this->cmToMm(0.6)
         ]);
 
         // Return the PDF for download or streaming
@@ -689,16 +756,25 @@ class TaskController extends Controller
 
 
 
-    private function returnNormalView($worksheet, $projectID)
+
+    private function returnNormalView($worksheet, $projectID, $pure = false)
     {
         $project = Projects_Model::with(['client', 'pcoordinator', 'team', 'monitor', 'task', 'worksheet'])
             ->where('id_project', $projectID)
             ->first();
         // Return a view instead of generating a PDF
-        return view('pages.userpanels.pm_printtaskws', [
-            'project' => $project,
-            'title' => "Daily Worksheet - " . $worksheet->project->id_project,
-            'loadDataWS' => $worksheet
-        ]);
+        if ($pure) {
+            return view('pages.userpanels.pm_printtaskws_pureview', [
+                'project' => $project,
+                'title' => "Daily Worksheet - " . $worksheet->project->id_project,
+                'loadDataWS' => $worksheet
+            ]);
+        } else {
+            return view('pages.userpanels.pm_printtaskws', [
+                'project' => $project,
+                'title' => "Daily Worksheet - " . $worksheet->project->id_project,
+                'loadDataWS' => $worksheet
+            ]);
+        }
     }
 }

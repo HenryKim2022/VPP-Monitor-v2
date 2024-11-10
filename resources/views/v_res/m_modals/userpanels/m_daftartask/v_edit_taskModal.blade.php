@@ -19,7 +19,7 @@
 
                     @php
                         $currentTime = now();
-                        $formattedTime = $currentTime->format('hh:i:ss');
+                        $formattedTime = $currentTime->format('h:i:s');
                     @endphp
                     <input type="hidden" id="edit-task_id" name="edit-task_id" class="form-control text-left"
                         value="Filled by system!" placeholder="Filled by system!" />
