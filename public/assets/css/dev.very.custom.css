@@ -112,3 +112,11 @@ html{
     display: flex;
     justify-content: space-evenly; /* This is the key line */
 }
+
+
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}

@@ -71,7 +71,7 @@ class TaskController extends Controller
                     },
                 ],
                 'task-id_monitoring'            => 'required',
-                'task-description'              => 'required',
+                'task-description'              => 'required|min:20',
                 'task-current-progress'         => 'required',
                 'ws-id_ws'                      => 'required',
                 'ws-id_project'                 => 'required'
@@ -82,6 +82,7 @@ class TaskController extends Controller
                 'task-work_time.required'       => 'The work_time field is required.',
                 'task-id_monitoring.required'   => 'The task field is required.',
                 'task-description.required'     => 'The description field is required.',
+                'task-description.min'          => 'The description must be at least 20 characters.',
                 'task-current-progress.required' => 'The current_progress field is required.',
                 'ws-id_ws.required'             => 'The id_worksheet field is not filled by system!',
                 'ws-id_project.required'        => 'The id_project field is not filled by system!'
@@ -266,7 +267,7 @@ class TaskController extends Controller
                     },
                 ],
                 'edit-task_id_monitoring'       => 'sometimes|required',
-                'edit-task_description'         => 'sometimes|required',
+                'edit-task_description'         => 'sometimes|required|min:20',
                 'edit-task_current_progress'    => 'sometimes|required',
                 'edit-ws_id_ws'                 => 'sometimes|required',
                 'edit-ws_id_project'            => 'sometimes|required',
@@ -279,6 +280,7 @@ class TaskController extends Controller
                 'edit-task_work_time.required'          => 'The work_time field is required.',
                 'edit-task_id_monitoring.required'      => 'The monitoring-id field is required.',
                 'edit-task_description.required'        => 'The description field is required.',
+                'edit-task_description.min'             => 'The description must be at least 20 characters.',
                 'edit-task_current_progress.required'   => 'The current-progress field is required.',
                 'edit-ws_id_ws.required'                => 'The worksheet-id field is not filled by system!.',
                 'edit-ws_id_project.required'           => 'The project-id field is not filled by system!.',
@@ -556,6 +558,7 @@ class TaskController extends Controller
 
         if ($printAct == 'dom') {
             return $this->returnDOMPDF($loadDataWS, $wsID, $projectID);
+            // return $this->returnNormalView($loadDataWS, $projectID);     //<--- this notpure (ignore)
         } else {
             return $this->returnNormalView($loadDataWS, $projectID, 'pure');     //<--- this pure (ignore)
         }
@@ -677,10 +680,12 @@ class TaskController extends Controller
             abort(404, 'Project not found.'); // Or handle the error differently
         }
 
+        $taskEachPage = 7;
         // Render the view as a string (HTML)
         $html = view('pages.userpanels.pm_printtaskws', [
             'project' => $project,
             'title' => "Daily Worksheet - " . $worksheet->project->id_project,
+            'taskEachPage' => $taskEachPage,
             'loadDataWS' => $worksheet
         ])->render();
 
@@ -692,6 +697,7 @@ class TaskController extends Controller
         $pdf->setPaper('a4', 'portrait');
         $pdf->setOptions([
             'isHtml5ParserEnabled' => true,
+            'isJavascriptEnabled' => true,
             'isPhpEnabled' => true,
             'isRemoteEnabled' => true,
             'defaultFont' => 'Arial',
@@ -766,6 +772,10 @@ class TaskController extends Controller
         if ($pure) {
             return view('pages.userpanels.pm_printtaskws_pureview', [
                 'project' => $project,
+                'margin_top' => '1cm',
+                'margin_left' => '5cm',
+                'margin_bottom' => '1cm',
+                'margin_right' => '1cm',
                 'title' => "Daily Worksheet - " . $worksheet->project->id_project,
                 'loadDataWS' => $worksheet
             ]);

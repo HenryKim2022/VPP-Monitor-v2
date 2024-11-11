@@ -207,8 +207,8 @@
             <li class="nav-item dropdown dropdown-user">
                 <a class="nav-link dropdown-toggle dropdown-user-link" id="dropdown-user" href="javascript:void(0);"
                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <div class="user-nav d-sm-flex d-none"><span
-                            class="user-name font-weight-bolder ellipsis-v1" style="max-width: 15vw;">{{ isset($authenticated_user_data) ? ($authenticated_user_data->na_karyawan ?: $authenticated_user_data->na_client) : 'No Name' }}
+                    <div class="user-nav d-sm-flex"><span class="user-name font-weight-bolder ellipsis-v1"
+                            style="max-width: 15vw;">{{ isset($authenticated_user_data) ? ($authenticated_user_data->na_karyawan ?: $authenticated_user_data->na_client) : 'No Name' }}
                         </span>
                         <span class="user-status">
                             {{ $authenticated_user_data
@@ -217,10 +217,8 @@
                                     'Illegal Access')
                                 : 'Illegal Access' }}
                         </span>
-
-
-
-                    </div><span class="avatar"><img class="round" src="{{ $avatar_src }}" alt="avatar"
+                    </div>
+                    <span class="avatar"><img class="round" src="{{ $avatar_src }}" alt="avatar"
                             height="40" width="40"><span class="avatar-status-online"></span></span>
                     {{-- src="{{ isset($authenticated_user_data) ? ($authenticated_user_data->foto_karyawan === null ? env('APP_DEFAULT_AVATAR') : 'public/avatar/uploads/' . $authenticated_user_data->foto_karyawan) : env('APP_DEFAULT_AVATAR') }}" --}}
                 </a>

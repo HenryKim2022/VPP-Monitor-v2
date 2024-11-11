@@ -39,7 +39,7 @@ abstract class Controller
         // CheckExpiredWorksheetsJob::dispatch();
         // $this->runQueueWorkerv1();
         // $this->runQueueWorkerv2();
-        // $this->dispatchJob();
+        $this->dispatchJob();
     }
 
 

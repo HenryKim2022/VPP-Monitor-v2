@@ -48,10 +48,11 @@
             display: table-header-group;
         }
 
+
         /* Print-specific Styles */
         @media print {
             body {
-                margin: 0;
+                margin: 0.5cm 0.5cm 0.5cm 1.2cm;
                 padding: 0;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
@@ -179,6 +180,14 @@
         #main-tb tbody tr:nth-child(even) {
             background-color: #f2f2f2 !important;
         }
+
+        tbody {
+            height: fit-content;
+            transition: height 0.3s ease; /* Smooth transition for height change */
+
+            overflow-y: auto; /* Allow scrolling if content exceeds height */
+        }
+
 
         /* Utility Classes */
         .text-center {
@@ -327,7 +336,7 @@
                     </tr>
                     <tr class="border-0">
                         <th rowspan="1" colspan="14" class="th-0 border-top-0">
-                            <span class="position-absolute">
+                            <span id="logo" class="position-absolute">
                                 <div class="border-0 p-1 text-center">
                                     <img src="{{ asset('public/assets/logo/dws_header_vplogo.svg') }}" class="logo">
                                 </div>
@@ -358,7 +367,7 @@
                         $workingDate = $loadDataWS->working_date_ws;
                         \Carbon\Carbon::setLocale('id');
                         $date = \Carbon\Carbon::parse($workingDate);
-                        $formattedDate = $date->isoFormat('dddd, DD MMMM YYYY');
+                        $formattedDate = $date->isoFormat('dddd, DD MMM YYYY');
                     @endphp
                     <tr>
                         <th colspan="5" class="th-0 text-start"><strong>DATE<br>(TANGGAL)</strong></th>
@@ -383,7 +392,7 @@
                         <th colspan="1" class="align-middle" style="width: 11.5%;">CURRENT</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tableBody" style="height: 708px;">
                     @foreach ($loadDataWS['task'] as $relDWS)
                     <tr>
                         <td colspan="3" class="text-center cell-fit">
@@ -425,11 +434,11 @@
                                     $totalActual += $total; // Accumulate to totalActual
                                 }
                             @endphp
-                            {{ number_format($total, 0) }}% <!-- Display total with 0 decimal places -->
+                            {{ number_format($total, 1) }}% <!-- Display total with 0 decimal places -->
                         </td>
                         <td class="text-center" colspan="1">
                             @if ($relDWS->progress_current_task != null && $relDWS->progress_current_task > 0)
-                                {{ $relDWS->progress_current_task }}%
+                                {{ number_format($relDWS->progress_current_task, 1) }}%
                             @else
                                 0%
                             @endif
@@ -443,7 +452,7 @@
                     </tr>
                     <tr>
                         <td colspan="14" rowspan="1" class="w-100" style="padding: 0.35rem 0.35rem;">
-                            <textarea class="w-100 border-0 bg-transparent" rows="7" @disabled(true)></textarea>
+                            <textarea class="w-100 border-0 bg-transparent" rows="7" @disabled(true)>{{  $relDWS->remark_ws ? $relDWS->remark_ws : 'None' }}</textarea>
                         </td>
                     </tr>
                     <tr>
@@ -499,11 +508,11 @@
                             </strong>
                             <br>
                             @php
-                                $startDate = $loadDataWS->closed_at_ws;
+                                $startDate = $loadDataWS->working_date_ws;
                                 $dateStart = \Carbon\Carbon::parse($startDate);
                                 // Format date in Indonesian
                                 \Carbon\Carbon::setLocale('in');
-                                $formattedDateStart = $dateStart->isoFormat('dddd, DD MMMM YYYY');
+                                $formattedDateStart = $dateStart->isoFormat('dddd, DD MMM YYYY');
                                 // Format time in English
                                 \Carbon\Carbon::setLocale('en');
                                 $formattedTimeStart = $dateStart->isoFormat('hh:mm:ss A');
@@ -528,7 +537,7 @@
 
                                     // Format date in Indonesian
                                     \Carbon\Carbon::setLocale('in');
-                                    $formattedDateClose = $dateClose->isoFormat('dddd, DD MMMM YYYY');
+                                    $formattedDateClose = $dateClose->isoFormat('dddd, DD MMM YYYY');
 
                                     // Format time in English
                                     \Carbon\Carbon::setLocale('en');
@@ -575,7 +584,32 @@
     <script src="{{ asset('public/theme/vuexy/app-assets/vendors/js/vendors.min.js') }}"></script>
     <script src="{{ asset('public/theme/vuexy/app-assets/js/core/app-menu.js') }}"></script>
     <script src="{{ asset('public/theme/vuexy/app-assets/js/core/app.js') }}"></script>
+{{--
+    <script>
+        function setTbodyHeight() {
+            // Get the heights of the thead and tfoot
+            var theadHeight = document.querySelector('thead').offsetHeight;
+            var tfootHeight = document.querySelector('tfoot').offsetHeight - 245;
 
+            // A4 page height in pixels (approximately)
+            var a4Height = 1123; // 297 mm in pixels
+
+            // Calculate the available height for tbody
+            var tbodyHeight = a4Height - (theadHeight + tfootHeight);
+
+            // Set the tbody height dynamically
+            var tbody = document.getElementById('tableBody');
+            tbody.style.height = tbodyHeight + 'px';
+        }
+
+        // Set tbody height on page load
+        window.onload = setTbodyHeight;
+
+        // Set tbody height when logo is clicked
+        document.getElementById('logo').addEventListener('click', function() {
+            setTbodyHeight();
+        });
+    </script> --}}
 
 
     </body>

@@ -92,6 +92,15 @@
             </div>
         </div> --}}
 
+        @php
+            $authUserId = $authenticated_user_data->id_karyawan;
+            $authUserType = auth()->user()->type;
+            $monUserId = $prjmondws->id_karyawan;
+        @endphp
+
+        @php
+            $isStatusOpen = $loadDataWS->status_ws == 'OPEN' ? true : false;
+        @endphp
 
         <!-- TableAbsen Card -->
         <div class="col-lg-12 col-md-12 col-12">
@@ -109,9 +118,58 @@
                                 <div class="card-body pt-0">
                                     <!-- Column 3: Engineer Text -->
                                     {{-- <div class="col text-end col-xl-3 col-md-6 col-12 d-flex align-items-top"> --}}
-                                    <span class="btn btn-primary auth-role-eng-text">
+
+
+                                    {{-- <span class="btn btn-primary auth-role-eng-text">
                                         <a class="mt-0 mb-0 cursor-default text-end">ENG</a>
-                                    </span>
+                                    </span> --}}
+                                    @if ($authUserType == 'Superuser')
+                                        @php
+                                            $ws_status = $loadDataWS->status_ws;
+                                        @endphp
+                                        @if ($ws_status == 'OPEN')
+                                            <form class="row g-2 needs-validation d-flex justify-content-center"
+                                                method="POST" action="{{ route('m.ws.status.lock') }}" id="lock_wsFORM"
+                                                novalidate>
+                                                @csrf
+                                                <input type="hidden" id="lock-ws_id" name="lock-ws_id"
+                                                    value="{{ $loadDataWS->id_ws }}" />
+                                                <button id="confirmSave" class="btn btn-primary auth-role-eng-text">
+                                                    <a class="mt-0 mb-0 cursor-default text-end">ENG</a>
+                                                </button>
+                                            </form>
+                                        @else
+                                            <form class="row g-2 needs-validation d-flex justify-content-center"
+                                                method="POST" action="{{ route('m.ws.status.unlock') }}" id="unlock_wsFORM"
+                                                novalidate>
+                                                @csrf
+                                                <input type="hidden" id="unlock-ws_id" name="unlock-ws_id"
+                                                    value="{{ $loadDataWS->id_ws }}" />
+                                                <button id="confirmSave" class="btn btn-primary auth-role-eng-text">
+                                                    <a class="mt-0 mb-0 cursor-default text-end">ENG</a>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    @else
+                                        @php
+                                            $ws_status = $loadDataWS->status_ws;
+                                        @endphp
+                                        @if ($ws_status == 'OPEN')
+                                            <button class="btn btn-primary auth-role-eng-text">
+                                                <a class="mt-0 mb-0 cursor-default text-end">ENG</a>
+                                            </button>
+                                        @else
+                                            <button class="btn btn-primary auth-role-eng-text">
+                                                <a class="mt-0 mb-0 cursor-default text-end">ENG</a>
+                                            </button>
+                                        @endif
+                                    @endif
+
+
+
+
+
+
                                     {{-- </div> --}}
                                     <div class="row w-100 justify-content-between">
                                         <!-- Column 1: Brand Logo -->
@@ -250,19 +308,19 @@
 
                                         @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
                                             {{-- @if (isset($modalData['modal_add'])) --}}
-                                                @if ($ws_status == 'OPEN')
-                                                    <button onclick="openModal('{{ $modalData['modal_add'] }}')"
-                                                        class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success add-new-record"
-                                                        style="width: 3rem; height: 3rem; padding: 0;">
-                                                        <i class="fas fa-plus-circle fa-xs text-white"></i>
-                                                    </button>
-                                                @else
-                                                    <button
-                                                        class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
-                                                        style="width: 3rem; height: 3rem; padding: 0;">
-                                                        <i class="fas fa-plus-circle fa-xs text-white"></i>
-                                                    </button>
-                                                @endif
+                                            @if ($ws_status == 'OPEN')
+                                                <button onclick="openModal('{{ $modalData['modal_add'] }}')"
+                                                    class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success add-new-record"
+                                                    style="width: 3rem; height: 3rem; padding: 0;">
+                                                    <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                </button>
+                                            @else
+                                                <button
+                                                    class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                    style="width: 3rem; height: 3rem; padding: 0;">
+                                                    <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                </button>
+                                            @endif
                                             {{-- @else
                                                 @if ($ws_status == 'OPEN')
                                                     <form class="me-1 needs-validation" method="POST"
@@ -310,7 +368,7 @@
                                                             value="{{ $loadDataWS->id_ws }}" />
                                                         <div>
                                                             <button
-                                                                class="btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success add-new-record {{ $blinkBGClass }}"
+                                                                class="btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger add-new-record {{ $blinkBGClass }}"
                                                                 style="width: 3rem; height: 3rem; padding: 0;">
                                                                 <i class="fas fa-lock-open fa-xs text-white"></i>
                                                             </button>
@@ -351,16 +409,24 @@
                                             {{-- @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId)) --}}
                                             <div class="d-flex justify-content-center align-items-ce">
                                                 <form class="needs-validation" method="POST"
-                                                    action="{{ route('m.task.printpuretask') }}" id="print_puretaskFORM" novalidate>
+                                                    action="{{ route('m.task.printpuretask') }}" id="print_puretaskFORM"
+                                                    novalidate>
                                                     @csrf
-                                                    <input type="hidden" id="print-prj_id" name="print-prj_id" value="{{ $loadDataWS->id_project }}" @readonly(true) />
-                                                    <input type="hidden" id="print-ws_id" name="print-ws_id" value="{{ $loadDataWS->id_ws }}" @readonly(true) />
-                                                    <input type="hidden" id="print-ws_date" name="print-ws_date" value="{{ $loadDataWS->working_date_ws }}" @readonly(true) />
+                                                    <input type="hidden" id="print-prj_id" name="print-prj_id"
+                                                        value="{{ $loadDataWS->id_project }}" @readonly(true) />
+                                                    <input type="hidden" id="print-ws_id" name="print-ws_id"
+                                                        value="{{ $loadDataWS->id_ws }}" @readonly(true) />
+                                                    <input type="hidden" id="print-ws_date" name="print-ws_date"
+                                                        value="{{ $loadDataWS->working_date_ws }}" @readonly(true) />
 
-                                                    <input type="hidden" id="print-act" name="print-act" value="pure"/>
-                                                    <input type="hidden" id="print-task-title" name="print-task-title" value="{{ $prjmondws->id_project }} {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }} DAILY WORKSHEETS" />
-                                                    <input type="hidden" id="print-task-length" name="print-task-length" />
-                                                    <input type="hidden" id="print-task-columns" name="print-task-columns" />
+                                                    <input type="hidden" id="print-act" name="print-act"
+                                                        value="pure" />
+                                                    <input type="hidden" id="print-task-title" name="print-task-title"
+                                                        value="{{ $prjmondws->id_project }} {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }} DAILY WORKSHEETS" />
+                                                    <input type="hidden" id="print-task-length"
+                                                        name="print-task-length" />
+                                                    <input type="hidden" id="print-task-columns"
+                                                        name="print-task-columns" />
                                                     <button
                                                         class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
                                                         style="width: 3rem; height: 3rem; padding: 0;">
@@ -369,16 +435,24 @@
                                                     </button>
                                                 </form>
                                                 <form class="needs-validation" method="POST"
-                                                    action="{{ route('m.task.printdomtask') }}" id="print_domtaskFORM" novalidate>
+                                                    action="{{ route('m.task.printdomtask') }}" id="print_domtaskFORM"
+                                                    novalidate>
                                                     @csrf
-                                                    <input type="hidden" id="print-prj_id" name="print-prj_id" value="{{ $loadDataWS->id_project }}" @readonly(true) />
-                                                    <input type="hidden" id="print-ws_id" name="print-ws_id" value="{{ $loadDataWS->id_ws }}" @readonly(true) />
-                                                    <input type="hidden" id="print-ws_date" name="print-ws_date" value="{{ $loadDataWS->working_date_ws }}" @readonly(true) />
+                                                    <input type="hidden" id="print-prj_id" name="print-prj_id"
+                                                        value="{{ $loadDataWS->id_project }}" @readonly(true) />
+                                                    <input type="hidden" id="print-ws_id" name="print-ws_id"
+                                                        value="{{ $loadDataWS->id_ws }}" @readonly(true) />
+                                                    <input type="hidden" id="print-ws_date" name="print-ws_date"
+                                                        value="{{ $loadDataWS->working_date_ws }}" @readonly(true) />
 
-                                                    <input type="hidden" id="print-act" name="print-act" value="dom" />
-                                                    <input type="hidden" id="print-task-title" name="print-task-title" value="{{ $prjmondws->id_project }} {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }} DAILY WORKSHEETS" />
-                                                    <input type="hidden" id="print-task-length" name="print-task-length" />
-                                                    <input type="hidden" id="print-task-columns" name="print-task-columns" />
+                                                    <input type="hidden" id="print-act" name="print-act"
+                                                        value="dom" />
+                                                    <input type="hidden" id="print-task-title" name="print-task-title"
+                                                        value="{{ $prjmondws->id_project }} {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }} DAILY WORKSHEETS" />
+                                                    <input type="hidden" id="print-task-length"
+                                                        name="print-task-length" />
+                                                    <input type="hidden" id="print-task-columns"
+                                                        name="print-task-columns" />
                                                     <button
                                                         class="btn bg-info mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
                                                         style="width: 3rem; height: 3rem; padding: 0;">
@@ -622,8 +696,160 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
 
                                 </tr>
                             @endforeach
-
                         </tbody>
+
+                        <!-- TABLE FOOTER -->
+                        <tfoot>
+                            <tr>
+                                <td colspan="{{ $isStatusOpen ? '6' : '5' }}" class="px-1">
+                                    <strong>
+                                        REMARK (CATATAN AKHIR)
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="{{ $isStatusOpen ? '6' : '5' }}" rowspan="1" class="px-1 align-middle">
+                                    <textarea class="w-100" rows="3" {{ $loadDataWS->status_ws == 'OPEN' ? '' : 'disabled' }}></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="{{ $isStatusOpen ? '4' : '3' }}" rowspan="5" class="px-1">
+
+                                    <div class="d-flex flex-col justify-content-around">
+                                        <div class="d-flex flex-column align-items-start">
+                                            <span>
+                                                <strong>
+                                                    EXECUTED BY, (DIKERJAKAN OLEH)
+                                                </strong>
+                                            </span>
+                                            <div style="height: 8em;"></div> <!-- Empty div for spacing -->
+                                            <span class="justify-content-center">
+                                                <a class="w-100 align-text-bottom">
+                                                    {{ $loadDataWS->karyawan->na_karyawan }}
+                                                </a>
+                                            </span>
+                                            <span class="underline-text">
+                                                <strong>
+                                                    PT. VERTECH PERDANA
+                                                </strong>
+                                            </span>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-start">
+                                            <span>
+                                                <strong>
+                                                    ACKNOWLEDGED BY, (DIKETAHUI OLEH)
+                                                </strong>
+                                            </span>
+                                            <div style="height: 8em;"></div> <!-- Empty div for spacing -->
+                                            <span class="justify-content-center">
+                                                <a class="w-100 align-text-bottom">
+                                                    {{ $loadDataWS->project->client->na_client }}
+                                                </a>
+                                            </span>
+                                            <span class="underline-text">
+                                                <strong>
+                                                    ( CLIENT )
+                                                    ..................................................................
+                                                </strong>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td colspan="2" class="px-1 text-center"><strong>Time Stamp</strong></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="px-1">
+                                    <strong>
+                                        Start Date:
+                                    </strong>
+                                    <br>
+                                    @php
+                                        $startDate = $loadDataWS->working_date_ws;
+                                        $dateStart = \Carbon\Carbon::parse($startDate);
+                                        // Format date in Indonesian
+                                        \Carbon\Carbon::setLocale('in');
+                                        $formattedDateStart = $dateStart->isoFormat('dddd, DD MMM YYYY');
+                                        // Format time in English
+                                        \Carbon\Carbon::setLocale('en');
+                                        $formattedTimeStart = $dateStart->isoFormat('hh:mm:ss A');
+                                        // Combine date and time
+                                        $formattedDateTimeStart = $formattedDateStart . ' at ' . $formattedTimeStart;
+                                        echo $formattedDateTimeStart;
+                                    @endphp
+                                </td>
+                                {{-- <td class="border-0"></td> --}}
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="px-1">
+                                    <strong>
+                                        Closed Date:
+                                    </strong>
+                                    <br>
+                                    @if ($loadDataWS->status_ws == 'OPEN')
+                                        -
+                                    @else
+                                        @php
+                                            $closedDate = $loadDataWS->closed_at_ws;
+                                            $dateClose = \Carbon\Carbon::parse($closedDate);
+
+                                            // Format date in Indonesian
+                                            \Carbon\Carbon::setLocale('in');
+                                            $formattedDateClose = $dateClose->isoFormat('dddd, DD MMM YYYY');
+
+                                            // Format time in English
+                                            \Carbon\Carbon::setLocale('en');
+                                            $formattedTimeClose = $dateClose->isoFormat('hh:mm:ss A');
+
+                                            // Combine date and time
+                                            $formattedDateTimeClose =
+                                                $formattedDateClose . ' at ' . $formattedTimeClose;
+                                            echo $formattedDateTimeClose;
+                                        @endphp
+                                    @endif
+
+                                </td>
+                                {{-- <td class="border-0"></td> --}}
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="px-1 text-center align-middle"><strong>Status</strong></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="rowlock px-1 text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }}">
+                                    @if ($isStatusOpen)
+                                        @if ($authUserType === 'Superuser' || $authUserType === 'Engineer')
+                                            @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
+                                                <form class="me-1 needs-validation" method="POST"
+                                                    action="{{ route('m.ws.status.lock') }}" id="lock_wsFORM" novalidate>
+                                                    @csrf
+                                                    <input type="hidden" id="lock-ws_id" name="lock-ws_id"
+                                                        value="{{ $loadDataWS->id_ws }}" />
+                                                    <div>
+                                                        <button class="mx-1 border-0 d-flex bg-transparent"
+                                                            style="padding: 0.5rem 1rem; justify-self: center;">
+                                                            <h2 class="mb-0">
+                                                                <strong>OPEN</strong>
+                                                            </h2>
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            @endif
+                                        @endif
+                                    @else
+                                        <div>
+                                            <button class="mx-1 border-0 d-flex bg-transparent text-white"
+                                                style="padding: 0.5rem 1rem; justify-self: center;">
+                                                <h2 class="mb-0">
+                                                    <strong>CLOSED</strong>
+                                                </h2>
+                                            </button>
+                                        </div>
+
+                                    @endif
+
+                                </td>
+                            </tr>
+                        </tfoot>
+
                     </table>
 
                 </div>
@@ -760,6 +986,7 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
 
 
             configDoPrint();
+
             function configDoPrint() {
                 $('#print_taskFORM button').on('click', function(event) {
                     event.preventDefault(); // Prevent default form submission
@@ -773,7 +1000,7 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                     $table.columns().every(function(index) {
                         if (this.visible()) {
                             visibleColumns.push(this.header()
-                            .textContent); // Push the column header text
+                                .textContent); // Push the column header text
                         }
                     });
                     $('#print-task-columns').val(JSON.stringify(visibleColumns)); // Store as JSON string
@@ -785,6 +1012,7 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                     $('#print_taskFORM').submit();
                 });
             }
+
 
 
         });

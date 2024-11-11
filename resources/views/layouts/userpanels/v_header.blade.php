@@ -438,6 +438,9 @@
         .btn:not([class*='btn-']).blink-bg {
             animation: blink_bg 1s infinite;
         }
+        .rowlock:not([class*='rowlock-']).blink-bg {
+            animation: blink_bg 1s infinite;
+        }
 
         /* .blink-bg {
             animation: blink_bg 1s infinite;

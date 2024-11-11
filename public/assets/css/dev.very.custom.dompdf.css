@@ -20,8 +20,9 @@
     --danger: #ea5455;
     --light: #f6f6f6;
     --dark: #4b4b4b;
-    --font-family-sans-serif: "Montserrat", Helvetica, Arial, serif;
+    --font-family-sans-serif: Arial, "Montserrat", Helvetica, serif;
     --title: 10pt;
+    --table-default-c: #000000;
     --m1-unit: 0.25rem;
     --p1-unit: 0.25rem;
     --m2-unit: 1rem;
@@ -115,9 +116,9 @@ body {
     font-size: 7pt;
     font-weight: 400;
     line-height: 1.45;
-    color: #6e6b7b;
+    color: var(--table-default-c);
     text-align: left;
-    background-color: #f8f8f8;
+    background-color: #ffffff;
 }
 
 .page-title {
@@ -128,17 +129,12 @@ body {
     font-size: var(--title) !important;
 }
 
-.table-responsive {
-    display: block;
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
 
 .table {
+    flex: 1;
     width: 100%;
     margin-bottom: 1rem;
-    color: #6e6b7b;
+    color: var(--table-default-c);
     border-collapse: collapse;
 }
 
@@ -160,20 +156,20 @@ body {
 }
 
 .table th.th-0 {
+    font-weight: normal;
     background-color: #ffffff;
     text-align: start !important;
     vertical-align: middle !important;
+    margin-top: 0px;
+    padding-top: 0px !important;
 }
 
 .table thead th {
     border-bottom: 1px solid #000;
 }
 
-.table-responsive {
-    display: block;
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+.table tbody {
+    page-break-inside: avoid;
 }
 
 .border-bottom-0 {
@@ -199,6 +195,18 @@ thead {
 
 .position-relative {
     position: relative !important;
+}
+
+.page-logo-container {
+    position: absolute;
+    align-items: center;
+    top: -1.2%;
+    margin-left: 1.8%;
+}
+
+.page-logo {
+    width: 90px;
+    height: 80px;
 }
 
 .w-100 {
@@ -238,39 +246,39 @@ thead {
 }
 
 .border-0 {
-    border: 0px;
+    border: 0px !important;
 }
 
 .border-top-0 {
-    border-top: 0px;
+    border-top: 0px !important;
 }
 
 .border-top-1 {
-    border-top: 1px;
+    border-top: 1px !important;
 }
 
 .border-bottom-0 {
-    border-bottom: 0px;
+    border-bottom: 0px !important;
 }
 
 .border-bottom-1 {
-    border-bottom: 1px;
+    border-bottom: 1px !important;
 }
 
 .border-left-0 {
-    border-left: 0px;
+    border-left: 0px !important;
 }
 
 .border-left-1 {
-    border-left: 1px;
+    border-left: 1px !important;
 }
 
 .border-right-0 {
-    border-right: 0px;
+    border-right: 0px !important;
 }
 
 .border-right-1 {
-    border-right: 1px;
+    border-right: 1px !important;
 }
 
 .border-solid {
@@ -341,6 +349,15 @@ strong {
     text-align: right;
 }
 
+.text-bottom {
+    vertical-align: bottom;
+}
+
+.text-top {
+    vertical-align: top;
+}
+
+
 .underline-text {
     text-decoration: underline;
 }
@@ -374,7 +391,7 @@ strong {
 .tikdu_eq {
     padding: 0.01rem 0.01rem !important;
     text-align: center;
-    font-weight: 700;
+    font-weight: 700 !important;
 }
 
 .tikdu_eq_2 {
@@ -387,6 +404,8 @@ strong {
 
 .th-time {
     width: fit-content !important;
+    padding: 0% !important;
+    margin: 0% !important;
 }
 
 .my-0 {
@@ -469,61 +488,233 @@ strong {
     padding-right: var(--p3-unit);
 }
 
-.p-0 {
-    padding: 0 !important;
+/* Padding classes - scale by 0.25rem increments with !important */
+
+
+
+
+
+/* Padding classes - responsive adjustments included */
+
+/* Padding Right */
+.pr-1 {
+    padding-right: 0.25rem;
 }
 
-.p-1 {
-    padding: 0.25rem !important;
+.pr-2 {
+    padding-right: 0.5rem;
 }
 
-.p-2 {
-    padding: 0.5rem !important;
+.pr-3 {
+    padding-right: 0.75rem;
 }
 
-.p-3 {
-    padding: 0.75rem !important;
+.pr-4 {
+    padding-right: 1rem;
 }
 
-.p-4 {
-    padding: 1rem !important;
+.pr-5 {
+    padding-right: 1.25rem;
 }
 
-.p-5 {
-    padding: 1.25rem !important;
+.pr-6 {
+    padding-right: 1.5rem;
 }
 
-.p-6 {
-    padding: 1.5rem !important;
+.pr-7 {
+    padding-right: 1.75rem;
 }
 
-.p-7 {
-    padding: 1.75rem !important;
+.pr-8 {
+    padding-right: 2rem;
 }
 
-.p-8 {
-    padding: 2rem !important;
+/* Padding Left */
+.pl-1 {
+    padding-left: 0.25rem;
 }
 
-.p-9 {
-    padding: 2.25rem !important;
+.pl-2 {
+    padding-left: 0.5rem;
 }
 
-.p-10 {
-    padding: 2.5rem !important;
+.pl-3 {
+    padding-left: 0.75rem;
 }
 
-/* Responsive adjustments (optional) */
+.pl-4 {
+    padding-left: 1rem;
+}
+
+.pl-5 {
+    padding-left: 1.25rem;
+}
+
+.pl-6 {
+    padding-left: 1.5rem;
+}
+
+.pl-7 {
+    padding-left: 1.75rem;
+}
+
+.pl-8 {
+    padding-left: 2rem;
+}
+
+/* Padding Bottom */
+.pb-1 {
+    padding-bottom: 0.25rem;
+}
+
+.pb-2 {
+    padding-bottom: 0.5rem;
+}
+
+.pb-3 {
+    padding-bottom: 0.75rem;
+}
+
+.pb-4 {
+    padding-bottom: 1rem;
+}
+
+.pb-5 {
+    padding-bottom: 1.25rem;
+}
+
+.pb-6 {
+    padding-bottom: 1.5rem;
+}
+
+.pb-7 {
+    padding-bottom: 1.75rem;
+}
+
+.pb-8 {
+    padding-bottom: 2rem;
+}
+
+/* Padding Top */
+.pt-1 {
+    padding-top: 0.25rem;
+}
+
+.pt-2 {
+    padding-top: 0.5rem;
+}
+
+.pt-3 {
+    padding-top: 0.75rem;
+}
+
+.pt-4 {
+    padding-top: 1rem;
+}
+
+.pt-5 {
+    padding-top: 1.25rem;
+}
+
+.pt-6 {
+    padding-top: 1.5rem;
+}
+
+.pt-7 {
+    padding-top: 1.75rem;
+}
+
+.pt-8 {
+    padding-top: 2rem;
+}
+
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
-    .p-10 {
-        padding: 1.5rem !important;
+    .pr-8, .pl-8, .pb-8, .pt-8 {
+        padding-right: 1.5rem;
+        padding-left: 1.5rem;
+        padding-bottom: 1.5rem;
+        padding-top: 1.5rem;
     }
 
-    .p-9 {
-        padding: 1.25rem !important;
+    .pr-7, .pl-7, .pb-7, .pt-7 {
+        padding-right: 1.25rem;
+        padding-left: 1.25rem;
+        padding-bottom: 1.25rem;
+        padding-top: 1.25rem;
     }
 
-    .p-8 {
-        padding: 1rem !important;
+    .pr-6, .pl-6, .pb-6, .pt-6 {
+        padding-right: 1rem;
+        padding-left: 1rem;
+        padding-bottom: 1rem;
+        padding-top: 1rem;
     }
+
+    /* Add more responsive adjustments as needed for smaller screen sizes */
+}
+
+@media (max-width: 576px) {
+    .pr-4, .pl-4, .pb-4, .pt-4 {
+        padding-right: 0.75rem;
+        padding-left: 0.75rem;
+        padding-bottom: 0.75rem;
+        padding-top: 0.75rem;
+    }
+
+    /* Add more responsive adjustments as needed for even smaller screens */
+}
+
+
+.fixed-height {
+    background-color: #28c76f !important;
+    display: block;
+    /* Allows the tbody to take fixed height */
+    /* height: 300px; Set your desired height */
+    overflow-y: auto;
+    /* Enables vertical scrolling */
+}
+
+.d-flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.justify-content-around {
+    justify-content: space-around;
+}
+
+.justify-content-center {
+    justify-content: center;
+}
+
+/* .table-container {
+    display: flex;
+    flex-direction: column;
+    height: 1123;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+} */
+
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.page-break {
+    page-break-after: always;
+}
+
+.hide-thead-on-subsequent-pages {
+    display: none; /* Hide thead initially */
 }

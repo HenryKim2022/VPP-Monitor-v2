@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('status_ws')->nullable();
             $table->dateTime('expired_at_ws')->nullable();
             $table->dateTime('closed_at_ws')->nullable();
+            $table->string('remark_ws', 9999)->nullable();
             $table->foreignId('id_karyawan')->nullable()->constrained('tb_karyawan', 'id_karyawan');
             $table->string('id_project')->nullable(); // Keep it as a string to match tb_projects
             $table->foreign('id_project')->references('id_project')->on('tb_projects')->onDelete('set null'); // Correct foreign key definition

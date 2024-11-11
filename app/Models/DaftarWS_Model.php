@@ -13,7 +13,7 @@ class DaftarWS_Model extends Model
 
     protected $table = 'tb_worksheet';
     protected $primaryKey = 'id_ws';
-    protected $fillable = ['working_date_ws', 'arrival_time_ws', 'finish_time_ws', 'status_ws', 'expired_at_ws', 'closed_at_ws', 'id_karyawan', 'id_project'];
+    protected $fillable = ['working_date_ws', 'arrival_time_ws', 'finish_time_ws', 'status_ws', 'expired_at_ws', 'closed_at_ws', 'remark_ws', 'id_karyawan', 'id_project'];
 
 
 
