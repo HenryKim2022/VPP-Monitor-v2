@@ -167,9 +167,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/m-prj/m-monitoring-worksheet/ws/task/load', [TaskController::class, 'get_task'])->name('m.task.gettask');
     // Route::get('/m-prj/m-monitoring-worksheet/ws/task/load', [TaskController::class, 'get_task'])->name('m.task.gettask');
     Route::post('/m-prj/m-monitoring-worksheet/ws/task/print/pure', [TaskController::class, 'print_task'])->name('m.task.printpuretask');
-    Route::post('/m-prj/m-monitoring-worksheet/ws/task/print/dom', [TaskController::class, 'print_task'])->name('m.task.printdomtask');
+    Route::post('/m-prj/m-monitoring-worksheet/ws/task/print/dom-pdf', [TaskController::class, 'print_task'])->name('m.task.printdomtask');
     Route::get('/m-prj/m-monitoring-worksheet/ws/task/print/pure', [TaskController::class, 'print_task'])->name('m.task.printpuretask');
-    Route::get('/m-prj/m-monitoring-worksheet/ws/task/print/dom', [TaskController::class, 'print_task'])->name('m.task.printdomtask');
+    Route::get('/m-prj/m-monitoring-worksheet/ws/task/print/dom-pdf', [TaskController::class, 'print_task'])->name('m.task.printdomtask');
+
+    Route::get('/m-prj/m-monitoring-worksheet/ws/task/print/dom-pure', [TaskController::class, 'print_task'])->name('m.task.printdompuretask');
+    Route::post('/m-prj/m-monitoring-worksheet/ws/task/print/dom-pure', [TaskController::class, 'print_task'])->name('m.task.printdompuretask');
+
+    Route::post('/m-prj/m-monitoring-worksheet/ws/task/print/mpdf', [TaskController::class, 'print_task'])->name('m.task.printmpdftask');
+    Route::get('/m-prj/m-monitoring-worksheet/ws/task/print/mpdf', [TaskController::class, 'print_task'])->name('m.task.printmpdftask');
+
     Route::get('/m-prj/m-monitoring-worksheet/ws/task/print/diagnosis/{wsID}', [TaskController::class, 'diagnosticPDFGeneration'])->name('m.task.pdfdiag');
 });
 

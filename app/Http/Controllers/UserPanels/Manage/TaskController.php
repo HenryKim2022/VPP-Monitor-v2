@@ -533,6 +533,8 @@ class TaskController extends Controller
         $wsID = $request->input('print-ws_id');
         $wsDate = Carbon::parse($request->input('print-ws_date'));
         $printAct = $request->input('print-act');
+        $ref = $request->input('print-ref');
+        // dd($ref);
 
         // Load worksheet with necessary relationships
         $loadDataWS = DaftarWS_Model::with([
@@ -557,14 +559,21 @@ class TaskController extends Controller
         }
 
         if ($printAct == 'dom') {
-            return $this->returnDOMPDF($loadDataWS, $wsID, $projectID);
-            // return $this->returnNormalView($loadDataWS, $projectID);     //<--- this notpure (ignore)
+            if ($ref == 'notview'){
+                return $this->returnDOMPDF_ver2($loadDataWS, $wsID, $projectID);
+            }else{
+                return $this->returnDOMPDF_ver2($loadDataWS, $wsID, $projectID, 'view');
+            }
+        } else if ($printAct == 'mpdf') {
+            return $this->returnMPDF($loadDataWS, $wsID, $projectID);
         } else {
             return $this->returnNormalView($loadDataWS, $projectID, 'pure');     //<--- this pure (ignore)
         }
 
 
+        // return $this->returnNormalView($loadDataWS, $projectID);     //<--- this notpure (ignore)
         // BELOW NOT USED
+        // return $this->returnDOMPDF($loadDataWS, $wsID, $projectID);
 
         // return $this->returnDOMPDF($loadDataWS, $wsID, $projectID);     //<--- this (ignore)
         // return $this->returnDOMPDF_ver2($loadDataWS, $wsID, $projectID);     //<--- this (ignore)
@@ -643,6 +652,13 @@ class TaskController extends Controller
                 ->where('id_project', $projectID)
                 ->first();
 
+
+            $user = auth()->user();
+            $authenticated_user_data = Karyawan_Model::with('daftar_login.karyawan', 'jabatan.karyawan')->find($user->id_karyawan);
+            Session::put('authenticated_user_data', $authenticated_user_data);
+
+
+
             // Render the view and pass the worksheet data
             $html = view('pages.userpanels.pm_printtaskws', [
                 'project' => $project,
@@ -682,7 +698,7 @@ class TaskController extends Controller
 
         $taskEachPage = 7;
         // Render the view as a string (HTML)
-        $html = view('pages.userpanels.pm_printtaskws', [
+        $html = view('pages.userpanels.pm_printtaskws_dompdfview', [
             'project' => $project,
             'title' => "Daily Worksheet - " . $worksheet->project->id_project,
             'taskEachPage' => $taskEachPage,
@@ -722,42 +738,73 @@ class TaskController extends Controller
     }
 
 
-    private function returnDOMPDF_ver2($worksheet, $wsID, $projectID)
+    private function returnDOMPDF_ver2($worksheet, $wsID, $projectID, $mode = 'notview')
     {
-        // Fetch the project with related models
         $project = Projects_Model::with(['client', 'pcoordinator', 'team', 'monitor', 'task', 'worksheet'])
             ->where('id_project', $projectID)
             ->first();
 
         if (!$project) {
-            abort(404, 'Project not found.'); // Handle the error if project is not found
+            abort(404, 'Project not found.'); // Or handle the error differently
         }
 
-        // Prepare data for the view
-        $data = [
-            'project' => $project,
-            'title' => "Daily Worksheet - " . $worksheet->project->id_project,
-            'loadDataWS' => $worksheet
-        ];
+        // Get the tasks from the worksheet
+        $tasks = $worksheet->task; // Assuming $worksheet->task contains the tasks
+        $eachtaskChunk = 1;
+        // Split tasks into chunks of 7
+        $taskChunks = array_chunk($tasks->toArray(), $eachtaskChunk); // Convert to array if it's a collection
 
-        // Load the view and pass the data to it
-        $pdf = PDF::loadView('pages.userpanels.pm_printtaskws_pureview', $data);
+        if ($mode == 'notview') {
+            // Render the view as a string (HTML)
+            $html = view('pages.userpanels.pm_printtaskws_dompdfview_v2', [
+                'project' => $project,
+                'title' => "Daily Worksheet - " . $worksheet->project->id_project,
+                'loadDataWS' => $worksheet,
+                'taskChunks' => $taskChunks, // Pass the chunks of tasks to the view
+                'eachtaskChunk' => $eachtaskChunk
+            ])->render();
 
-        // Optional: Configure PDF settings
-        $pdf->setPaper('a4', 'portrait');
-        $pdf->setOptions([
-            'isHtml5ParserEnabled' => true,
-            'isPhpEnabled' => true,
-            'isRemoteEnabled' => true,
-            'defaultFont' => 'Arial',
-            'margin_top' => $this->cmToMm(0.2),
-            'margin_right' => $this->cmToMm(0.2),
-            'margin_bottom' => $this->cmToMm(0.2),
-            'margin_left' => $this->cmToMm(0.6)
-        ]);
+            // Generate PDF from the HTML string
+            $pdf = PDF::loadHTML($html);
 
-        // Return the PDF for download or streaming
-        return $pdf->stream("worksheet-{$wsID}.pdf");
+            // Optional: Configure PDF settings
+            $pdf->setPaper('a4', 'portrait');
+            $pdf->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isJavascriptEnabled' => false,
+                'isPhpEnabled' => true,
+                'isRemoteEnabled' => true,
+                'defaultFont' => 'Arial',
+                // 'margin_top' => $this->cmToMm(0.2),
+                // 'margin_right' => $this->cmToMm(0.2),
+                // 'margin_bottom' => $this->cmToMm(0.2),
+                // 'margin_left' => $this->cmToMm(0.8),
+                'margin_top' => 10,
+                'margin_right' => 10,
+                'margin_bottom' => 10,
+                'margin_left' => 10,
+                'dpi' => 60,
+                'isFontSubsettingEnabled' => true,
+                'debugPng' => false,
+                'debugKeepTemp' => false,
+                'debugFontSize' => 0,
+                'debugKeepTemp' => false,
+                'debugKern' => false,
+                'debugFontDir' => false,
+                'debugCss' => false,
+            ]);
+
+            // Return the PDF for download or streaming
+            return $pdf->stream("worksheet-{$wsID}.pdf");
+        } else {
+            return view('pages.userpanels.pm_printtaskws_dompdfview_v2', [
+                'project' => $project,
+                'title' => "Daily Worksheet - " . $worksheet->project->id_project,
+                'loadDataWS' => $worksheet,
+                'taskChunks' => $taskChunks, // Pass the chunks of tasks to the view
+                'eachtaskChunk' => $eachtaskChunk
+            ]);
+        }
     }
 
 
