@@ -118,7 +118,7 @@ body {
     color: var(--table-default-c);
     text-align: left;
     background-color: #ffffff;
-    margin: 0;
+    /* margin: 0; */
     padding: 0;
 }
 
@@ -132,16 +132,13 @@ body {
 
 
 .table {
-    /* flex: 1; */
     width: 100%;
-    /* margin-bottom: 1rem; */
     color: var(--table-default-c);
     border-collapse: collapse;
 }
 
 .table th,
 .table td {
-    /* padding: 0.2rem 0.2rem !important; */
     padding: 0.2rem 0.2rem;
     vertical-align: middle;
     border: 0.5px solid #000;
@@ -151,7 +148,6 @@ body {
     background-color: #f3f2f7;
     vertical-align: bottom;
     text-transform: uppercase;
-    /* font-size: 0.857rem; */
     font-size: 7pt;
     letter-spacing: 0.5px;
 }
@@ -167,7 +163,6 @@ body {
 
 table thead tr th, table tbody tr td, table tfoot tr td, .table th, .table td {
     border-bottom: 0.5px solid #000;
-    /* Increased border thickness */
 }
 
 .table tbody {
@@ -583,7 +578,6 @@ strong {
 
 
 /* Padding classes - responsive adjustments included */
-
 /* Padding Right */
 .pr-1 {
     padding-right: 0.25rem;
@@ -759,11 +753,7 @@ strong {
 .fixed-height {
     background-color: #28c76f !important;
     display: block;
-    /* Allows the tbody to take fixed height */
-    /* min-height: 300px;
-    max-height: 300px; */
     overflow-y: auto;
-    /* Enables vertical scrolling */
 }
 
 .d-flex {
@@ -786,31 +776,15 @@ strong {
     justify-content: center;
 }
 
-/* .table-container {
-    display: flex;
-    flex-direction: column;
-    height: 1123;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-} */
-
-/* .table-responsive {
-    display: block;
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-} */
-
 .page-break {
     page-break-after: always;
 }
 
 
-
 @media print {
     body {
         /* Reset the margin & padding */
-        margin: 0;
+        /* margin: 0px; */
         padding: 0;
         width: 100%;
     }
@@ -838,11 +812,6 @@ strong {
         /* Ensure tfoot is repeated on each page */
     }
 
-    /* tfoot td {
-        padding: 0.1rem 0.1rem !important;
-        height: 0px !important;
-    } */
-
     tr {
         page-break-inside: avoid;
         /* Prevent page breaks inside rows */
@@ -862,11 +831,12 @@ strong {
     }
 }
 
+/* @page { margin: 1cm 1cm 1cm 1.5cm;}        */
 
 .form-ver{
     position: fixed;
-    top: -2rem;
-    right: -1.7rem;
+    top: -1.8rem;
+    right: -1.6rem;
     font-size: 0.7rem;
     font-weight: 200 !important;
     color: var(--gray);
@@ -875,8 +845,8 @@ strong {
 
 .form-footer{
     position: fixed;
-    bottom: -2rem;
-    right: -1.7rem;
+    bottom: -1.7rem;
+    right: -1.6rem;
     font-size: 0.7rem;
     font-weight: 200 !important;
     color: var(--gray);

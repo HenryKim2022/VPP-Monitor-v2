@@ -216,7 +216,7 @@
             }
 
             // Set the total height for the tbody
-            $tbodyHeight = 287 + $maxDescriptionHeight + $maxTaskHeight; // Base height + dynamic height 258
+            $tbodyHeight = 297 + $maxDescriptionHeight + $maxTaskHeight; // Base height + dynamic height 258
             $rowCount = count($chunk);
             // $cellHeight = $rowCount > 0 ? $tbodyHeight / $rowCount : 0; // Calculate height per cell
             $cellHeight = max($tbodyHeight / $rowCount, $lineHeight); // Ensure it is at least the line height
@@ -260,7 +260,12 @@
             .pro-cur {
                 width: 2% !important;
             }
+
+            @page { margin: {{ $margin_top }}mm {{ $margin_right }}mm {{ $margin_bottom }}mm {{ $margin_left }}mm ;}
         </style>
+
+
+
 
 
 

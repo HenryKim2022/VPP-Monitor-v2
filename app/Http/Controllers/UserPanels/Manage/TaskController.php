@@ -559,9 +559,9 @@ class TaskController extends Controller
         }
 
         if ($printAct == 'dom') {
-            if ($ref == 'notview'){
+            if ($ref == 'notview') {
                 return $this->returnDOMPDF_ver2($loadDataWS, $wsID, $projectID);
-            }else{
+            } else {
                 return $this->returnDOMPDF_ver2($loadDataWS, $wsID, $projectID, 'view');
             }
         } else if ($printAct == 'mpdf') {
@@ -748,6 +748,11 @@ class TaskController extends Controller
             abort(404, 'Project not found.'); // Or handle the error differently
         }
 
+        $margin_top = $this->cmToMm(1);
+        $margin_right = $this->cmToMm(1);
+        $margin_bottom = $this->cmToMm(1);
+        $margin_left = $this->cmToMm(1.5);
+
         // Get the tasks from the worksheet
         $tasks = $worksheet->task; // Assuming $worksheet->task contains the tasks
         $eachtaskChunk = 1;
@@ -761,12 +766,15 @@ class TaskController extends Controller
                 'title' => "Daily Worksheet - " . $worksheet->project->id_project,
                 'loadDataWS' => $worksheet,
                 'taskChunks' => $taskChunks, // Pass the chunks of tasks to the view
-                'eachtaskChunk' => $eachtaskChunk
+                'eachtaskChunk' => $eachtaskChunk,
+                'margin_top' => $margin_top,
+                'margin_right' => $margin_right,
+                'margin_bottom' => $margin_bottom,
+                'margin_left' => $margin_left
             ])->render();
 
             // Generate PDF from the HTML string
             $pdf = PDF::loadHTML($html);
-
             // Optional: Configure PDF settings
             $pdf->setPaper('a4', 'portrait');
             $pdf->setOptions([
@@ -775,14 +783,10 @@ class TaskController extends Controller
                 'isPhpEnabled' => true,
                 'isRemoteEnabled' => true,
                 'defaultFont' => 'Arial',
-                // 'margin_top' => $this->cmToMm(0.2),
-                // 'margin_right' => $this->cmToMm(0.2),
-                // 'margin_bottom' => $this->cmToMm(0.2),
-                // 'margin_left' => $this->cmToMm(0.8),
-                'margin_top' => 10,
-                'margin_right' => 10,
-                'margin_bottom' => 10,
-                'margin_left' => 10,
+                'margin_top' => $margin_top,
+                'margin_right' => $margin_right,
+                'margin_bottom' => $margin_bottom,
+                'margin_left' => $margin_left,
                 'dpi' => 60,
                 'isFontSubsettingEnabled' => true,
                 'debugPng' => false,
