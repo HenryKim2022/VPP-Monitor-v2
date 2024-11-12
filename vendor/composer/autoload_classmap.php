@@ -14,7 +14,6 @@ return array(
     'App\\Http\\Controllers\\Auth\\RegisterClientPageController' => $baseDir . '/app/Http/Controllers/Auth/RegisterClientPageController.php',
     'App\\Http\\Controllers\\Auth\\RegisterEmployeePageController' => $baseDir . '/app/Http/Controllers/Auth/RegisterEmployeePageController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
-    'App\\Http\\Controllers\\UserPanels\\Manage\\BackupTaskController' => $baseDir . '/app/Http/Controllers/UserPanels/Manage/BackupTaskController.php',
     'App\\Http\\Controllers\\UserPanels\\Manage\\ClientUserLoginController' => $baseDir . '/app/Http/Controllers/UserPanels/Manage/ClientUserLoginController.php',
     'App\\Http\\Controllers\\UserPanels\\Manage\\EmpUserLoginController' => $baseDir . '/app/Http/Controllers/UserPanels/Manage/EmpUserLoginController.php',
     'App\\Http\\Controllers\\UserPanels\\Manage\\EmployeeController' => $baseDir . '/app/Http/Controllers/UserPanels/Manage/EmployeeController.php',

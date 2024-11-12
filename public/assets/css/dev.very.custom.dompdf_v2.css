@@ -194,6 +194,7 @@ thead {
 .position-relative {
     position: relative !important;
 }
+
 .position-fixed {
     position: fixed !important;
 }
@@ -218,6 +219,7 @@ textarea {
 .w-100 {
     width: 100% !important;
 }
+
 .h-8 {
     height: 8% !important;
 }
@@ -821,8 +823,10 @@ strong {
 
     .page {
         page-break-after: always;
-        margin: 0; /* Reset margin for pages */
-        padding: 0; /* Reset padding for pages */
+        margin: 0;
+        /* Reset margin for pages */
+        padding: 0;
+        /* Reset padding for pages */
         overflow-y: auto;
     }
 
@@ -833,7 +837,7 @@ strong {
 
 /* @page { margin: 1cm 1cm 1cm 1.5cm;}        */
 
-.form-ver{
+.form-ver {
     position: fixed;
     top: -1.8rem;
     right: -1.6rem;
@@ -843,7 +847,7 @@ strong {
     font-family: Arial;
 }
 
-.form-footer{
+.form-footer {
     position: fixed;
     bottom: -1.7rem;
     right: -1.6rem;
@@ -851,4 +855,12 @@ strong {
     font-weight: 200 !important;
     color: var(--gray);
     font-family: Arial;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
 }

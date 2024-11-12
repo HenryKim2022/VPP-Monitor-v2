@@ -23,8 +23,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\CheckExpiredWorksheetsJob;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Mpdf\Mpdf;
-use TCPDF;
+
 use Exception;
 
 
@@ -534,7 +533,8 @@ class TaskController extends Controller
         $wsDate = Carbon::parse($request->input('print-ws_date'));
         $printAct = $request->input('print-act');
         $ref = $request->input('print-ref');
-        // dd($ref);
+        $eachtaskChunk = 6;
+
 
         // Load worksheet with necessary relationships
         $loadDataWS = DaftarWS_Model::with([
@@ -560,14 +560,12 @@ class TaskController extends Controller
 
         if ($printAct == 'dom') {
             if ($ref == 'notview') {
-                return $this->returnDOMPDF_ver2($loadDataWS, $wsID, $projectID);
+                return $this->returnDOMPDF_ver2($loadDataWS, $wsID, $projectID, 'notview', $eachtaskChunk);
             } else {
-                return $this->returnDOMPDF_ver2($loadDataWS, $wsID, $projectID, 'view');
+                return $this->returnDOMPDF_ver2($loadDataWS, $wsID, $projectID, 'view', $eachtaskChunk);
             }
-        } else if ($printAct == 'mpdf') {
-            return $this->returnMPDF($loadDataWS, $wsID, $projectID);
         } else {
-            return $this->returnNormalView($loadDataWS, $projectID, 'pure');     //<--- this pure (ignore)
+            return $this->returnNormalView($loadDataWS, $projectID, 'pure');
         }
 
 
@@ -584,109 +582,13 @@ class TaskController extends Controller
     }
 
 
-    private function returnTCPDF($worksheet, $wsID, $projectID)
-    {
-        try {
-            $project = Projects_Model::with(['client', 'pcoordinator', 'team', 'monitor', 'task', 'worksheet'])
-                ->where('id_project', $projectID)
-                ->first();
-
-            // Create a new PDF document
-            $pdf = new TCPDF();
-
-            // Set document information
-            $pdf->SetCreator(PDF_CREATOR);
-            $pdf->SetAuthor('PT. Vertech Perdana');
-            $pdf->SetTitle('Daily Worksheet - ' . $worksheet->project->id_project);
-            $pdf->SetSubject('Daily Worksheet');
-            $pdf->SetKeywords('TCPDF, PDF, worksheet, project');
-
-            // Set default header data
-            $pdf->SetHeaderData('', 0, 'Daily Worksheet', 'Project: ' . $worksheet->project->id_project);
-
-            // Set header and footer fonts
-            $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-            $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
-
-            // Set margins
-            $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-            $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-            $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-
-            // Set auto page breaks
-            $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-
-            // Add a page
-            $pdf->AddPage();
-
-            // Render the view and pass the worksheet data
-            $html = view('pages.userpanels.pm_printtaskws', [
-                'project' => $project,
-                'title' => "Daily Worksheet - " . $worksheet->project->id_project,
-                'loadDataWS' => $worksheet
-            ])->render();
-
-            // Write HTML content to the PDF
-            $pdf->writeHTML($html, true, false, true, false, '');
-
-            // Output the PDF document
-            $pdf->Output('worksheet.pdf', 'I'); // 'I' for inline display, 'D' for download, 'F' for saving to file
-        } catch (Exception $e) {
-            return back()->with('error', 'PDF generation failed: ' . $e->getMessage());
-        }
-    }
-
-
-    private function returnMPDF($worksheet, $wsID, $projectID)
-    {
-        try {
-            // Configure mPDF with image compression settings
-            $mpdf = new \Mpdf\Mpdf([
-                'mode' => 'utf-8',
-                'format' => 'A4-L',
-                'imageDPI' => 150, // Set the DPI for images (higher means better quality, but larger size)
-                'imageQuality' => 80, // Set the quality of images (0-100, where 100 is the best quality)
-            ]);
-
-            $project = Projects_Model::with(['client', 'pcoordinator', 'team', 'monitor', 'task', 'worksheet'])
-                ->where('id_project', $projectID)
-                ->first();
-
-
-            $user = auth()->user();
-            $authenticated_user_data = Karyawan_Model::with('daftar_login.karyawan', 'jabatan.karyawan')->find($user->id_karyawan);
-            Session::put('authenticated_user_data', $authenticated_user_data);
-
-
-
-            // Render the view and pass the worksheet data
-            $html = view('pages.userpanels.pm_printtaskws', [
-                'project' => $project,
-                'title' => "Daily Worksheet - " . $worksheet->project->id_project,
-                'loadDataWS' => $worksheet
-            ])->render();
-
-            // TEMPORARY FOR TESTING - REMOVE AFTER TESTING
-            // return $html; // Return the HTML instead of generating the PDF
-
-
-            $mpdf->WriteHTML($html);
-            return $mpdf->Output('worksheet.pdf', 'I'); // 'D' for download, 'I' for inline display
-        } catch (\Mpdf\MpdfException $e) {
-            return back()->with('error', 'PDF generation failed: ' . $e->getMessage());
-        }
-    }
-
-
 
     function cmToMm($cm)
     {
         return $cm * 10; // 1 cm = 10 mm
     }
 
-
-
-    private function returnDOMPDF($worksheet, $wsID, $projectID)
+    private function returnDOMPDF_ver2($worksheet, $wsID, $projectID, $mode = 'notview', $eachtaskChunk = 1)
     {
         $project = Projects_Model::with(['client', 'pcoordinator', 'team', 'monitor', 'task', 'worksheet'])
             ->where('id_project', $projectID)
@@ -696,66 +598,14 @@ class TaskController extends Controller
             abort(404, 'Project not found.'); // Or handle the error differently
         }
 
-        $taskEachPage = 7;
-        // Render the view as a string (HTML)
-        $html = view('pages.userpanels.pm_printtaskws_dompdfview', [
-            'project' => $project,
-            'title' => "Daily Worksheet - " . $worksheet->project->id_project,
-            'taskEachPage' => $taskEachPage,
-            'loadDataWS' => $worksheet
-        ])->render();
-
-
-        // Generate PDF from the HTML string
-        $pdf = PDF::loadHTML($html);
-
-        // Optional: Configure PDF settings
-        $pdf->setPaper('a4', 'portrait');
-        $pdf->setOptions([
-            'isHtml5ParserEnabled' => true,
-            'isJavascriptEnabled' => true,
-            'isPhpEnabled' => true,
-            'isRemoteEnabled' => true,
-            'defaultFont' => 'Arial',
-            'margin_top' => $this->cmToMm(0.2),
-            'margin_right' => $this->cmToMm(0.2),
-            'margin_bottom' => $this->cmToMm(0.2),
-            'margin_left' => $this->cmToMm(0.6),
-            'dpi' => 96,
-            'isFontSubsettingEnabled' => true,
-            'isHtml5ParserEnabled' => true,
-            'debugPng' => false,
-            'debugKeepTemp' => false,
-            'debugFontSize' => 0,
-            'debugKeepTemp' => false,
-            'debugKern' => false,
-            'debugFontDir' => false,
-            'debugCss' => false,
-        ]);
-
-        // Return the PDF for download or streaming
-        return $pdf->stream("worksheet-{$wsID}.pdf");
-    }
-
-
-    private function returnDOMPDF_ver2($worksheet, $wsID, $projectID, $mode = 'notview')
-    {
-        $project = Projects_Model::with(['client', 'pcoordinator', 'team', 'monitor', 'task', 'worksheet'])
-            ->where('id_project', $projectID)
-            ->first();
-
-        if (!$project) {
-            abort(404, 'Project not found.'); // Or handle the error differently
-        }
-
-        $margin_top = $this->cmToMm(1);
+        $margin_top = $this->cmToMm(1.5);
         $margin_right = $this->cmToMm(1);
-        $margin_bottom = $this->cmToMm(1);
+        $margin_bottom = $this->cmToMm(1.5);
         $margin_left = $this->cmToMm(1.5);
+        $baseHeight = 272; // <---- Default 272 for actual print
 
         // Get the tasks from the worksheet
         $tasks = $worksheet->task; // Assuming $worksheet->task contains the tasks
-        $eachtaskChunk = 1;
         // Split tasks into chunks of 7
         $taskChunks = array_chunk($tasks->toArray(), $eachtaskChunk); // Convert to array if it's a collection
 
@@ -770,7 +620,8 @@ class TaskController extends Controller
                 'margin_top' => $margin_top,
                 'margin_right' => $margin_right,
                 'margin_bottom' => $margin_bottom,
-                'margin_left' => $margin_left
+                'margin_left' => $margin_left,
+                'baseHeight' => $baseHeight
             ])->render();
 
             // Generate PDF from the HTML string
@@ -806,7 +657,12 @@ class TaskController extends Controller
                 'title' => "Daily Worksheet - " . $worksheet->project->id_project,
                 'loadDataWS' => $worksheet,
                 'taskChunks' => $taskChunks, // Pass the chunks of tasks to the view
-                'eachtaskChunk' => $eachtaskChunk
+                'eachtaskChunk' => $eachtaskChunk,
+                'margin_top' => $margin_top,
+                'margin_right' => $margin_right,
+                'margin_bottom' => $margin_bottom,
+                'margin_left' => $margin_left,
+                'baseHeight' => $baseHeight
             ]);
         }
     }

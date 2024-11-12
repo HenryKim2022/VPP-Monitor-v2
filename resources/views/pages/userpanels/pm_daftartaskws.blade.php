@@ -407,8 +407,8 @@
                                     @if ($ws_status == 'CLOSED')
                                         @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
                                             {{-- @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId)) --}}
-                                            <div class="d-flex justify-content-center align-items-ce">
-                                                <form class="needs-validation" method="POST"
+                                            <div class="d-flex justify-content-center align-items-ce d-none">
+                                                {{-- <form class="needs-validation" method="POST"
                                                     action="{{ route('m.task.printpuretask') }}" id="print_puretaskFORM"
                                                     novalidate>
                                                     @csrf
@@ -430,10 +430,9 @@
                                                     <button
                                                         class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
                                                         style="width: 3rem; height: 3rem; padding: 0;">
-                                                        {{-- <i class="fas fa-print fa-xs text-white"></i> --}}
                                                         <i class="fas fa-thin fa-file-pdf text-white"></i>
                                                     </button>
-                                                </form>
+                                                </form> --}}
                                                 <form class="needs-validation" method="POST"
                                                     action="{{ route('m.task.printdomtask') }}" id="print_domtaskFORM"
                                                     novalidate>
@@ -459,32 +458,6 @@
                                                         <i class="fas fa-duotone fa-file-pdf text-white"></i>
                                                     </button>
                                                 </form>
-                                                <form class="needs-validation" method="POST"
-                                                    action="{{ route('m.task.printdompuretask') }}" id="print_domtaskFORM"
-                                                    novalidate>
-                                                    @csrf
-                                                    <input type="hidden" id="print-prj_id" name="print-prj_id"
-                                                        value="{{ $loadDataWS->id_project }}" @readonly(true) />
-                                                    <input type="hidden" id="print-ws_id" name="print-ws_id"
-                                                        value="{{ $loadDataWS->id_ws }}" @readonly(true) />
-                                                    <input type="hidden" id="print-ws_date" name="print-ws_date"
-                                                        value="{{ $loadDataWS->working_date_ws }}" @readonly(true) />
-
-                                                    <input type="hidden" id="print-act" name="print-act"
-                                                        value="dom" />
-                                                    <input type="hidden" id="print-task-title" name="print-task-title"
-                                                        value="{{ $prjmondws->id_project }} {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }} DAILY WORKSHEETS" />
-                                                    <input type="hidden" id="print-ref" name="print-ref"
-                                                        value="view" />
-
-                                                    <button
-                                                        class="btn bg-indigo-500 mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
-                                                        style="width: 3rem; height: 3rem; padding: 0;">
-                                                        {{-- <i class="fas fa-print fa-xs text-white"></i> --}}
-                                                        <i class="fas fa-duotone fa-file-pdf text-white"></i> V
-                                                    </button>
-                                                </form>
-
                                             </div>
 
                                             {{-- @else

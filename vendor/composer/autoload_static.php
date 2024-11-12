@@ -660,7 +660,6 @@ class ComposerStaticInite5fbbe6137dc77bcd5b6646b5dd75b52
         'App\\Http\\Controllers\\Auth\\RegisterClientPageController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/RegisterClientPageController.php',
         'App\\Http\\Controllers\\Auth\\RegisterEmployeePageController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/RegisterEmployeePageController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
-        'App\\Http\\Controllers\\UserPanels\\Manage\\BackupTaskController' => __DIR__ . '/../..' . '/app/Http/Controllers/UserPanels/Manage/BackupTaskController.php',
         'App\\Http\\Controllers\\UserPanels\\Manage\\ClientUserLoginController' => __DIR__ . '/../..' . '/app/Http/Controllers/UserPanels/Manage/ClientUserLoginController.php',
         'App\\Http\\Controllers\\UserPanels\\Manage\\EmpUserLoginController' => __DIR__ . '/../..' . '/app/Http/Controllers/UserPanels/Manage/EmpUserLoginController.php',
         'App\\Http\\Controllers\\UserPanels\\Manage\\EmployeeController' => __DIR__ . '/../..' . '/app/Http/Controllers/UserPanels/Manage/EmployeeController.php',

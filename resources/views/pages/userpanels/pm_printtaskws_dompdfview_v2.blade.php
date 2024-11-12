@@ -216,7 +216,7 @@
             }
 
             // Set the total height for the tbody
-            $tbodyHeight = 297 + $maxDescriptionHeight + $maxTaskHeight; // Base height + dynamic height 258
+            $tbodyHeight = $baseHeight + $maxDescriptionHeight + $maxTaskHeight; // Base height (297) + dynamic height
             $rowCount = count($chunk);
             // $cellHeight = $rowCount > 0 ? $tbodyHeight / $rowCount : 0; // Calculate height per cell
             $cellHeight = max($tbodyHeight / $rowCount, $lineHeight); // Ensure it is at least the line height
@@ -261,7 +261,9 @@
                 width: 2% !important;
             }
 
-            @page { margin: {{ $margin_top }}mm {{ $margin_right }}mm {{ $margin_bottom }}mm {{ $margin_left }}mm ;}
+            @page { margin: {{ $margin_top }}mm {{ $margin_right }}mm {{ $margin_bottom }}mm {{ $margin_left }}mm;
+              /*  */
+        }
         </style>
 
 
@@ -355,10 +357,10 @@
                 <tbody class="border-left-bold border-right-bold">
                     @foreach ($chunk as $relDWS)
                         <tr>
-                            <td colspan="3" class="text-center align-middle cell-fit th-time">
+                            <td colspan="3" class="text-center align-top cell-fit th-time">
                                 {{ \Carbon\Carbon::parse($relDWS['start_time_task'])->format('h:i') }}</td>
-                            <td colspan="7" class="text-wrap">{{ $relDWS['monitor']['category'] }}</td>
-                            <td colspan="1" class="text-wrap">
+                            <td colspan="7" class="text-start align-top text-wrap">{{ $relDWS['monitor']['category'] }}</td>
+                            <td colspan="1" class="text-start align-top text-wrap">
                                 @php
                                     $descbTask = $relDWS['descb_task'];
                                     $descbTask = str_replace(
@@ -371,7 +373,7 @@
                                 @endphp
                                 {!! $descbTask !!}
                             </td>
-                            <td class="text-center pro-act" colspan="3">
+                            <td class="text-center align-top pro-act" colspan="3">
                                 @php
                                     $total = 0; // Initialize total for this monitoring entry
                                     $qty = $relDWS['monitor']['qty'];
@@ -401,7 +403,7 @@
                                 @endphp
                                 {{ number_format($total, 1) }}% <!-- Display total with 1 decimal place -->
                             </td>
-                            <td class="text-center pro-cur" colspan="3">
+                            <td class="text-center align-top pro-cur" colspan="3">
                                 @if ($relDWS['progress_current_task'] != null && $relDWS['progress_current_task'] > 0)
                                     {{ number_format($relDWS['progress_current_task'], 1) }}%
                                 @else
