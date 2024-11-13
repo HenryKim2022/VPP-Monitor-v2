@@ -128,7 +128,14 @@
                                             $ws_status = $loadDataWS->status_ws;
                                         @endphp
                                         @if ($ws_status == 'OPEN')
-                                            <form class="row g-2 needs-validation d-flex justify-content-center"
+                                            @if (isset($modalData['modal_lock']))
+                                                <button class="lock-ws-cmd btn btn-primary auth-role-eng-text"
+                                                    lock_ws_id_value = "{{ $loadDataWS->id_ws ?: 0 }}">
+                                                    <a class="mt-0 mb-0 cursor-default text-end">ENG</a>
+                                                </button>
+                                            @endif
+
+                                            {{-- <form class="row g-2 needs-validation d-flex justify-content-center"
                                                 method="POST" action="{{ route('m.ws.status.lock') }}" id="lock_wsFORM"
                                                 novalidate>
                                                 @csrf
@@ -137,9 +144,16 @@
                                                 <button id="confirmSave" class="btn btn-primary auth-role-eng-text">
                                                     <a class="mt-0 mb-0 cursor-default text-end">ENG</a>
                                                 </button>
-                                            </form>
+                                            </form> --}}
                                         @else
-                                            <form class="row g-2 needs-validation d-flex justify-content-center"
+                                            @if (isset($modalData['modal_unlock']))
+                                                <button class="unlock-ws-cmd btn btn-primary auth-role-eng-text"
+                                                    unlock_ws_id_value = "{{ $loadDataWS->id_ws ?: 0 }}">
+                                                    <a class="mt-0 mb-0 cursor-default text-end">ENG</a>
+                                                </button>
+                                            @endif
+
+                                            {{-- <form class="row g-2 needs-validation d-flex justify-content-center"
                                                 method="POST" action="{{ route('m.ws.status.unlock') }}" id="unlock_wsFORM"
                                                 novalidate>
                                                 @csrf
@@ -148,7 +162,7 @@
                                                 <button id="confirmSave" class="btn btn-primary auth-role-eng-text">
                                                     <a class="mt-0 mb-0 cursor-default text-end">ENG</a>
                                                 </button>
-                                            </form>
+                                            </form> --}}
                                         @endif
                                     @else
                                         @php
@@ -271,13 +285,7 @@
                                                 <td>{{ \Carbon\Carbon::parse($loadDataWS->finish_time_ws)->isoFormat($cust_time_format) }}
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td colspan="3" class="text-nowrap"><strong>EXECUTED BY</strong></td>
-                                                <td class="pl-2">: </td>
-                                                <td>
-                                                    {{ $loadDataWS->karyawan->na_karyawan }}
-                                                </td>
-                                            </tr>
+
 
                                         </tbody>
                                     </table>
@@ -325,30 +333,6 @@
                                                     <i class="fas fa-plus-circle fa-xs text-white"></i>
                                                 </button>
                                             @endif
-                                            {{-- @else
-                                                @if ($ws_status == 'OPEN')
-                                                    <form class="me-1 needs-validation" method="POST"
-                                                        action="{{ route('m.ws.status.lock') }}" id="lock_wsFORM"
-                                                        novalidate>
-                                                        @csrf
-                                                        <input type="hidden" id="lock-ws_id" name="lock-ws_id"
-                                                            value="{{ $loadDataWS->id_ws }}" />
-                                                        <div>
-                                                            <button
-                                                                class="btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success {{ $blinkBGClass }}"
-                                                                style="width: 3rem; height: 3rem; padding: 0;">
-                                                                <i class="fas fa-lock-open fa-xs text-white"></i>
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                                @else
-                                                    <button
-                                                        class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
-                                                        style="width: 3rem; height: 3rem; padding: 0;">
-                                                        <i class="fas fa-lock fa-xs text-white"></i>
-                                                    </button>
-                                                @endif --}}
-                                            {{-- @endif --}}
                                         @else
                                             <button
                                                 class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
@@ -361,23 +345,15 @@
                                 <div class="nav-item">
                                     @if ($authUserType === 'Superuser' || $authUserType === 'Engineer')
                                         @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
-
-                                            @if (isset($modalData['modal_add']) && $modalData['modal_add'])
+                                            @if (isset($modalData['modal_lock']) && $modalData['modal_lock'])
                                                 @if ($ws_status == 'OPEN')
-                                                    <form class="me-1 needs-validation" method="POST"
-                                                        action="{{ route('m.ws.status.lock') }}" id="lock_wsFORM"
-                                                        novalidate>
-                                                        @csrf
-                                                        <input type="hidden" id="lock-ws_id" name="lock-ws_id"
-                                                            value="{{ $loadDataWS->id_ws }}" />
-                                                        <div>
-                                                            <button
-                                                                class="btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger add-new-record {{ $blinkBGClass }}"
-                                                                style="width: 3rem; height: 3rem; padding: 0;">
-                                                                <i class="fas fa-lock-open fa-xs text-white"></i>
-                                                            </button>
-                                                        </div>
-                                                    </form>
+                                                    @if (isset($modalData['modal_lock']))
+                                                        <button lock_ws_id_value = "{{ $loadDataWS->id_ws ?: 0 }}"
+                                                            class="lock-ws-cmd btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger add-new-record {{ $blinkBGClass }}"
+                                                            style="width: 3rem; height: 3rem; padding: 0;">
+                                                            <i class="fas fa-lock-open fa-xs text-white"></i>
+                                                        </button>
+                                                    @endif
                                                 @else
                                                     <button
                                                         class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
@@ -423,8 +399,7 @@
                                                     <input type="hidden" id="print-ws_date" name="print-ws_date"
                                                         value="{{ $loadDataWS->working_date_ws }}" @readonly(true) />
 
-                                                    <input type="hidden" id="print-act" name="print-act"
-                                                        value="dom" />
+                                                    <input type="hidden" id="print-act" name="print-act" value="dom" />
                                                     <input type="hidden" id="print-task-title" name="print-task-title"
                                                         value="{{ $prjmondws->id_project }} {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }} DAILY WORKSHEETS" />
                                                     <input type="hidden" id="print-ref" name="print-ref"
@@ -437,29 +412,29 @@
                                                     </button>
                                                 </form>
                                                 <form class="needs-validation" method="POST"
-                                                action="{{ route('m.task.printdomtask') }}" id="print_domtaskFORM"
-                                                novalidate>
-                                                @csrf
-                                                <input type="hidden" id="print-prj_id" name="print-prj_id"
-                                                    value="{{ $loadDataWS->id_project }}" @readonly(true) />
-                                                <input type="hidden" id="print-ws_id" name="print-ws_id"
-                                                    value="{{ $loadDataWS->id_ws }}" @readonly(true) />
-                                                <input type="hidden" id="print-ws_date" name="print-ws_date"
-                                                    value="{{ $loadDataWS->working_date_ws }}" @readonly(true) />
+                                                    action="{{ route('m.task.printdomtask') }}" id="print_domtaskFORM"
+                                                    novalidate>
+                                                    @csrf
+                                                    <input type="hidden" id="print-prj_id" name="print-prj_id"
+                                                        value="{{ $loadDataWS->id_project }}" @readonly(true) />
+                                                    <input type="hidden" id="print-ws_id" name="print-ws_id"
+                                                        value="{{ $loadDataWS->id_ws }}" @readonly(true) />
+                                                    <input type="hidden" id="print-ws_date" name="print-ws_date"
+                                                        value="{{ $loadDataWS->working_date_ws }}" @readonly(true) />
 
-                                                <input type="hidden" id="print-act" name="print-act"
-                                                    value="dom" />
-                                                <input type="hidden" id="print-task-title" name="print-task-title"
-                                                    value="{{ $prjmondws->id_project }} {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }} DAILY WORKSHEETS" />
-                                                <input type="hidden" id="print-ref" name="print-ref"
-                                                    value="pdf" />
+                                                    <input type="hidden" id="print-act" name="print-act"
+                                                        value="dom" />
+                                                    <input type="hidden" id="print-task-title" name="print-task-title"
+                                                        value="{{ $prjmondws->id_project }} {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }} DAILY WORKSHEETS" />
+                                                    <input type="hidden" id="print-ref" name="print-ref"
+                                                        value="pdf" />
 
-                                                <button
-                                                    class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
-                                                    style="width: 3rem; height: 3rem; padding: 0;">
-                                                    <i class="fad fa-download text-white"></i>
-                                                </button>
-                                            </form>
+                                                    <button
+                                                        class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
+                                                        style="width: 3rem; height: 3rem; padding: 0;">
+                                                        <i class="fad fa-download text-white"></i>
+                                                    </button>
+                                                </form>
                                             </div>
 
                                             {{-- @else
@@ -603,7 +578,7 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                     @endif
 
                                     <td class="text-center align-middle">
-                                        {{ \Carbon\Carbon::parse($relDWS->start_time_task)->isoFormat($cust_time_format) }}
+                                        {{ \Carbon\Carbon::parse($relDWS->start_time_task)->isoFormat('hh:mm') }}
                                     </td>
                                     <td>
                                         {{ $relDWS->monitor->category }}
@@ -737,7 +712,8 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                 @endphp
 
                                 <td colspan="{{ $isStatusOpen ? '6' : '5' }}" rowspan="1" class="p-0 align-middle">
-                                    <textarea class="remark-textarea w-100 h-fit px-1 m-0 text-left border-0" ws_id_value="{{ $loadDataWS->id_ws }}" rows="8" {{ $loadDataWS->status_ws == 'OPEN' ? '' : 'disabled' }}>{!! htmlspecialchars($textareaRemarkWS, ENT_QUOTES, 'UTF-8') !!}</textarea>
+                                    <textarea class="remark-textarea w-100 h-fit px-1 m-0 text-left border-0" ws_id_value="{{ $loadDataWS->id_ws }}"
+                                        rows="8" {{ $loadDataWS->status_ws == 'OPEN' ? '' : 'disabled' }}>{!! htmlspecialchars($textareaRemarkWS, ENT_QUOTES, 'UTF-8') !!}</textarea>
                                 </td>
                             </tr>
                             <tr>
@@ -858,20 +834,16 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                     @if ($isStatusOpen)
                                         @if ($authUserType === 'Superuser' || $authUserType === 'Engineer')
                                             @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
-                                                <form class="me-1 needs-validation" method="POST"
-                                                    action="{{ route('m.ws.status.lock') }}" id="lock_wsFORM" novalidate>
-                                                    @csrf
-                                                    <input type="hidden" id="lock-ws_id" name="lock-ws_id"
-                                                        value="{{ $loadDataWS->id_ws }}" />
-                                                    <div>
-                                                        <button class="mx-1 border-0 d-flex bg-transparent"
-                                                            style="padding: 0.5rem 1rem; justify-self: center;">
-                                                            <h3 class="mb-0">
-                                                                <strong>OPEN</strong>
-                                                            </h3>
-                                                        </button>
-                                                    </div>
-                                                </form>
+                                                @if (isset($modalData['modal_lock']))
+                                                    <button lock_ws_id_value = "{{ $loadDataWS->id_ws ?: 0 }}"
+                                                        class="lock-ws-cmd btn mx-1 border-0 d-flex {{ $blinkBGClass }}"
+                                                        style="padding: 0.5rem 1rem; justify-self: center;">
+                                                        <h3 class="mb-0">
+                                                            <strong>OPEN</strong>
+                                                        </h3>
+                                                    </button>
+                                                @endif
+
                                             @endif
                                         @endif
                                     @else
@@ -908,6 +880,12 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
     <!-- BEGIN: DelTaskModal--> @include('v_res.m_modals.userpanels.m_daftartask.v_del_taskModal') <!-- END: DelTaskModal-->
     @if ($reset_btn)
         <!-- BEGIN: ResetTaskModal--> @include('v_res.m_modals.userpanels.m_daftartask.v_reset_taskModal') <!-- END: ResetTaskModal-->
+    @endif
+
+    @if ($isStatusOpen)
+        <!-- BEGIN: LockWSModal--> @include('v_res.m_modals.userpanels.m_daftarworksheet.v_lock_wsModal') <!-- END: LockWSModal-->
+    @else
+        <!-- BEGIN: UnlockWSModal--> @include('v_res.m_modals.userpanels.m_daftarworksheet.v_unlock_wsModal') <!-- END: UnlockWSModal-->
     @endif
 @endsection
 
@@ -1200,59 +1178,96 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
     </script>
 
 
+    @if ($authUserType === 'Superuser' || $authUserType === 'Engineer')
+        @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
+            <script>
+                $(document).ready(function() {
+                    // Function to handle AJAX request
+                    function sendRemarkUpdate() {
+                        var remarkText = $('.remark-textarea').val();
+                        var wsId = $('.remark-textarea').attr('ws_id_value'); // Get the worksheet ID
 
-    <script>
-        $(document).ready(function() {
-            // Function to handle AJAX request
-            function sendRemarkUpdate() {
-                var remarkText = $('.remark-textarea').val();
-                var wsId = $('.remark-textarea').attr('ws_id_value'); // Get the worksheet ID
+                        console.log(wsId);
 
-                console.log(wsId);
+                        $.ajax({
+                            url: '{{ route('m.ws.remark.edit') }}',
+                            type: 'POST',
+                            data: {
+                                id_ws: wsId,
+                                remarkText: remarkText,
+                                _token: '{{ csrf_token() }}' // CSRF token for security
+                            },
+                            success: function(response) {
+                                if (response != null && response.message) {
+                                    jsonToastReceiver(response
+                                        .message); // Pass response.message instead of response
+                                }
 
-                $.ajax({
-                    url: '{{ route('m.ws.remark.edit') }}',
-                    type: 'POST',
-                    data: {
-                        id_ws: wsId,
-                        remarkText: remarkText,
-                        _token: '{{ csrf_token() }}' // CSRF token for security
-                    },
-                    success: function(response) {
-                        if (response != null && response.message) {
-                            jsonToastReceiver(response
-                                .message); // Pass response.message instead of response
-                        }
-
-                        console.log('Remark updated successfully:', response);
-                    },
-                    error: function(xhr, status, error) {
-                        if (xhr.responseJSON != null && xhr.responseJSON.message) {
-                            jsonToastReceiver(xhr.responseJSON
-                                .message); // Pass response.message instead of response
-                        }
-                        console.error('Error updating remark:', error);
+                                console.log('Remark updated successfully:', response);
+                            },
+                            error: function(xhr, status, error) {
+                                if (xhr.responseJSON != null && xhr.responseJSON.message) {
+                                    jsonToastReceiver(xhr.responseJSON
+                                        .message); // Pass response.message instead of response
+                                }
+                                console.error('Error updating remark:', error);
+                            }
+                        });
                     }
+
+                    // Keydown event for Ctrl + Enter or Up Arrow + Enter
+                    $('.remark-textarea').on('keydown', function(event) {
+                        // Check if Enter key is pressed
+                        if (event.key === 'Enter') {
+                            // Check if Ctrl key is pressed or Up Arrow key was pressed
+                            if (event.ctrlKey || (event.originalEvent.key === 'ArrowUp')) {
+                                event.preventDefault(); // Prevent the default action (e.g., adding a new line)
+                                sendRemarkUpdate(); // Call the function to send AJAX request
+                            }
+                        }
+                    });
+
+                    // Blur event for leaving the textarea
+                    $('.remark-textarea').on('blur', function() {
+                        // Send AJAX request when the textarea loses focus
+                        sendRemarkUpdate();
+                    });
                 });
-            }
+            </script>
+        @endif
+    @endif
 
-            // Keydown event for Ctrl + Enter or Up Arrow + Enter
-            $('.remark-textarea').on('keydown', function(event) {
-                // Check if Enter key is pressed
-                if (event.key === 'Enter') {
-                    // Check if Ctrl key is pressed or Up Arrow key was pressed
-                    if (event.ctrlKey || (event.originalEvent.key === 'ArrowUp')) {
-                        event.preventDefault(); // Prevent the default action (e.g., adding a new line)
-                        sendRemarkUpdate(); // Call the function to send AJAX request
-                    }
-                }
-            });
+    @if ($isStatusOpen)
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                whichModal = "lock_wsModal";
+                const modalSelector = document.querySelector('#' + whichModal);
+                const modalToShow = new bootstrap.Modal(modalSelector);
 
-            // Blur event for leaving the textarea
-            $('.remark-textarea').on('blur', function() {
-                // Send AJAX request when the textarea loses focus
-                sendRemarkUpdate();
+                setTimeout(() => {
+                    $('.lock-ws-cmd').on('click', function() {
+                        var wsID = $(this).attr('lock_ws_id_value');
+                        $('#' + whichModal + ' #lock-ws_id').val(wsID);
+                        modalToShow.show();
+                    });
+                }, 800);
             });
-        });
-    </script>
+        </script>
+    @else
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                whichModal = "unlock_wsModal";
+                const modalSelector = document.querySelector('#' + whichModal);
+                const modalToShow = new bootstrap.Modal(modalSelector);
+
+                setTimeout(() => {
+                    $('.unlock-ws-cmd').on('click', function() {
+                        var wsID = $(this).attr('unlock_ws_id_value');
+                        $('#' + whichModal + ' #unlock-ws_id').val(wsID);
+                        modalToShow.show();
+                    });
+                }, 800);
+            });
+        </script>
+    @endif
 @endsection

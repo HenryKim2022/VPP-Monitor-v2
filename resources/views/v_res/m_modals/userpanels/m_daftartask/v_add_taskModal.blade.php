@@ -37,22 +37,21 @@
                             <div class="form-group">
                                 <label for="task-work_time">Working-Time</label>
                                 <input type="time" id="task-work_time" name="task-work_time"
-                                    class="form-control text-left flatpickr-time" value="{{ $formattedTime }}"
+                                    class="form-control text-left flatpickr-time" value="{{ old('task-work_time', $formattedTime) }}"
                                     placeholder="HH:MM:SS AM/PM" />
                             </div>
                         </div>
                         <div class="col-xl-12 col-md-12 col-12 mb-1">
                             <div class="form-group mb-0">
                                 <label>Task</label>
-                                <select class="select2 form-control form-control-lg" name="task-id_monitoring"
-                                    id="task-id_monitoring">
+                                <select class="select2 form-control form-control-lg" name="task-id_monitoring" id="task-id_monitoring">
                                     <option value="">Select Task</option>
                                     @foreach ($taskCategoryList as $task)
-                                        <option value="{{ $task->id_monitoring }}">
+                                        <option value="{{ $task->id_monitoring }}"
+                                            {{ old('task-id_monitoring') == $task->id_monitoring ? 'selected' : '' }}>
                                             {{ $task->category }}
                                         </option>
                                     @endforeach
-
                                 </select>
                             </div>
                         </div>
@@ -61,14 +60,14 @@
                             <div class="form-group">
                                 <label for="task-description">Description</label>
                                 <textarea id="task-description" name="task-description" class="form-control" rows="3"
-                                    placeholder="*- Doing abcd &#10;*- Doing efg&#10;*- Doing hijkl"></textarea>
+                                    placeholder="*- Doing abcd &#10;*- Doing efg&#10;*- Doing hijkl">{{ old('task-description') }}</textarea>
                             </div>
                         </div>
                         <div class="col-xl-12 col-md-12 col-12 mb-2">
                             <div class="form-group">
                                 <label for="task-current-progress">Current Progress%</label>
                                 <input type="number" id="task-current-progress" name="task-current-progress" class="form-control"
-                                    placeholder="eg: 2"></input>
+                                    placeholder="eg: 2" value="{{ old('task-current-progress') }}">
                             </div>
                         </div>
 

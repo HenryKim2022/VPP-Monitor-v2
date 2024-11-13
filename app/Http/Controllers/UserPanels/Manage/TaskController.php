@@ -652,7 +652,7 @@ class TaskController extends Controller
             ]);
 
             $workingDateTime = Carbon::parse($worksheet->working_date_ws)->format('d.m.Y H.i.s');
-            $filename = "{$project->id_project} - Daily Worksheet-{$wsID} - {$workingDateTime}";
+            $filename = "{$project->id_project} - Daily Worksheet({$wsID}) - {$workingDateTime}";
             if ($mode == 'print') {
                 return $pdf->stream("{$filename}.pdf");   // Return the PDF for streaming
             } else {

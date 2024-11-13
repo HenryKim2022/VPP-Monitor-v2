@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Carbon\Carbon;
 
 
 class DaftarWS_Model extends Model
@@ -16,6 +17,18 @@ class DaftarWS_Model extends Model
     protected $fillable = ['working_date_ws', 'arrival_time_ws', 'finish_time_ws', 'status_ws', 'expired_at_ws', 'closed_at_ws', 'remark_ws', 'id_karyawan', 'id_project'];
 
 
+    public function working_date_ws()
+    {
+        if (isset($this->attributes['working_date_ws']) && !empty($this->attributes['working_date_ws'])) {
+            try {
+                Carbon::setLocale('id'); // Set locale to Indonesian
+                return Carbon::parse($this->attributes['working_date_ws'])->locale('id')->translatedFormat('d M Y');
+            } catch (\Exception $e) {
+                return 'Stored date format isn\'t valid!';
+            }
+        }
+        return null;
+    }
 
 
     // public function checkAllWSStatus()

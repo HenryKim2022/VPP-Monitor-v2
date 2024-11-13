@@ -98,6 +98,9 @@ class WorksheetController extends Controller
             $modalData = ['modal_edit' => '#edit_taskModal', 'modal_delete' => '#delete_taskModal', 'modal_reset' => '#reset_taskModal'];
             if ($loadDataWS->status_ws === 'OPEN') {
                 $modalData['modal_add'] = '#add_taskModal';
+                $modalData['modal_lock'] = '#lock_wsModal';
+            } else {
+                $modalData['modal_unlock'] = '#unlock_wsModal';
             }
 
             $projectId = $request->input('projectID');
@@ -552,10 +555,10 @@ class WorksheetController extends Controller
             $authenticated_user_data = Karyawan_Model::with('daftar_login.karyawan', 'jabatan.karyawan')->find($user->id_karyawan);
             Session::put('authenticated_user_data', $authenticated_user_data);
 
-            Session::flash('success', ['Worksheet open successfully!']);
+            Session::flash('success', ['Worksheet unlock successfully!']);
             return Redirect::back();
         } else {
-            Session::flash('errors', ['Err[404]: Failed to open worksheet!']);
+            Session::flash('errors', ['Err[404]: Failed to unlock worksheet!']);
         }
     }
 
@@ -689,33 +692,49 @@ class WorksheetController extends Controller
 
 
 
-
     public function edit_mark_ws(Request $request)
     {
-           // Validate the incoming request
-    $request->validate([
-        'id_ws' => 'required|integer|exists:tb_worksheet,id_ws',
-        'remarkText' => 'required|string|max:5000', // Adjust max length as needed
-    ]);
+        // Initialize the message array
+        $message = [];
 
-    // Get the worksheet ID from the request
-    $wsID = $request->input('id_ws');
-    $worksheet = DaftarWS_Model::find($wsID);
+        try {
+            // Validate the incoming request
+            $request->validate([
+                'id_ws' => 'required|integer|exists:tb_worksheet,id_ws',
+                'remarkText' => [
+                    'required',
+                    'string',
+                    'max:5000',
+                    'regex:/^((?:.*\n?){0,8})$/', // Max 8 lines
+                ],
+            ], [
+                'remarkText.required' => 'The remark text field is required.',
+                'remarkText.max' => 'The remark text may not be greater than 5000 characters.',
+                'remarkText.regex' => 'The remark text field format is invalid. It must not exceed 8 lines.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Capture validation errors
+            $message['err_json'] = $e->validator->errors()->all();
+            return response()->json(['message' => $message], 422); // Return 422 Unprocessable Entity
+        }
+
+        // Get the worksheet ID from the request
+        $wsID = $request->input('id_ws');
+        $worksheet = DaftarWS_Model::find($wsID);
         if (!$worksheet) {
             $message['err_json'][] = 'Worksheet not found';
             return response()->json(['message' => $message], 404);
         }
 
-        // Update the remark and save it
+        $work_date = Carbon::parse($worksheet->working_date_ws)->isoFormat("DD-MMM-YYYY");
         $worksheet->remark_ws = $request->input('remarkText');
         $worksheet->save(); // Don't forget to save the changes
 
         // Prepare success message
-        $message['success_json'][] = "*" . $worksheet->working_date_ws . ' worksheet remarks for ' . '*' . $worksheet->id_project . ' is updated!';
+        $message['success_json'][] = $worksheet->id_project . ' worksheet remarks for ' . '*' . $work_date . ' is updated!';
 
         return response()->json(['message' => $message], 200);
     }
-
 
 
     public function delete_ws(Request $request)
