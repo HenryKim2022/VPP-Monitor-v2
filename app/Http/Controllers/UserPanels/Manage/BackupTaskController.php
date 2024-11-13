@@ -28,7 +28,7 @@ use TCPDF;
 use Exception;
 
 
-class TaskController extends Controller
+class BackupTaskController extends Controller
 {
     //
     public function add_task(Request $request)

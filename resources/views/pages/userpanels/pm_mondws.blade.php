@@ -219,7 +219,7 @@
                                 <!-- Left Card -->
                                 <div class="col-xl-7 col-md-7 col-12">
                                     <div class="card mb-0 mb-0">
-                                        <div class="card-body">
+                                        <div class="card-body overflow-x-scroll dis-overflow-y-hidden">
                                             <table>
                                                 <tbody>
                                                     <tr>
@@ -247,7 +247,7 @@
                                 <!-- Right Card -->
                                 <div class="col-xl-5 col-md-5 col-12">
                                     <div class="card mb-0">
-                                        <div class="card-body">
+                                        <div class="card-body overflow-x-scroll dis-overflow-y-hidden">
                                             <a class="text-end text-nowrap">
                                                 <h6><strong>PT. VERTECH PERDANA</strong></h6>
                                             </a>
@@ -436,9 +436,16 @@
                                                 {{ $totalQty == 100 ? 'text-success' : ($totalQty > 100 ? 'text-danger' : 'text-warning') }}">
                                                 Qty<br>({{ $totalQty }}%)
                                             </th>
+                                            @php
+                                                if ($totalActual <> 0){
+                                                    $actPro = number_format($totalActual, 0);
+                                                }else{
+                                                    $actPro = number_format($totalActual, 0);
+                                                }
+                                            @endphp
                                             <th
                                                 class="text-center {{ $totalActual == 100 ? 'text-success' : ($totalActual > 100 ? 'text-danger' : 'text-warning') }}">
-                                                Actual<br>({{ number_format($totalActual, 0) }}%)
+                                                Actual<br>({{ $actPro }}%)
                                             </th>
                                         </tr>
                                     </thead>
@@ -579,7 +586,11 @@ $relatedTasks = collect($prjmondws->task)->filter(
                                                             @endphp
                                                         @endif
 
-                                                        {{ number_format($total, 0) }}%
+                                                        @if ($total <> 0)
+                                                            {{ number_format($total, 1) }}%
+                                                        @else
+                                                            {{ number_format($total, 0) }}%
+                                                        @endif
                                                         <!-- Display total with 2 decimal places -->
                                                     </td>
                                                 </tr>
@@ -1022,8 +1033,8 @@ $relatedTasks = collect($prjmondws->task)->filter(
                         initComplete: function() {
                             $(this.api().column([0]).header()).addClass('cell-fit text-center align-middle');
                             $(this.api().column([1]).header()).addClass('cell-fit text-center align-middle');
-                            $(this.api().column([2]).header()).addClass('text-center align-middle');
-                            $(this.api().column([3]).header()).addClass('text-center align-middle');
+                            $(this.api().column([2]).header()).addClass('text-center fit-content align-middle');
+                            $(this.api().column([3]).header()).addClass('text-center fit-content align-middle');
                             $(this.api().column([4]).header()).addClass('text-center align-middle');
 
                             var pageInfo = this.api().page.info();

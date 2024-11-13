@@ -8,10 +8,8 @@
         "php": "^8.2",
         "barryvdh/laravel-dompdf": "^3.0",
         "dompdf/dompdf": "^3.0",
-        "elibyy/tcpdf-laravel": "^11.1",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
-        "mpdf/mpdf": "^8.2",
         "tecnickcom/tc-lib-pdf": "^8.0"
     },
     "require-dev": {

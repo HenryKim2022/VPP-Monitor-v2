@@ -2252,27 +2252,139 @@
 
 
 /* Responsive Heading Styles */
+:root {
+    --base-font-size: 1rem;
+}
+
 h1 {
-    font-size: 2.5rem; /* Default size for h1 */
+    font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
 }
 
 h2 {
-    font-size: 2rem; /* Default size for h2 */
+    font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2.4rem);
 }
 
 h3 {
-    font-size: 1.75rem; /* Default size for h3 */
+    font-size: clamp(1.2rem, 1rem + 1vw, 1.8rem);
 }
 
 h4 {
-    font-size: 1.5rem; /* Default size for h4 */
+    font-size: clamp(1rem, 0.8rem + 0.7vw, 1.4rem);
 }
 
 h5 {
-    font-size: 1.25rem; /* Default size for h5 */
+    font-size: clamp(0.8rem, 0.7rem + 0.5vw, 1.2rem);
 }
 
 h6 {
-    font-size: 1rem; /* Default size for h6 */
+    font-size: clamp(0.7rem, 0.6rem + 0.3vw, 1rem);
+}
+
+
+.h-8 {
+    height: 8% !important;
+}
+
+.h-9 {
+    height: 9% !important;
+}
+
+.h-10 {
+    height: 10% !important;
+}
+
+.h-11 {
+    height: 11% !important;
+}
+
+.h-12 {
+    height: 12% !important;
+}
+
+
+.w-100 {
+    width: 100% !important;
+}
+
+.w-99 {
+    width: 99% !important;
+}
+
+.w-98 {
+    width: 98% !important;
+}
+
+.w-97 {
+    width: 97% !important;
+}
+
+
+.h-fit {
+    height: fit-content !important;
+}
+
+.fit-content{
+    width: fit-content !important;
+}
+
+.dis-overflow-y-hidden{
+    overflow-y: hidden;
+}
+
+.overflow-x-scroll {
+    overflow-x: auto;
+    /* Enable horizontal scrolling */
+    scrollbar-width: thin;
+    /* For Firefox */
+    scrollbar-color: transparent transparent;
+    /* For Firefox */
+}
+
+/* WebKit browsers (Chrome, Safari) */
+.overflow-x-scroll::-webkit-scrollbar {
+    width: 0;
+    /* Initially hide scrollbar */
+    height: 0;
+    /* Hide horizontal scrollbar */
+}
+
+.overflow-x-scroll:hover {
+    scrollbar-color: #6c757d transparent;
+    /* Change to desired color */
+}
+
+/* Show scrollbar on hover */
+.overflow-x-scroll:hover::-webkit-scrollbar {
+    width: 8px;
+    /* Width of the scrollbar when hovered */
+    height: 8px;
+    /* Height of the horizontal scrollbar when hovered */
+}
+
+/* Style for the scrollbar thumb */
+.overflow-x-scroll:hover::-webkit-scrollbar-thumb {
+    background-color: #6c757d transparent;
+    /* Color of the scrollbar thumb */
+    border-radius: 10px;
+    /* Rounded corners */
+}
+
+/* Optional: Add a track style for the scrollbar */
+.overflow-x-scroll::-webkit-scrollbar-track {
+    background: #6c757d transparent;
+    /* Background color of the track */
+}
+
+/* Increase scrollbar size when hovering over the track */
+.overflow-x-scroll::-webkit-scrollbar:hover {
+    width: 12px;
+    /* Width of the scrollbar when hovering over the track */
+    height: 12px;
+    /* Height of the horizontal scrollbar when hovering over the track */
+}
+
+.overflow-x-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: #6c757d transparent;
+    /* Darker color for the thumb on hover */
 }
 

@@ -659,7 +659,56 @@ class WorksheetController extends Controller
     // }
 
 
+    // public function edit_mark_ws(Request $request)
+    // {
+    //     // $message = [
+    //     //     'err_json' => [],
+    //     //     'success_json' => [],
+    //     // ];
 
+    //     // $validator = Validator::make(
+    //     //     $request->all(),
+    //     //     [
+    //     //         'ws_id_value' => 'required'
+    //     //     ],
+    //     //     [
+    //     //         'ws_id_value.required' => 'The ws_id is not filled by system!'
+    //     //     ]
+    //     // );
+
+    //     // if ($validator->fails()) {
+
+    //     //     $toast_message = $validator->errors()->all();
+    //     //     // Session::flash('errors', $toast_message);
+    //     //     // return redirect()->back()->withErrors($validator)->withInput();
+    //     //      $message['err_json'] = $toast_message;
+    //     //     return response()->json(['message' => $message], 422);
+    //     // }
+
+    // }
+
+
+
+
+    public function edit_mark_ws(Request $request)
+    {
+        // Get the worksheet ID from the request
+        $wsID = $request->input('id_ws');
+        $worksheet = DaftarWS_Model::where('id_ws', $wsID)->first(); // Corrected to use where
+        if (!$worksheet) {
+            $message['err_json'][] = 'Worksheet not found';
+            return response()->json(['message' => $message], 404);
+        }
+
+        // Update the remark and save it
+        $worksheet->remark_ws = $request->input('remarkText');
+        $worksheet->save(); // Don't forget to save the changes
+
+        // Prepare success message
+        $message['success_json'][] = "*" . $worksheet->working_date_ws . ' worksheet remarks for ' . '*' . $worksheet->id_project . ' is updated!';
+
+        return response()->json(['message' => $message], 200);
+    }
 
 
 

@@ -261,9 +261,10 @@
                 width: 2% !important;
             }
 
-            @page { margin: {{ $margin_top }}mm {{ $margin_right }}mm {{ $margin_bottom }}mm {{ $margin_left }}mm;
-              /*  */
-        }
+            @page {
+                margin: {{ $margin_top }}mm {{ $margin_right }}mm {{ $margin_bottom }}mm {{ $margin_left }}mm;
+                /*  */
+            }
         </style>
 
 
@@ -359,7 +360,8 @@
                         <tr>
                             <td colspan="3" class="text-center align-top cell-fit th-time">
                                 {{ \Carbon\Carbon::parse($relDWS['start_time_task'])->format('h:i') }}</td>
-                            <td colspan="7" class="text-start align-top text-wrap">{{ $relDWS['monitor']['category'] }}</td>
+                            <td colspan="7" class="text-start align-top text-wrap">
+                                {{ $relDWS['monitor']['category'] }}</td>
                             <td colspan="1" class="text-start align-top text-wrap">
                                 @php
                                     $descbTask = $relDWS['descb_task'];
@@ -419,8 +421,30 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="17" rowspan="1" class="w-100 h-8" {{-- style="padding: 0.35rem 0.35rem;" --}}>
-                            <textarea class="w-100 border-0 bg-trans" rows="7" @disabled(true)>{{ $loadDataWS->remark_ws ? $loadDataWS->remark_ws : '- None' }}</textarea>
+                        @php
+                            $remarkWS = $loadDataWS->remark_ws;
+                            if (isset($loadDataWS->remark_ws)) {
+                                if (strpos($remarkWS, '*- ') !== false) {
+                                    $remarkWS = str_replace(
+                                        '*- ',
+                                        '<i class="fas fa-circle fs-sm"></i>&nbsp;',
+                                        $remarkWS,
+                                    );
+                                } elseif (strpos($remarkWS, '- ') !== false) {
+                                    $remarkWS = str_replace(
+                                        '- ',
+                                        '<i class="fas fa-circle fs-sm"></i>&nbsp;',
+                                        $remarkWS,
+                                    );
+                                }
+                                $remarkWS = str_replace("\n", '<br>', $remarkWS);
+                            } else {
+                                $remarkWS = '- Tidak Ada';
+                            }
+                        @endphp
+
+                        <td colspan="17" rowspan="1" class="p-0">
+                            <textarea class="w-98 h-12 px-1 m-0 text-left border-0 bg-trans" rows="14" @disabled(true)>{!! $remarkWS !!}</textarea>
                         </td>
                     </tr>
                     <tr>

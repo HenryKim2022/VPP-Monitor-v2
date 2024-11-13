@@ -220,8 +220,8 @@
                         <!-- Left Card -->
                         <div class="col-xl-7 col-md-7 col-12">
                             <div class="card mb-0 mb-0">
-                                <div class="card-body">
-                                    <table>
+                                <div class="card-body overflow-x-scroll dis-overflow-y-hidden">
+                                    <table class="w-100">
                                         <tbody>
                                             <tr>
                                                 <td class="text-nowrap"><strong>DESCRIPTION</strong></td>
@@ -231,12 +231,16 @@
                                             <tr>
                                                 <td class="text-nowrap"><strong>CLIENT'S NAME</strong></td>
                                                 <td class="pl-2">: </td>
-                                                <td>{{ $loadDataWS->project->client->na_client }}</td>
+                                                <td>
+                                                    {{ $loadDataWS->project->client->na_client }}
+                                                </td>
+                                                {{-- <td>{{ Str::limit($loadDataWS->project->client->na_client, 35, '...') }}</td> --}}
                                             </tr>
                                             <tr>
                                                 <td class="text-nowrap"><strong>DATE</strong></td>
                                                 <td class="pl-2">: </td>
-                                                <td>{{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }}
+                                                <td>
+                                                    {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }}
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -249,7 +253,7 @@
                         <!-- Right Card -->
                         <div class="col-xl-5 col-md-5 col-12">
                             <div class="card mb-0">
-                                <div class="card-body">
+                                <div class="card-body overflow-x-scroll dis-overflow-y-hidden">
                                     {{-- <a class="text-end">
                                         <h6><strong>PT. VERTECH PERDANA</strong></h6>
                                     </a> --}}
@@ -539,8 +543,8 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                 @if ($loadDataWS->status_ws === 'OPEN')
                                     <th rowspan="2" class="cell-fit text-center">Act</th>
                                 @endif
-                                <th rowspan="2" class="text-center align-middle" style="width: 12.8%;">Time</th>
-                                <th rowspan="2" class="text-center" style="width: 28%;">Task</th>
+                                <th rowspan="2" class="text-center align-middle">Time</th>
+                                <th rowspan="2" class="text-center">Task</th>
                                 <th rowspan="2" class="text-center">Description</th>
                                 {{-- <th colspan="2" class="text-center">Progress</th> --}}
                                 <th colspan="2"
@@ -706,8 +710,31 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="{{ $isStatusOpen ? '6' : '5' }}" rowspan="1" class="px-1 align-middle">
-                                    <textarea class="w-100" rows="3" {{ $loadDataWS->status_ws == 'OPEN' ? '' : 'disabled' }}></textarea>
+                                @php
+                                    $remarkWS = $loadDataWS->remark_ws;
+                                    if (isset($loadDataWS->remark_ws)) {
+                                        if (strpos($remarkWS, '*- ') !== false) {
+                                            $remarkWS = str_replace(
+                                                '*- ',
+                                                '<i class="fas fa-circle fs-sm"></i>&nbsp;',
+                                                $remarkWS,
+                                            );
+                                        } elseif (strpos($remarkWS, '- ') !== false) {
+                                            $remarkWS = str_replace(
+                                                '- ',
+                                                '<i class="fas fa-circle fs-sm"></i>&nbsp;',
+                                                $remarkWS,
+                                            );
+                                        }
+                                        $remarkWS = str_replace("\n", '<br>', $remarkWS);
+                                    } else {
+                                        $remarkWS = '- Tidak Ada';
+                                    }
+                                @endphp
+
+                                <td colspan="{{ $isStatusOpen ? '6' : '5' }}" rowspan="1" class="p-0 align-middle">
+                                    <textarea class="remark-textarea w-100 h-fit px-1 m-0 text-left border-0" ws_id_value="{{ $loadDataWS->id_ws }}"
+                                        rows="8"{{ $loadDataWS->status_ws == 'OPEN' ? '' : 'disabled' }}>{!! $remarkWS !!}</textarea>
                                 </td>
                             </tr>
                             <tr>
@@ -723,7 +750,7 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                             <div style="height: 8em;"></div> <!-- Empty div for spacing -->
                                             <span class="justify-content-center">
                                                 <a class="w-100 align-text-bottom">
-                                                    {{ $loadDataWS->karyawan->na_karyawan }}
+                                                    {{ Str::limit($loadDataWS->karyawan->na_karyawan, 30, '...') }}
                                                 </a>
                                             </span>
                                             <span class="underline-text">
@@ -741,13 +768,24 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                             <div style="height: 8em;"></div> <!-- Empty div for spacing -->
                                             <span class="justify-content-center">
                                                 <a class="w-100 align-text-bottom">
-                                                    {{ $loadDataWS->project->client->na_client }}
+                                                    {{ Str::limit($loadDataWS->project->client->na_client, 37, '...') }}
                                                 </a>
                                             </span>
                                             <span class="underline-text">
                                                 <strong>
-                                                    ( CLIENT )
-                                                    ..................................................................
+                                                    @php
+                                                        $clientName = $loadDataWS->project->client->na_client;
+                                                        $clientNameLength = mb_strlen(
+                                                            Str::limit($clientName, 37, '...'),
+                                                        );
+                                                        $clientLabelLength = mb_strlen('(CLIENT) ');
+                                                        $totalLength = $clientNameLength * 3 - 2;
+                                                        $dotsCount = max(
+                                                            0,
+                                                            $totalLength - $clientLabelLength - $clientNameLength,
+                                                        );
+                                                        echo '(CLIENT)' . str_repeat('.', $dotsCount);
+                                                    @endphp
                                                 </strong>
                                             </span>
                                         </div>
@@ -812,7 +850,8 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                 <td colspan="2" class="px-1 text-center align-middle"><strong>Status</strong></td>
                             </tr>
                             <tr>
-                                <td colspan="2" class="rowlock px-1 text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }}">
+                                <td colspan="2"
+                                    class="rowlock px-1 text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }}">
                                     @if ($isStatusOpen)
                                         @if ($authUserType === 'Superuser' || $authUserType === 'Engineer')
                                             @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
@@ -824,9 +863,9 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                                     <div>
                                                         <button class="mx-1 border-0 d-flex bg-transparent"
                                                             style="padding: 0.5rem 1rem; justify-self: center;">
-                                                            <h2 class="mb-0">
+                                                            <h3 class="mb-0">
                                                                 <strong>OPEN</strong>
-                                                            </h2>
+                                                            </h3>
                                                         </button>
                                                     </div>
                                                 </form>
@@ -836,9 +875,9 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                         <div>
                                             <button class="mx-1 border-0 d-flex bg-transparent text-white"
                                                 style="padding: 0.5rem 1rem; justify-self: center;">
-                                                <h2 class="mb-0">
+                                                <h3 class="mb-0">
                                                     <strong>CLOSED</strong>
-                                                </h2>
+                                                </h3>
                                             </button>
                                         </div>
 
@@ -1154,6 +1193,49 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                     modalToShow.show();
                 });
             }, 800);
+        });
+    </script>
+
+
+
+
+    <script>
+        $(document).ready(function() {
+            $('.remark-textarea').on('input', function() {
+                var remarkText = $(this).val();
+                var wsId = $(this).attr('ws_id_value'); // Get the worksheet ID
+
+                console.log(wsId);
+
+                $.ajax({
+                    url: '{{ route('m.ws.remark.edit') }}',
+                    type: 'POST',
+                    data: {
+                        id_ws: wsId,
+                        remarkText: remarkText,
+                        _token: '{{ csrf_token() }}' // CSRF token for security
+                    },
+                    success: function(response) {
+                        if (response != null && response.message) {
+                            jsonToastReceiver(response
+                                .message
+                            ); // Pass response.message instead of response
+                        }
+
+                        console.log('Remark updated successfully:', response);
+
+                    },
+                    error: function(xhr, status, error) {
+                        if (response != null && response.message) {
+                            jsonToastReceiver(response
+                                .message
+                            ); // Pass response.message instead of response
+                        }
+
+                        // console.error('Error updating remark:', error);
+                    }
+                });
+            });
         });
     </script>
 @endsection

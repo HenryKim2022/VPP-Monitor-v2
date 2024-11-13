@@ -219,9 +219,65 @@ textarea {
 .w-100 {
     width: 100% !important;
 }
+.w-99 {
+    width: 99% !important;
+}
+.w-98 {
+    width: 98% !important;
+}
+.w-97 {
+    width: 97% !important;
+}
+
+
+
+
+
+/* Responsive Heading Styles */
+:root {
+    --base-font-size: 1rem;
+}
+
+h1 {
+    font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+}
+
+h2 {
+    font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2.4rem);
+}
+
+h3 {
+    font-size: clamp(1.2rem, 1rem + 1vw, 1.8rem);
+}
+
+h4 {
+    font-size: clamp(1rem, 0.8rem + 0.7vw, 1.4rem);
+}
+
+h5 {
+    font-size: clamp(0.8rem, 0.7rem + 0.5vw, 1.2rem);
+}
+
+h6 {
+    font-size: clamp(0.7rem, 0.6rem + 0.3vw, 1rem);
+}
+
+
 
 .h-8 {
     height: 8% !important;
+}
+.h-9 {
+    height: 9% !important;
+}
+.h-10 {
+    height: 10% !important;
+}
+.h-11 {
+    height: 11% !important;
+}
+.h-12 {
+    height: 12% !important;
 }
 
 .h-0 {
