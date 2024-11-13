@@ -559,8 +559,10 @@ class TaskController extends Controller
         }
 
         if ($printAct == 'dom') {
-            if ($ref == 'notview') {
-                return $this->returnDOMPDF_ver2($loadDataWS, $wsID, $projectID, 'notview', $eachtaskChunk);
+            if ($ref == 'print') {
+                return $this->returnDOMPDF_ver2($loadDataWS, $wsID, $projectID, $ref, $eachtaskChunk);
+            } else if ($ref == 'pdf') {
+                return $this->returnDOMPDF_ver2($loadDataWS, $wsID, $projectID, $ref, $eachtaskChunk);
             } else {
                 return $this->returnDOMPDF_ver2($loadDataWS, $wsID, $projectID, 'view', $eachtaskChunk);
             }
@@ -588,7 +590,7 @@ class TaskController extends Controller
         return $cm * 10; // 1 cm = 10 mm
     }
 
-    private function returnDOMPDF_ver2($worksheet, $wsID, $projectID, $mode = 'notview', $eachtaskChunk = 1)
+    private function returnDOMPDF_ver2($worksheet, $wsID, $projectID, $mode = 'print', $eachtaskChunk = 1)
     {
         $project = Projects_Model::with(['client', 'pcoordinator', 'team', 'monitor', 'task', 'worksheet'])
             ->where('id_project', $projectID)
@@ -609,11 +611,11 @@ class TaskController extends Controller
         // Split tasks into chunks of 7
         $taskChunks = array_chunk($tasks->toArray(), $eachtaskChunk); // Convert to array if it's a collection
 
-        if ($mode == 'notview') {
+        if ($mode == 'print' || $mode == 'pdf') {
             // Render the view as a string (HTML)
             $html = view('pages.userpanels.pm_printtaskws_dompdfview_v2', [
                 'project' => $project,
-                'title' => "Daily Worksheet - " . $worksheet->project->id_project,
+                'title' => $worksheet->project->id_project . " - Daily Worksheet",
                 'loadDataWS' => $worksheet,
                 'taskChunks' => $taskChunks, // Pass the chunks of tasks to the view
                 'eachtaskChunk' => $eachtaskChunk,
@@ -649,8 +651,13 @@ class TaskController extends Controller
                 'debugCss' => false,
             ]);
 
-            // Return the PDF for download or streaming
-            return $pdf->stream("worksheet-{$wsID}.pdf");
+            $workingDateTime = Carbon::parse($worksheet->working_date_ws)->format('d.m.Y H.i.s');
+            $filename = "{$project->id_project} - Daily Worksheet-{$wsID} - {$workingDateTime}";
+            if ($mode == 'print') {
+                return $pdf->stream("{$filename}.pdf");   // Return the PDF for streaming
+            } else {
+                return $pdf->download("{$filename}.pdf"); // Return the PDF for download
+            }
         } else {
             return view('pages.userpanels.pm_printtaskws_dompdfview_v2', [
                 'project' => $project,

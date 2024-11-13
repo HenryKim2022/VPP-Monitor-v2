@@ -412,31 +412,6 @@
                                         @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
                                             {{-- @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId)) --}}
                                             <div class="d-flex justify-content-center align-items-ce d-none">
-                                                {{-- <form class="needs-validation" method="POST"
-                                                    action="{{ route('m.task.printpuretask') }}" id="print_puretaskFORM"
-                                                    novalidate>
-                                                    @csrf
-                                                    <input type="hidden" id="print-prj_id" name="print-prj_id"
-                                                        value="{{ $loadDataWS->id_project }}" @readonly(true) />
-                                                    <input type="hidden" id="print-ws_id" name="print-ws_id"
-                                                        value="{{ $loadDataWS->id_ws }}" @readonly(true) />
-                                                    <input type="hidden" id="print-ws_date" name="print-ws_date"
-                                                        value="{{ $loadDataWS->working_date_ws }}" @readonly(true) />
-
-                                                    <input type="hidden" id="print-act" name="print-act"
-                                                        value="pure" />
-                                                    <input type="hidden" id="print-task-title" name="print-task-title"
-                                                        value="{{ $prjmondws->id_project }} {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }} DAILY WORKSHEETS" />
-                                                    <input type="hidden" id="print-task-length"
-                                                        name="print-task-length" />
-                                                    <input type="hidden" id="print-task-columns"
-                                                        name="print-task-columns" />
-                                                    <button
-                                                        class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
-                                                        style="width: 3rem; height: 3rem; padding: 0;">
-                                                        <i class="fas fa-thin fa-file-pdf text-white"></i>
-                                                    </button>
-                                                </form> --}}
                                                 <form class="needs-validation" method="POST"
                                                     action="{{ route('m.task.printdomtask') }}" id="print_domtaskFORM"
                                                     novalidate>
@@ -453,15 +428,38 @@
                                                     <input type="hidden" id="print-task-title" name="print-task-title"
                                                         value="{{ $prjmondws->id_project }} {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }} DAILY WORKSHEETS" />
                                                     <input type="hidden" id="print-ref" name="print-ref"
-                                                        value="notview" />
+                                                        value="print" />
 
                                                     <button
-                                                        class="btn bg-info mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
+                                                        class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
                                                         style="width: 3rem; height: 3rem; padding: 0;">
-                                                        {{-- <i class="fas fa-print fa-xs text-white"></i> --}}
-                                                        <i class="fas fa-duotone fa-file-pdf text-white"></i>
+                                                        <i class="fas fa-duotone fa-print text-white"></i>
                                                     </button>
                                                 </form>
+                                                <form class="needs-validation" method="POST"
+                                                action="{{ route('m.task.printdomtask') }}" id="print_domtaskFORM"
+                                                novalidate>
+                                                @csrf
+                                                <input type="hidden" id="print-prj_id" name="print-prj_id"
+                                                    value="{{ $loadDataWS->id_project }}" @readonly(true) />
+                                                <input type="hidden" id="print-ws_id" name="print-ws_id"
+                                                    value="{{ $loadDataWS->id_ws }}" @readonly(true) />
+                                                <input type="hidden" id="print-ws_date" name="print-ws_date"
+                                                    value="{{ $loadDataWS->working_date_ws }}" @readonly(true) />
+
+                                                <input type="hidden" id="print-act" name="print-act"
+                                                    value="dom" />
+                                                <input type="hidden" id="print-task-title" name="print-task-title"
+                                                    value="{{ $prjmondws->id_project }} {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }} DAILY WORKSHEETS" />
+                                                <input type="hidden" id="print-ref" name="print-ref"
+                                                    value="pdf" />
+
+                                                <button
+                                                    class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
+                                                    style="width: 3rem; height: 3rem; padding: 0;">
+                                                    <i class="fad fa-download text-white"></i>
+                                                </button>
+                                            </form>
                                             </div>
 
                                             {{-- @else

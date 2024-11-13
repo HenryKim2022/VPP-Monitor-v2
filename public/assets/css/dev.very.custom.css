@@ -122,15 +122,21 @@ html{
 }
 
 
+
+
+.light-layout textarea {
+    color: #6e6b7b;
+    background-color: #fff;
+}
+.dark-layout textarea {
+    background-color: #283046;
+    color: #b4b7bd;
+}
 .light-layout textarea:disabled {
-    color: var(--light);
-    background-color: var(--dark);
-    border: 1px solid #ccc;
     cursor: not-allowed;
 }
 .dark-layout textarea:disabled {
-    color: var(--dark);
-    background-color: var(--light);
-    border: 1px solid #ccc;
     cursor: not-allowed;
 }
+
+
