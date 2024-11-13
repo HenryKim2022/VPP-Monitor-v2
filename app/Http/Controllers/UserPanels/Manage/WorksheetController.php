@@ -692,9 +692,15 @@ class WorksheetController extends Controller
 
     public function edit_mark_ws(Request $request)
     {
-        // Get the worksheet ID from the request
-        $wsID = $request->input('id_ws');
-        $worksheet = DaftarWS_Model::where('id_ws', $wsID)->first(); // Corrected to use where
+           // Validate the incoming request
+    $request->validate([
+        'id_ws' => 'required|integer|exists:tb_worksheet,id_ws',
+        'remarkText' => 'required|string|max:5000', // Adjust max length as needed
+    ]);
+
+    // Get the worksheet ID from the request
+    $wsID = $request->input('id_ws');
+    $worksheet = DaftarWS_Model::find($wsID);
         if (!$worksheet) {
             $message['err_json'][] = 'Worksheet not found';
             return response()->json(['message' => $message], 404);

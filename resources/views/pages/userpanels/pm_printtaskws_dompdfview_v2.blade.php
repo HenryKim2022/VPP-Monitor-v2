@@ -422,29 +422,35 @@
                     </tr>
                     <tr>
                         @php
-                            $remarkWS = $loadDataWS->remark_ws;
-                            if (isset($loadDataWS->remark_ws)) {
-                                if (strpos($remarkWS, '*- ') !== false) {
-                                    $remarkWS = str_replace(
-                                        '*- ',
-                                        '<i class="fas fa-circle fs-sm"></i>&nbsp;',
-                                        $remarkWS,
-                                    );
-                                } elseif (strpos($remarkWS, '- ') !== false) {
-                                    $remarkWS = str_replace(
-                                        '- ',
-                                        '<i class="fas fa-circle fs-sm"></i>&nbsp;',
-                                        $remarkWS,
-                                    );
-                                }
-                                $remarkWS = str_replace("\n", '<br>', $remarkWS);
-                            } else {
-                                $remarkWS = '- Tidak Ada';
-                            }
-                        @endphp
+                        $remarkWS =
+                            isset($loadDataWS->remark_ws) && !empty($loadDataWS->remark_ws)
+                                ? $loadDataWS->remark_ws
+                                : '- Tidak Ada';
+
+                        if ($remarkWS !== '- Tidak Ada') {
+                            // Replace bullet points with icons for display outside the textarea
+                            $formattedRemarkWS = str_replace(
+                                '*- ',
+                                '<i class="fas fa-circle fs-sm"></i>&nbsp;',
+                                $remarkWS,
+                            );
+                            $formattedRemarkWS = str_replace(
+                                '- ',
+                                '<i class="fas fa-circle fs-sm"></i>&nbsp;',
+                                $formattedRemarkWS,
+                            );
+                            // Replace new lines with line breaks for display outside the textarea
+                            $formattedRemarkWS = str_replace("\n", '<br>', $formattedRemarkWS);
+                        } else {
+                            $formattedRemarkWS = '- Tidak Ada';
+                        }
+
+                        // Strip HTML tags for textarea
+                        $textareaRemarkWS = htmlspecialchars(strip_tags($remarkWS), ENT_QUOTES, 'UTF-8');
+                    @endphp
 
                         <td colspan="17" rowspan="1" class="p-0">
-                            <textarea class="w-98 h-12 px-1 m-0 text-left border-0 bg-trans" rows="14" @disabled(true)>{!! $remarkWS !!}</textarea>
+                            <textarea class="w-98 h-12 px-1 m-0 text-left border-0 bg-trans" rows="14" @disabled(true)>{!! $textareaRemarkWS !!}</textarea>
                         </td>
                     </tr>
                     <tr>

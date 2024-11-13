@@ -711,30 +711,35 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                             </tr>
                             <tr>
                                 @php
-                                    $remarkWS = $loadDataWS->remark_ws;
-                                    if (isset($loadDataWS->remark_ws)) {
-                                        if (strpos($remarkWS, '*- ') !== false) {
-                                            $remarkWS = str_replace(
-                                                '*- ',
-                                                '<i class="fas fa-circle fs-sm"></i>&nbsp;',
-                                                $remarkWS,
-                                            );
-                                        } elseif (strpos($remarkWS, '- ') !== false) {
-                                            $remarkWS = str_replace(
-                                                '- ',
-                                                '<i class="fas fa-circle fs-sm"></i>&nbsp;',
-                                                $remarkWS,
-                                            );
-                                        }
-                                        $remarkWS = str_replace("\n", '<br>', $remarkWS);
+                                    $remarkWS =
+                                        isset($loadDataWS->remark_ws) && !empty($loadDataWS->remark_ws)
+                                            ? $loadDataWS->remark_ws
+                                            : '- Tidak Ada';
+
+                                    if ($remarkWS !== '- Tidak Ada') {
+                                        // Replace bullet points with icons for display outside the textarea
+                                        $formattedRemarkWS = str_replace(
+                                            '*- ',
+                                            '<i class="fas fa-circle fs-sm"></i>&nbsp;',
+                                            $remarkWS,
+                                        );
+                                        $formattedRemarkWS = str_replace(
+                                            '- ',
+                                            '<i class="fas fa-circle fs-sm"></i>&nbsp;',
+                                            $formattedRemarkWS,
+                                        );
+                                        // Replace new lines with line breaks for display outside the textarea
+                                        $formattedRemarkWS = str_replace("\n", '<br>', $formattedRemarkWS);
                                     } else {
-                                        $remarkWS = '- Tidak Ada';
+                                        $formattedRemarkWS = '- Tidak Ada';
                                     }
+
+                                    // Strip HTML tags for textarea
+                                    $textareaRemarkWS = strip_tags($remarkWS);
                                 @endphp
 
                                 <td colspan="{{ $isStatusOpen ? '6' : '5' }}" rowspan="1" class="p-0 align-middle">
-                                    <textarea class="remark-textarea w-100 h-fit px-1 m-0 text-left border-0" ws_id_value="{{ $loadDataWS->id_ws }}"
-                                        rows="8"{{ $loadDataWS->status_ws == 'OPEN' ? '' : 'disabled' }}>{!! $remarkWS !!}</textarea>
+                                    <textarea class="remark-textarea w-100 h-fit px-1 m-0 text-left border-0" ws_id_value="{{ $loadDataWS->id_ws }}" rows="8" {{ $loadDataWS->status_ws == 'OPEN' ? '' : 'disabled' }}>{!! htmlspecialchars($textareaRemarkWS, ENT_QUOTES, 'UTF-8') !!}</textarea>
                                 </td>
                             </tr>
                             <tr>
@@ -1198,12 +1203,12 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
 
 
 
-
     <script>
         $(document).ready(function() {
-            $('.remark-textarea').on('input', function() {
-                var remarkText = $(this).val();
-                var wsId = $(this).attr('ws_id_value'); // Get the worksheet ID
+            // Function to handle AJAX request
+            function sendRemarkUpdate() {
+                var remarkText = $('.remark-textarea').val();
+                var wsId = $('.remark-textarea').attr('ws_id_value'); // Get the worksheet ID
 
                 console.log(wsId);
 
@@ -1218,23 +1223,37 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                     success: function(response) {
                         if (response != null && response.message) {
                             jsonToastReceiver(response
-                                .message
-                            ); // Pass response.message instead of response
+                                .message); // Pass response.message instead of response
                         }
 
                         console.log('Remark updated successfully:', response);
-
                     },
                     error: function(xhr, status, error) {
-                        if (response != null && response.message) {
-                            jsonToastReceiver(response
-                                .message
-                            ); // Pass response.message instead of response
+                        if (xhr.responseJSON != null && xhr.responseJSON.message) {
+                            jsonToastReceiver(xhr.responseJSON
+                                .message); // Pass response.message instead of response
                         }
-
-                        // console.error('Error updating remark:', error);
+                        console.error('Error updating remark:', error);
                     }
                 });
+            }
+
+            // Keydown event for Ctrl + Enter or Up Arrow + Enter
+            $('.remark-textarea').on('keydown', function(event) {
+                // Check if Enter key is pressed
+                if (event.key === 'Enter') {
+                    // Check if Ctrl key is pressed or Up Arrow key was pressed
+                    if (event.ctrlKey || (event.originalEvent.key === 'ArrowUp')) {
+                        event.preventDefault(); // Prevent the default action (e.g., adding a new line)
+                        sendRemarkUpdate(); // Call the function to send AJAX request
+                    }
+                }
+            });
+
+            // Blur event for leaving the textarea
+            $('.remark-textarea').on('blur', function() {
+                // Send AJAX request when the textarea loses focus
+                sendRemarkUpdate();
             });
         });
     </script>

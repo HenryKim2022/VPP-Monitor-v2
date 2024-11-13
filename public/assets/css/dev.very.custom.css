@@ -120,3 +120,17 @@ html{
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
+
+
+.light-layout textarea:disabled {
+    color: var(--light);
+    background-color: var(--dark);
+    border: 1px solid #ccc;
+    cursor: not-allowed;
+}
+.dark-layout textarea:disabled {
+    color: var(--dark);
+    background-color: var(--light);
+    border: 1px solid #ccc;
+    cursor: not-allowed;
+}
