@@ -1320,9 +1320,25 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                     $('.lock-ws-cmd').on('click', function() {
                         var wsID = $(this).attr('lock_ws_id_value');
                         $('#' + whichModal + ' #lock-ws_id').val(wsID);
+                        setInfoText_v2_1();
+
                         modalToShow.show();
                     });
                 }, 800);
+
+                function setInfoText_v2_1() {
+                    const infoText = document.querySelector('#' + whichModal + ' .info-text');
+                    const projectId = "{{ $loadDataWS->id_project }}";
+                    const workingDate = "{{ $loadDataWS->working_date_ws() }}";
+                    const employeeName = "{{ $loadDataWS->karyawan->na_karyawan }}";
+
+                    infoText.innerHTML = `
+                        Are you sure you want to
+                        <a class="text-warning">Lock the worksheet for ${projectId} with working date *${workingDate} that was executed by ${employeeName}?</a>
+                        This action <a class="text-danger">cannot be undone</a>.
+                        Please confirm by clicking "<a class="text-danger">LOCK</a>" below.
+                    `;
+                }
             });
         </script>
     @else
@@ -1336,9 +1352,26 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                     $('.unlock-ws-cmd').on('click', function() {
                         var wsID = $(this).attr('unlock_ws_id_value');
                         $('#' + whichModal + ' #unlock-ws_id').val(wsID);
+                        setInfoText_v2_2();
+
                         modalToShow.show();
                     });
+
                 }, 800);
+
+                function setInfoText_v2_2() {
+                    const infoText = document.querySelector('#' + whichModal + ' .info-text');
+                    const projectId = "{{ $loadDataWS->id_project }}";
+                    const workingDate = "{{ $loadDataWS->working_date_ws() }}";
+                    const employeeName = "{{ $loadDataWS->karyawan->na_karyawan }}";
+
+                    infoText.innerHTML = `
+                        Are you sure you want to
+                        <a class="text-warning">Lock the worksheet for ${projectId} with working date *${workingDate} that was executed by ${employeeName}?</a>
+                        This action <a class="text-danger">cannot be undone</a>.
+                        Please confirm by clicking "<a class="text-danger">UNLOCK</a>" below.
+                    `;
+                }
             });
         </script>
     @endif
