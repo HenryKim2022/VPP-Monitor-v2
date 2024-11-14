@@ -248,28 +248,29 @@
                                 <div class="col-xl-5 col-md-5 col-12">
                                     <div class="card mb-0">
                                         <div class="card-body overflow-x-scroll dis-overflow-y-hidden">
-                                            <a class="text-end text-nowrap">
+                                            <div class="text-end text-nowrap">
                                                 <h6><strong>PT. VERTECH PERDANA</strong></h6>
-                                            </a>
+                                            </div>
                                             <table>
                                                 <tbody>
                                                     <tr>
-                                                        <td colspan="3" class="text-nowrap"><strong>Engineer
-                                                                Team</strong></td>
-                                                        <td class="pl-2">: </td>
-                                                        <td data-toggle="tooltip" data-popup="tooltip-custom"
-                                                            data-placement="left"
+                                                        <td colspan="3" class="text-nowrap" data-toggle="tooltip"
+                                                            data-popup="tooltip-custom" data-placement="left"
+                                                            class="pull-up"
                                                             data-original-title="
-                                                                @if ($prjmondws->team) {{ $prjmondws->team->na_team }}:
-                                                                    @if ($prjmondws->team->karyawans && $prjmondws->team->karyawans->isNotEmpty())
-                                                                         {{ implode(', ', array_column($prjmondws->team->karyawans->toArray(), 'na_karyawan')) }}
-                                                                    @else
-                                                                        No team members available @endif
+                                                            @if ($prjmondws->team) {{ $prjmondws->team->na_team }}:
+                                                                @if ($prjmondws->team->karyawans && $prjmondws->team->karyawans->isNotEmpty())
+                                                                     {{ implode(', ', array_column($prjmondws->team->karyawans->toArray(), 'na_karyawan')) }}
                                                                 @else
-                                                                No team information available
-                                                                @endif
-                                                            "
-                                                            class="pull-up">
+                                                                    No team members available @endif
+@else
+No team information available
+                                                            @endif
+                                                        ">
+                                                            <strong>Engineer Team</strong>
+                                                        </td>
+                                                        <td class="pl-2">: </td>
+                                                        <td>
                                                             @if ($prjmondws->team)
                                                                 {{ $prjmondws->team->na_team }}
                                                             @else
@@ -437,9 +438,9 @@
                                                 Qty<br>({{ $totalQty }}%)
                                             </th>
                                             @php
-                                                if ($totalActual <> 0){
+                                                if ($totalActual != 0) {
                                                     $actPro = number_format($totalActual, 0);
-                                                }else{
+                                                } else {
                                                     $actPro = number_format($totalActual, 0);
                                                 }
                                             @endphp
@@ -586,7 +587,7 @@ $relatedTasks = collect($prjmondws->task)->filter(
                                                             @endphp
                                                         @endif
 
-                                                        @if ($total <> 0)
+                                                        @if ($total != 0)
                                                             {{ number_format($total, 1) }}%
                                                         @else
                                                             {{ number_format($total, 0) }}%
@@ -773,19 +774,23 @@ $relatedTasks = collect($prjmondws->task)->filter(
                                 <table id="daftarDWSTable" class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th class="cell-fit text-center">Act</th>
+                                            <th class="text-center">Act</th>
                                             <th class="text-center">Date</th>
                                             <th class="text-center">Arrival</th>
                                             <th class="text-center">Finish</th>
                                             <th class="text-center">Executed by</th>
-                                            <th class="cell-fit text-center">Status</th>
+                                            <th class="text-center">Status</th>
                                         </tr>
                                     </thead>
 
 
                                     <tbody>
                                         @if ($prjmondws->worksheet)
+
                                             @foreach ($prjmondws->worksheet as $ws)
+                                                @php
+                                                    $isStatusOpen = $ws->status_ws == 'OPEN' ? true : false;
+                                                @endphp
                                                 @php
                                                     $exeUserId = $ws->id_karyawan;
                                                     // echo 'exeUserId: ' . $exeUserId . '<br>';
@@ -823,15 +828,18 @@ $relatedTasks = collect($prjmondws->task)->filter(
                                                                     @if ($authUserType === 'Superuser' || !$isExpired)
                                                                         @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
                                                                             @if ($authUserType == 'Superuser' || $ws->status_ws == 'OPEN')
-                                                                                <a class="edit-record-ws dropdown-item d-flex align-items-center"
-                                                                                    edit_ws_id_value = "{{ $ws->id_ws ?: 0 }}"
-                                                                                    edit_ws_prj_id_value = "{{ $ws->id_project }}"
-                                                                                    edit_ws_kar_id_value = "{{ $ws->id_karyawan }}"
-                                                                                    onclick="openModal('{{ $modalData['modal_edit_ws'] }}')">
-                                                                                    <i data-feather="edit" class="mr-1"
-                                                                                        style="color: #28c76f;"></i>
-                                                                                    Edit
-                                                                                </a>
+                                                                                @if (isset($modalData['modal_edit_ws']))
+                                                                                    <a class="edit-record-ws dropdown-item d-flex align-items-center"
+                                                                                        edit_ws_id_value = "{{ $ws->id_ws ?: 0 }}"
+                                                                                        edit_ws_prj_id_value = "{{ $ws->id_project }}"
+                                                                                        edit_ws_kar_id_value = "{{ $ws->id_karyawan }}"
+                                                                                        onclick="openModal('{{ $modalData['modal_edit_ws'] }}')">
+                                                                                        <i data-feather="edit"
+                                                                                            class="mr-1"
+                                                                                            style="color: #28c76f;"></i>
+                                                                                        Edit
+                                                                                    </a>
+                                                                                @endif
                                                                             @endif
                                                                         @endif
                                                                     @endif
@@ -852,15 +860,18 @@ $relatedTasks = collect($prjmondws->task)->filter(
                                                                     @if (!$isExpired)
                                                                         @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
                                                                             @if ($authUserType == 'Superuser' || $ws->status_ws == 'OPEN')
-                                                                                <a class="edit-record-ws dropdown-item d-flex align-items-center"
-                                                                                    edit_ws_id_value = "{{ $ws->id_ws ?: 0 }}"
-                                                                                    edit_ws_prj_id_value = "{{ $ws->id_project }}"
-                                                                                    edit_ws_kar_id_value = "{{ $ws->id_karyawan }}"
-                                                                                    onclick="openModal('{{ $modalData['modal_edit_ws'] }}')">
-                                                                                    <i data-feather="edit" class="mr-1"
-                                                                                        style="color: #28c76f;"></i>
-                                                                                    Edit
-                                                                                </a>
+                                                                                @if (isset($modalData['modal_edit_ws']))
+                                                                                    <a class="edit-record-ws dropdown-item d-flex align-items-center"
+                                                                                        edit_ws_id_value = "{{ $ws->id_ws ?: 0 }}"
+                                                                                        edit_ws_prj_id_value = "{{ $ws->id_project }}"
+                                                                                        edit_ws_kar_id_value = "{{ $ws->id_karyawan }}"
+                                                                                        onclick="openModal('{{ $modalData['modal_edit_ws'] }}')">
+                                                                                        <i data-feather="edit"
+                                                                                            class="mr-1"
+                                                                                            style="color: #28c76f;"></i>
+                                                                                        Edit
+                                                                                    </a>
+                                                                                @endif
                                                                             @endif
                                                                         @endif
                                                                     @endif
@@ -899,38 +910,26 @@ $relatedTasks = collect($prjmondws->task)->filter(
                                                                 $ws_status = $ws->status_ws;
                                                                 $blinkClass = $ws_status == 'OPEN' ? 'blink-bg' : '';
                                                             @endphp
-                                                            @if ($ws->status_ws == 'OPEN')
-                                                                <form
-                                                                    class="row g-2 needs-validation d-flex justify-content-center"
-                                                                    method="POST"
-                                                                    action="{{ route('m.ws.status.lock') }}"
-                                                                    id="lock_wsFORM" novalidate>
-                                                                    @csrf
-                                                                    <input type="hidden" id="lock-ws_id"
-                                                                        name="lock-ws_id" value="{{ $ws->id_ws }}" />
-                                                                    <button id="confirmSave"
-                                                                        class="btn rounded small text-white {{ $blinkClass }}"
+                                                            @if ($isStatusOpen)
+                                                                @if (isset($modalData['modal_lock']))
+                                                                    <button
+                                                                        class="lock-ws-cmd btn rounded small text-white {{ $blinkClass }}"
+                                                                        lock_ws_id_value = "{{ $ws->id_ws ?: 0 }}"
                                                                         style="padding: 0.4rem">
                                                                         <i class="fas fa-lock-open fa-shake fa-sm"></i>
                                                                     </button>
-                                                                </form>
+                                                                @endif
+
                                                             @else
-                                                                <form
-                                                                    class="row g-2 needs-validation d-flex justify-content-center"
-                                                                    method="POST"
-                                                                    action="{{ route('m.ws.status.unlock') }}"
-                                                                    id="unlock_wsFORM" novalidate>
-                                                                    @csrf
-                                                                    <input type="hidden" id="unlock-ws_id"
-                                                                        name="unlock-ws_id"
-                                                                        value="{{ $ws->id_ws }}" />
+                                                                @if (isset($modalData['modal_unlock']))
                                                                     <button
-                                                                    id="confirmSave"
-                                                                        class="btn bg-success rounded small text-white"
+                                                                        class="unlock-ws-cmd btn bg-success rounded small text-white"
+                                                                        unlock_ws_id_value = "{{ $ws->id_ws ?: 0 }}"
                                                                         style="padding: 0.4rem">
                                                                         <i class="fas fa-user-lock fa-sm"></i>
                                                                     </button>
-                                                                </form>
+                                                                @endif
+
                                                             @endif
                                                         @else
                                                             @php
@@ -979,6 +978,8 @@ $relatedTasks = collect($prjmondws->task)->filter(
                                     <!-- BEGIN: ResetWorksheetModal--> @include('v_res.m_modals.userpanels.m_daftarworksheet.v_reset_wsModal')
                                     <!-- END: ResetWorksheetModal-->
                                 @endif
+                                <!-- BEGIN: LockWSModal--> @include('v_res.m_modals.userpanels.m_daftarworksheet.v_lock_wsModal') <!-- END: LockWSModal-->
+                                <!-- BEGIN: UnlockWSModal--> @include('v_res.m_modals.userpanels.m_daftarworksheet.v_unlock_wsModal') <!-- END: UnlockWSModal-->
                             </div>
 
 
@@ -1033,9 +1034,11 @@ $relatedTasks = collect($prjmondws->task)->filter(
                         initComplete: function() {
                             $(this.api().column([0]).header()).addClass('cell-fit text-center align-middle');
                             $(this.api().column([1]).header()).addClass('cell-fit text-center align-middle');
-                            $(this.api().column([2]).header()).addClass('text-center fit-content align-middle');
+                            $(this.api().column([2]).header()).addClass('text-center align-middle w-25');
                             $(this.api().column([3]).header()).addClass('text-center fit-content align-middle');
-                            $(this.api().column([4]).header()).addClass('text-center align-middle');
+                            $(this.api().column([4]).header()).addClass('text-center fit-content align-middle');
+                            $(this.api().column([5]).header()).addClass('text-center fit-content align-middle');
+                            $(this.api().column([6]).header()).addClass('text-center fit-content align-middle');
 
                             var pageInfo = this.api().page.info();
                             $('#lengthMenu1').val(pageInfo.length); // Updated ID
@@ -1134,10 +1137,10 @@ $relatedTasks = collect($prjmondws->task)->filter(
                         }],
                         initComplete: function() {
                             $(this.api().column([0]).header()).addClass('cell-fit text-center align-middle');
-                            $(this.api().column([1]).header()).addClass('text-center align-middle');
+                            $(this.api().column([1]).header()).addClass('cell-fit text-center align-middle');
                             $(this.api().column([2]).header()).addClass('text-center align-middle');
-                            $(this.api().column([3]).header()).addClass('text-center align-middle');
-                            $(this.api().column([4]).header()).addClass('text-center align-middle');
+                            $(this.api().column([3]).header()).addClass('text-center align-middle w-25');
+                            $(this.api().column([4]).header()).addClass('cell-fit text-center align-middle');
                             $(this.api().column([5]).header()).addClass('cell-fit text-center align-middle');
 
                             var pageInfo = this.api().page.info();
@@ -1176,7 +1179,7 @@ $relatedTasks = collect($prjmondws->task)->filter(
                         </div>
                     `;
 
-                    // Append the dropdown button to the second table ```javascript
+                    // Append the dropdown button to the second table
                     // Append the dropdown button to the second table's head label
                     $('.head-label2').prepend(dropdownButton2);
 
@@ -1328,6 +1331,9 @@ $relatedTasks = collect($prjmondws->task)->filter(
 
 
 
+
+
+
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
                     const modalId = 'edit_wsModal';
@@ -1335,10 +1341,12 @@ $relatedTasks = collect($prjmondws->task)->filter(
                     const modalToShow = new bootstrap.Modal(modalSelector);
                     const targetedModalForm = document.querySelector('#' + modalId + ' #edit_wsModalFORM');
 
-                    $(document).on('click', '.edit-record-ws', function(event) {
+                    $('.dropdown-menu').on('click', '.edit-record-ws', function(event) {
                         var wsID = $(this).attr('edit_ws_id_value');
                         var projectID = $(this).attr('edit_ws_prj_id_value');
                         var karyawanID = $(this).attr('edit_ws_kar_id_value');
+
+
                         console.log('Edit button clicked for ws_id:', wsID);
                         setTimeout(() => {
                             $.ajax({
@@ -1373,7 +1381,8 @@ $relatedTasks = collect($prjmondws->task)->filter(
                     });
 
                     function setWsWorkDateTime(response) {
-                        $('#edit-ws_working_date').val(response.work_date.substr(0, 10));
+                        // $('#edit-ws_working_date').val(response.work_date.substr(0, 10));
+                        $('#edit-ws_working_date').val(response.work_date);
                         var datePickerInput = modalSelector.querySelector("#edit-ws_working_date");
                         if (datePickerInput) {
                             flatpickr(datePickerInput, {
@@ -1498,4 +1507,120 @@ $relatedTasks = collect($prjmondws->task)->filter(
                     }
                 }
             </script>
+
+
+            @if (isset($modalData['modal_lock']))
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        whichModal1 = "lock_wsModal";
+
+                        setTimeout(() => {
+                            $('.lock-ws-cmd').on('click', function() {
+                                var wsID = $(this).attr('lock_ws_id_value');
+
+                                const modalSelector = document.querySelector('#' + whichModal1);
+                                const modalToShow = new bootstrap.Modal(modalSelector);
+
+                                $.ajax({
+                                    url: '{{ route('m.ws.getws4lockunlock') }}',
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Update the CSRF token here
+                                    },
+                                    data: {
+                                        wsID: wsID,
+                                    },
+                                    success: function(response) {
+                                        // console.log(response);
+                                        $('#' + whichModal1 + ' #lock-ws_id').val(response.wsID);
+                                        setInfoText(response);
+
+                                        modalToShow.show();
+                                    },
+                                    error: function(error) {
+                                        console.log("Err [JS]:\n");
+                                        console.log(error);
+                                    }
+                                });
+
+
+                                function setInfoText(response) {
+                                    setTimeout(() => {
+                                        const infoText = document.querySelector('#' + whichModal1 +
+                                            ' .info-text');
+                                        if (infoText) {
+                                            infoText.innerHTML =
+                                            `Are you sure you want to <a class="text-warning">Lock the worksheet for ${response.projectID} with working date *${response.workingDate} that was executed by ${response.namaKaryawan}?</a> This action <a class="text-danger">cannot be undone</a>. Please confirm by clicking "<a class="text-danger">LOCK</a>" below.`; // Update with your desired content
+                                        } else {
+                                            console.error(
+                                                "infoText element not found in the specified modal:",
+                                                whichModal1);
+                                        }
+                                    }, 100);
+                                }
+
+                            });
+                        }, 800);
+
+                    });
+                </script>
+            @endif
+
+
+            @if (isset($modalData['modal_unlock']))
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+
+                        setTimeout(() => {
+                            $('.unlock-ws-cmd').on('click', function() {
+                                var wsID = $(this).attr('unlock_ws_id_value');
+
+                                whichModal2 = "unlock_wsModal";
+                                const modalSelector = document.querySelector('#' + whichModal2);
+                                const modalToShow = new bootstrap.Modal(modalSelector);
+
+                                $.ajax({
+                                    url: '{{ route('m.ws.getws4lockunlock') }}',
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Update the CSRF token here
+                                    },
+                                    data: {
+                                        wsID: wsID,
+                                    },
+                                    success: function(response) {
+                                        // console.log(response);
+                                        $('#' + whichModal2 + ' #unlock-ws_id').val(response.wsID);
+                                        setInfoText(response);
+
+                                        modalToShow.show();
+                                    },
+                                    error: function(error) {
+                                        console.log("Err [JS]:\n");
+                                        console.log(error);
+                                    }
+                                });
+
+
+                                function setInfoText(response) {
+                                    setTimeout(() => {
+                                        const infoText2 = document.querySelector('#' + whichModal2 +
+                                            ' .info-text');
+                                        if (infoText2) {
+                                            infoText2.innerHTML =
+                                            `Are you sure you want to <a class="text-warning">Lock the worksheet for ${response.projectID} with working date *${response.workingDate} that was executed by ${response.namaKaryawan}?</a> This action <a class="text-danger">cannot be undone</a>. Please confirm by clicking "<a class="text-danger">LOCK</a>" below.`; // Update with your desired content
+                                        } else {
+                                            console.error(
+                                                "infoText element not found in the specified modal:",
+                                                whichModal2);
+                                        }
+                                    }, 100);
+                                }
+
+
+                            });
+                        }, 800);
+                    });
+                </script>
+            @endif
         @endsection

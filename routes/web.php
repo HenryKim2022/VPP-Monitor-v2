@@ -154,6 +154,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/m-prj/m-monitoring-worksheet/ws/edit', [WorksheetController::class, 'edit_ws'])->name('m.ws.edit');
     Route::post('/m-prj/m-monitoring-worksheet/ws/mark-edit', [WorksheetController::class, 'edit_mark_ws'])->name('m.ws.remark.edit');
     Route::post('/m-prj/m-monitoring-worksheet/ws/load', [WorksheetController::class, 'get_ws'])->name('m.ws.getws');
+    Route::get('/m-prj/m-monitoring-worksheet/ws/load', [WorksheetController::class, 'get_ws'])->name('m.ws.getws');
+    Route::post('/m-prj/m-monitoring-worksheet/ws/getlockunlock', [WorksheetController::class, 'get_ws_4lockunlock'])->name('m.ws.getws4lockunlock');
     Route::post('/m-prj/m-monitoring-worksheet/ws/lock', [WorksheetController::class, 'lock_ws'])->name('m.ws.status.lock');
     Route::post('/m-prj/m-monitoring-worksheet/ws/unlock', [WorksheetController::class, 'unlock_ws'])->name('m.ws.status.unlock');
     Route::post('/m-prj/m-monitoring-worksheet/ws/sulock', [WorksheetController::class, 'su_lock_ws'])->name('m.ws.status.su.lock');

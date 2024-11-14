@@ -247,12 +247,14 @@ class WorksheetController extends Controller
         $wsID = $request->input('wsID');
         $projectID = $request->input('projectID');
         $karyawanID = $request->input('karyawanID');
-
+        // dd($wsID);
         $daftarWorksheet = DaftarWS_Model::where('id_ws', $wsID)->first();
+        // dd($daftarWorksheet->toArray());
+        // dd(Carbon::parse($daftarWorksheet->working_date_ws)->isoFormat("Y-MM-DD"));
         if ($daftarWorksheet) {
             return response()->json([    // Return queried data as a JSON response
                 'id_ws'         => $daftarWorksheet->id_ws,
-                'work_date'     => $daftarWorksheet->working_date_ws,
+                'work_date'     => Carbon::parse($daftarWorksheet->working_date_ws)->isoFormat("Y-MM-DD"),
                 'arrival_time'  => $daftarWorksheet->arrival_time_ws,
                 'finish_time'   => $daftarWorksheet->finish_time_ws,
                 'id_karyawan'   => $daftarWorksheet->id_karyawan,
@@ -468,6 +470,23 @@ class WorksheetController extends Controller
 
 
 
+    public function get_ws_4lockunlock(Request $request){
+        $wsID = $request->input('wsID');
+        $daftarWorksheet = DaftarWS_Model::where('id_ws', $wsID)->first();
+        if ($daftarWorksheet) {
+            return response()->json([    // Return queried data as a JSON response
+                'wsID'         => $daftarWorksheet->id_ws,
+                'workingDate'  => $daftarWorksheet->working_date_ws(),
+                'namaKaryawan' => $daftarWorksheet->karyawan->na_karyawan,
+                'projectID'    => $daftarWorksheet->id_project
+            ]);
+        } else {    // Handle the case when the Jabatan_Model with the given jabatanID is not found
+            return response()->json(['error' => 'Worksheet for locking not found'], 404);
+        }
+    }
+
+
+
     public function lock_ws(Request $request)
     {
         $validator = Validator::make(
@@ -565,131 +584,6 @@ class WorksheetController extends Controller
 
 
 
-    // public function su_unlock_ws(Request $request)
-    // {
-    //     $validator = Validator::make(
-    //         $request->all(),
-    //         [
-    //             'unlock-ws_id'            => 'required'
-    //         ],
-    //         [
-    //             'unlock-ws_id.required'   => 'The ws_id field is not filled by system!'
-    //         ]
-    //     );
-    //     if ($validator->fails()) {
-    //         $toast_message = $validator->errors()->all();
-    //         Session::flash('errors', $toast_message);
-    //         return redirect()->back()->withErrors($validator)->withInput();
-    //     }
-
-    //     // Check worksheet ws_status
-    //     $isWorksheetLocked = DaftarWS_Model::where('id_ws', $request->input('lock-ws_id'))
-    //         ->where('status_ws', "CLOSED")
-    //         ->exists();
-    //     $ws = DaftarWS_Model::find($request->input('unlock-ws_id'));
-    //     if ($ws) {
-    //         // Allow superuser to lock the worksheet
-    //         if ($isWorksheetLocked) {
-    //             $ws->status_ws = 'OPEN';
-    //             $ws->expired_at_ws = Carbon::tomorrow()->setTime(12, 1);
-    //             $ws->closed_at_ws = null;
-    //         } else {
-    //             $ws->status_ws = 'CLOSED';
-    //             $ws->expired_at_ws = null;
-    //             $ws->closed_at_ws = Carbon::now();
-    //         }
-    //         $ws->save();
-
-    //         $user = auth()->user();
-    //         $authenticated_user_data = Karyawan_Model::with('daftar_login.karyawan', 'jabatan.karyawan')->find($user->id_karyawan);
-    //         Session::put('authenticated_user_data', $authenticated_user_data);
-
-    //         Session::flash('success', ['Worksheet open successfully!']);
-    //         return Redirect::back();
-    //     } else {
-    //         Session::flash('errors', ['Err[404]: Failed to open worksheet!']);
-    //     }
-    // }
-
-    // public function su_lock_ws(Request $request)
-    // {
-    //     $validator = Validator::make(
-    //         $request->all(),
-    //         [
-    //             'lock-ws_id' => 'required'
-    //         ],
-    //         [
-    //             'lock-ws_id.required' => 'The ws_id field is not filled by system!'
-    //         ]
-    //     );
-
-    //     if ($validator->fails()) {
-    //         $toast_message = $validator->errors()->all();
-    //         Session::flash('errors', $toast_message);
-    //         return redirect()->back()->withErrors($validator)->withInput();
-    //     }
-
-
-    //     // Check worksheet ws_status
-    //     $isWorksheetLocked = DaftarWS_Model::where('id_ws', $request->input('lock-ws_id'))
-    //         ->where('status_ws', "CLOSED")
-    //         ->exists();
-    //     $ws = DaftarWS_Model::find($request->input('lock-ws_id'));
-    //     if ($ws) {
-    //         if (auth()->user()->type == 'Superuser') {
-    //             // Allow superuser to lock the worksheet
-    //             if ($isWorksheetLocked) {
-    //                 $ws->status_ws = 'OPEN';
-    //                 $ws->expired_at_ws = Carbon::tomorrow()->setTime(12, 1);
-    //                 $ws->closed_at_ws = null;
-    //             } else {
-    //                 $ws->status_ws = 'CLOSED';
-    //                 $ws->expired_at_ws = null;
-    //                 $ws->closed_at_ws = Carbon::now();
-    //             }
-    //             $ws->save();
-
-    //             $user = auth()->user();
-    //             $authenticated_user_data = Karyawan_Model::with('daftar_login.karyawan', 'jabatan.karyawan')->find($user->id_karyawan);
-    //             Session::put('authenticated_user_data', $authenticated_user_data);
-
-    //             Session::flash('success', ['Worksheet locked successfully!']);
-    //         }
-    //         return Redirect::back();
-    //     } else {
-    //         Session::flash('n_errors', ['Err[404]: Failed to lock worksheet!']);
-    //     }
-    // }
-
-
-    // public function edit_mark_ws(Request $request)
-    // {
-    //     // $message = [
-    //     //     'err_json' => [],
-    //     //     'success_json' => [],
-    //     // ];
-
-    //     // $validator = Validator::make(
-    //     //     $request->all(),
-    //     //     [
-    //     //         'ws_id_value' => 'required'
-    //     //     ],
-    //     //     [
-    //     //         'ws_id_value.required' => 'The ws_id is not filled by system!'
-    //     //     ]
-    //     // );
-
-    //     // if ($validator->fails()) {
-
-    //     //     $toast_message = $validator->errors()->all();
-    //     //     // Session::flash('errors', $toast_message);
-    //     //     // return redirect()->back()->withErrors($validator)->withInput();
-    //     //      $message['err_json'] = $toast_message;
-    //     //     return response()->json(['message' => $message], 422);
-    //     // }
-
-    // }
-
 
 
     public function edit_mark_ws(Request $request)
@@ -724,6 +618,13 @@ class WorksheetController extends Controller
         if (!$worksheet) {
             $message['err_json'][] = 'Worksheet not found';
             return response()->json(['message' => $message], 404);
+        }
+
+        // Check if the remark text is different from the existing remark
+        $newRemark = $request->input('remarkText');
+        if ($newRemark === $worksheet->remark_ws) {
+            // $message['info_json'][] = 'No changes detected in the remark text.';
+            return response()->json(['message' => $message], 200); // Return 200 OK with info message
         }
 
         $work_date = Carbon::parse($worksheet->working_date_ws)->isoFormat("DD-MMM-YYYY");

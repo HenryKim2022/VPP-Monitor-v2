@@ -13,14 +13,14 @@
                      novalidate>
                      @csrf
                      <div class="container" style="text-align: justify;">
-                         <h6 class="text-center">
-                             Are you sure want to <a class="text-warning">Lock the worksheet for {{ $loadDataWS->id_project }} with working date *{{ $loadDataWS->working_date_ws() }} that executed by {{ $loadDataWS->karyawan->na_karyawan }}?</a> This action <a
+                         <h6 class="text-center info-text">
+                             {{-- Are you sure want to <a class="text-warning">Lock the worksheet for PRJ- with working date *{{ $loadDataWS->working_date_ws() }} that executed by {{ $loadDataWS->karyawan->na_karyawan }}?</a> This action <a
                                  class="text-danger">cannot be undone</a>.
-                             Please confirm by clicking "<a class="text-danger">LOCK</a>" below.
+                             Please confirm by clicking "<a class="text-danger">LOCK</a>" below. --}}
                          </h6>
                      </div>
 
-                     <input type="hidden" id="lock-ws_id" name="lock-ws_id" value="" @readonly(true) />
+                     <input type="hidden" id="lock-ws_id" name="lock-ws_id" value="" />
                      <div class="modal-footer w-100 px-0 py-1">
                          <div class="col-12 text-center">
                              <div class="d-flex flex-col justify-content-end">

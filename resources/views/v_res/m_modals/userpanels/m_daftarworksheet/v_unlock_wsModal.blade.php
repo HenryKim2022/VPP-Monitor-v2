@@ -13,9 +13,9 @@
                      novalidate>
                      @csrf
                      <div class="container" style="text-align: justify;">
-                         <h6 class="text-center">
-                             Are you sure want to <a class="text-warning">Unlock the worksheet for {{ $loadDataWS->id_project }} with working date *{{ $loadDataWS->working_date_ws() }} that executed by {{ $loadDataWS->karyawan->na_karyawan }}?</a>
-                             Please confirm by clicking "<a class="text-danger">UNLOCK</a>" below.
+                         <h6 class="text-center info-text">
+                             {{-- Are you sure want to <a class="text-warning">Unlock the worksheet for {{ $loadDataWS->id_project }} with working date *{{ $loadDataWS->working_date_ws() }} that executed by {{ $loadDataWS->karyawan->na_karyawan }}?</a>
+                             Please confirm by clicking "<a class="text-danger">UNLOCK</a>" below. --}}
                          </h6>
                      </div>
 

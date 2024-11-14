@@ -455,23 +455,23 @@
 
 <script>
     const scrollTargetElement = document.querySelector('body');
-    $(document).ready(function() {
+    // $(document).ready(function() {
         // Attach event listener to all modals
         $('.modal').on('hide.bs.modal', function() {
             console.log('Modal Closed:', this.id);
-            bodyScrollLock.enableBodyScroll(scrollTargetElement);
-            bodyScrollLock.clearAllBodyScrollLocks();
+            // bodyScrollLock.enableBodyScroll(scrollTargetElement);
+            // bodyScrollLock.clearAllBodyScrollLocks();
         });
         $('.modal').on('show.bs.modal', function() {
             console.log('Modal Shown:', this.id);
-            bodyScrollLock.disableBodyScroll(scrollTargetElement)
+            // bodyScrollLock.disableBodyScroll(scrollTargetElement)
         });
-    });
+    // });
 
     function openModal(modalId) {
         var modal = document.querySelector(modalId);
         if (modal) {
-            bodyScrollLock.disableBodyScroll(scrollTargetElement);
+            // bodyScrollLock.disableBodyScroll(scrollTargetElement);
             var bootstrapModal = new bootstrap.Modal(modal);
             bootstrapModal.show();
         } else {
@@ -656,8 +656,9 @@
                 }
             });
 
-            // Call the function to check layout and restore the active tab on page load
-            checkLayoutAndRestoreActiveTab();
+            try {   // Call the function to check layout and restore the active tab on page load
+                checkLayoutAndRestoreActiveTab();
+            } catch (error) { }
 
             // Listen for storage changes to restore the active tab if the layout changes
             window.addEventListener('storage', (event) => {

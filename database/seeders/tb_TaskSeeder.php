@@ -44,8 +44,8 @@ class tb_TaskSeeder extends Seeder
             // ['10:00:00', '- UUUUUUU - UUUUUUU - UUUUUUU', NULL, 80, 1, 'PRJ-24-0001', 1],
             // ['11:00:00', '- VVVVVVV - VVVVVVV - VVVVVVV', NULL, 84, 1, 'PRJ-24-0001', 1],
             // ['12:00:00', '- WWWWWWW - WWWWWWW - WWWWWWW', NULL, 88, 1, 'PRJ-24-0001', 1],
-            ['13:00:00', '- XXXXXXX - XXXXXXX - XXXXXXX', NULL, 92, 1, 'PRJ-24-0001', 1],
-            ['14:00:00', '- YYYYYYY - YYYYYYY - YYYYYYY', NULL, 96, 1, 'PRJ-24-0001', 1],
+            // ['13:00:00', '- XXXXXXX - XXXXXXX - XXXXXXX', NULL, 92, 1, 'PRJ-24-0001', 1],
+            // ['14:00:00', '- YYYYYYY - YYYYYYY - YYYYYYY', NULL, 96, 1, 'PRJ-24-0001', 1],
         ];
         foreach ($taskList as $task) {
             $model = new DaftarTask_Model();

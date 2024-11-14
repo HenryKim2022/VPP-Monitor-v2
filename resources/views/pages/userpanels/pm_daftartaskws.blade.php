@@ -323,20 +323,26 @@
                                             @if ($ws_status == 'OPEN')
                                                 <button onclick="openModal('{{ $modalData['modal_add'] }}')"
                                                     class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success add-new-record"
-                                                    style="width: 3rem; height: 3rem; padding: 0;">
+                                                    style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
+                                                    data-popup="tooltip-custom" data-placement="bottom"
+                                                    data-original-title="Add Task!">
                                                     <i class="fas fa-plus-circle fa-xs text-white"></i>
                                                 </button>
                                             @else
                                                 <button
                                                     class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
-                                                    style="width: 3rem; height: 3rem; padding: 0;">
+                                                    style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
+                                                    data-popup="tooltip-custom" data-placement="bottom"
+                                                    data-original-title="Worksheet Locked!">
                                                     <i class="fas fa-plus-circle fa-xs text-white"></i>
                                                 </button>
                                             @endif
                                         @else
                                             <button
                                                 class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
-                                                style="width: 3rem; height: 3rem; padding: 0;">
+                                                style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
+                                                data-popup="tooltip-custom" data-placement="bottom"
+                                                data-original-title="Worksheet Locked!">
                                                 <i class="fas fa-plus-circle fa-xs text-white"></i>
                                             </button>
                                         @endif
@@ -350,14 +356,18 @@
                                                     @if (isset($modalData['modal_lock']))
                                                         <button lock_ws_id_value = "{{ $loadDataWS->id_ws ?: 0 }}"
                                                             class="lock-ws-cmd btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger add-new-record {{ $blinkBGClass }}"
-                                                            style="width: 3rem; height: 3rem; padding: 0;">
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom" data-original-title="Lock Worksheet!">
                                                             <i class="fas fa-lock-open fa-xs text-white"></i>
                                                         </button>
                                                     @endif
                                                 @else
                                                     <button
                                                         class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
-                                                        style="width: 3rem; height: 3rem; padding: 0;">
+                                                        style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
+                                                        data-popup="tooltip-custom" data-placement="bottom"
+                                                        data-original-title="Worksheet Locked!">
                                                         <i class="fas fa-lock-open fa-xs text-white"></i>
                                                     </button>
                                                 @endif
@@ -367,14 +377,18 @@
                                                 <div>
                                                     <button
                                                         class="btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border bg-danger border-danger"
-                                                        style="width: 3rem; height: 3rem; padding: 0;">
+                                                        style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
+                                                        data-popup="tooltip-custom" data-placement="bottom"
+                                                        data-original-title="Lock Worksheet!">
                                                         <i class="fas fa-lock-open fa-xs text-white"></i>
                                                     </button>
                                                 </div>
                                             @else
                                                 <button
                                                     class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
-                                                    style="width: 3rem; height: 3rem; padding: 0;">
+                                                    style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
+                                                    data-popup="tooltip-custom" data-placement="bottom"
+                                                    data-original-title="Worksheet Locked!">
                                                     <i class="fas fa-lock fa-xs text-white"></i>
                                                 </button>
                                             @endif
@@ -399,7 +413,8 @@
                                                     <input type="hidden" id="print-ws_date" name="print-ws_date"
                                                         value="{{ $loadDataWS->working_date_ws }}" @readonly(true) />
 
-                                                    <input type="hidden" id="print-act" name="print-act" value="dom" />
+                                                    <input type="hidden" id="print-act" name="print-act"
+                                                        value="dom" />
                                                     <input type="hidden" id="print-task-title" name="print-task-title"
                                                         value="{{ $prjmondws->id_project }} {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }} DAILY WORKSHEETS" />
                                                     <input type="hidden" id="print-ref" name="print-ref"
@@ -407,7 +422,9 @@
 
                                                     <button
                                                         class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
-                                                        style="width: 3rem; height: 3rem; padding: 0;">
+                                                        style="width: 3rem; height: 3rem; padding: 0;"
+                                                        data-toggle="tooltip" data-popup="tooltip-custom"
+                                                        data-placement="bottom" data-original-title="Print">
                                                         <i class="fas fa-duotone fa-print text-white"></i>
                                                     </button>
                                                 </form>
@@ -431,7 +448,9 @@
 
                                                     <button
                                                         class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
-                                                        style="width: 3rem; height: 3rem; padding: 0;">
+                                                        style="width: 3rem; height: 3rem; padding: 0;"
+                                                        data-toggle="tooltip" data-popup="tooltip-custom"
+                                                        data-placement="bottom" data-original-title="Download as PDF">
                                                         <i class="fad fa-download text-white"></i>
                                                     </button>
                                                 </form>
@@ -447,11 +466,24 @@
                                         @endif
                                     @else
                                         @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
-                                            <button
-                                                class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
-                                                style="width: 3rem; height: 3rem; padding: 0;">
-                                                <i class="fas fa-print fa-xs text-white"></i>
-                                            </button>
+                                            <div class="d-flex justify-content-center align-items-ce d-none">
+                                                <button
+                                                    class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                    style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
+                                                    data-popup="tooltip-custom" data-placement="bottom"
+                                                    data-original-title="Worksheet Not Locked!">
+                                                    <i class="fas fa-duotone fa-print text-white"></i>
+                                                </button>
+
+                                                <button
+                                                    class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                    style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
+                                                    data-popup="tooltip-custom" data-placement="bottom"
+                                                    data-original-title="Worksheet Not Locked!">
+                                                    <i class="fad fa-download text-white"></i>
+                                                </button>
+
+                                            </div>
                                         @endif
                                     @endif
 
@@ -727,10 +759,8 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                                 </strong>
                                             </span>
                                             <div style="height: 8em;"></div> <!-- Empty div for spacing -->
-                                            <span class="justify-content-center">
-                                                <a class="w-100 align-text-bottom">
-                                                    {{ Str::limit($loadDataWS->karyawan->na_karyawan, 30, '...') }}
-                                                </a>
+                                            <span class="justify-content-center w-100 align-text-bottom">
+                                                {{ Str::limit($loadDataWS->karyawan->na_karyawan, 30, '...') }}
                                             </span>
                                             <span class="underline-text">
                                                 <strong>
@@ -745,10 +775,8 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                                 </strong>
                                             </span>
                                             <div style="height: 8em;"></div> <!-- Empty div for spacing -->
-                                            <span class="justify-content-center">
-                                                <a class="w-100 align-text-bottom">
-                                                    {{ Str::limit($loadDataWS->project->client->na_client, 37, '...') }}
-                                                </a>
+                                            <span class="justify-content-center w-100 align-text-bottom">
+                                                {{ Str::limit($loadDataWS->project->client->na_client, 33, '...') }}
                                             </span>
                                             <span class="underline-text">
                                                 <strong>
@@ -773,7 +801,7 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                 <td colspan="2" class="px-1 text-center"><strong>Time Stamp</strong></td>
                             </tr>
                             <tr>
-                                <td colspan="2" class="px-1">
+                                <td colspan="2" class="px-1 tfoot-date">
                                     <strong>
                                         Start Date:
                                     </strong>
@@ -795,7 +823,7 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                 {{-- <td class="border-0"></td> --}}
                             </tr>
                             <tr>
-                                <td colspan="2" class="px-1">
+                                <td colspan="2" class="px-1 tfoot-date">
                                     <strong>
                                         Closed Date:
                                     </strong>
@@ -828,6 +856,49 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                             <tr>
                                 <td colspan="2" class="px-1 text-center align-middle"><strong>Status</strong></td>
                             </tr>
+
+                            @if ($isStatusOpen)
+                                @if ($authUserType === 'Superuser' || $authUserType === 'Engineer')
+                                    @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
+                                        <tr class="lock-ws-cmd cursor-pointer"
+                                            lock_ws_id_value="{{ $loadDataWS->id_ws ?: 0 }}">
+                                            <td colspan="2"
+                                                class="rowlock px-1 text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }}">
+                                                <button lock_ws_id_value = "{{ $loadDataWS->id_ws ?: 0 }}"
+                                                    class="lock-ws-cmd btn mx-1 border-0 d-flex {{ $blinkBGClass }}"
+                                                    style="padding: 0.5rem 1rem; justify-self: center;"
+                                                    data-toggle="tooltip" data-popup="tooltip-custom"
+                                                    data-placement="bottom" data-original-title="Lock Worksheet!">
+                                                    <h3 class="mb-0">
+                                                        <strong>OPEN</strong>
+                                                    </h3>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @endif
+                            @else
+                                <tr>
+                                    <td colspan="2"
+                                        class="rowlock px-1 text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }}">
+                                        <div>
+                                            <button class="mx-1 border-0 d-flex bg-transparent text-white"
+                                                style="padding: 0.5rem 1rem; justify-self: center;" data-toggle="tooltip"
+                                                data-popup="tooltip-custom" data-placement="bottom"
+                                                data-original-title="Worksheet Locked!">
+                                                <h3 class="mb-0">
+                                                    <strong>CLOSED</strong>
+                                                </h3>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endif
+
+
+
+
+                            {{--
                             <tr>
                                 <td colspan="2"
                                     class="rowlock px-1 text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }}">
@@ -837,13 +908,14 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                                 @if (isset($modalData['modal_lock']))
                                                     <button lock_ws_id_value = "{{ $loadDataWS->id_ws ?: 0 }}"
                                                         class="lock-ws-cmd btn mx-1 border-0 d-flex {{ $blinkBGClass }}"
-                                                        style="padding: 0.5rem 1rem; justify-self: center;">
+                                                        style="padding: 0.5rem 1rem; justify-self: center;"
+                                                        data-toggle="tooltip" data-popup="tooltip-custom"
+                                                        data-placement="bottom" data-original-title="Lock Task!">
                                                         <h3 class="mb-0">
                                                             <strong>OPEN</strong>
                                                         </h3>
                                                     </button>
                                                 @endif
-
                                             @endif
                                         @endif
                                     @else
@@ -859,7 +931,7 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                     @endif
 
                                 </td>
-                            </tr>
+                            </tr> --}}
                         </tfoot>
 
                     </table>

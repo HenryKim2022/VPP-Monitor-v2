@@ -140,3 +140,6 @@ html{
 }
 
 
+.tfoot-date{
+    font-size: calc(min(0.8rem, max(0.5rem, 1.5rem + 2vw)));
+}

@@ -404,7 +404,10 @@ class ProjectsController extends Controller
                     'modal_edit_ws' => '#edit_wsModal',
                     'modal_delete_ws' => '#delete_wsModal',
                     'modal_reset_ws' => '#reset_wsModal',
+                    'modal_lock' => '#lock_wsModal',
+                    'modal_unlock' => '#unlock_wsModal'
                 ];
+
 
                 $data = [
                     'breadcrumbs' => $this->getBreadcrumb($request->route()->getName()),
