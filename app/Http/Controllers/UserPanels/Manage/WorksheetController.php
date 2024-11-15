@@ -119,7 +119,7 @@ class WorksheetController extends Controller
                 // 'loadRelatedDailyWS' => $loadRelatedDailyWS,
                 'employee_list' => Karyawan_Model::withoutTrashed()->get(),
                 'taskCategoryList' => Monitoring_Model::where('id_project', $projectID)->withoutTrashed()->get(),
-                'prjmondws' => $project,
+                'project' => $project,
                 'authenticated_user_data' => $authenticated_user_data,
             ];
             return $this->setReturnView('pages/userpanels/pm_daftartaskws', $data);

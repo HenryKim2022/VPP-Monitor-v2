@@ -490,6 +490,9 @@
                                             @php
                                                 $clientName = $loadDataWS->project->client->na_client;
                                                 $clientNameLength = mb_strlen(Str::limit($clientName, 37, '...'));
+                                                if ($clientNameLength < 38) {
+                                                    $clientNameLength = 37;
+                                                }
                                                 $clientLabelLength = mb_strlen('(CLIENT) ');
                                                 $totalLength = $clientNameLength * 3 - 2;
                                                 $dotsCount = max(

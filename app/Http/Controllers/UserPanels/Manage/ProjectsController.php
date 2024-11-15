@@ -140,6 +140,7 @@ class ProjectsController extends Controller
         $inst = new Projects_Model();
         $inst->id_project = $request->input('project-id');
         $inst->na_project = $request->input('project-name');
+        $inst->status_project = 'OPEN';
         $inst->id_client = $request->input('client-id');
         $inst->id_karyawan = $request->input('co-id');
         $inst->id_team = $request->input('team-id');
@@ -148,7 +149,6 @@ class ProjectsController extends Controller
         $dates = explode(" to ", $dateRange);
         $inst->start_project = $dates[0];
         $inst->deadline_project = $dates[1];
-
 
 
         Session::flash('success', ['Project added successfully!']);
@@ -405,14 +405,15 @@ class ProjectsController extends Controller
                     'modal_delete_ws' => '#delete_wsModal',
                     'modal_reset_ws' => '#reset_wsModal',
                     'modal_lock' => '#lock_wsModal',
-                    'modal_unlock' => '#unlock_wsModal'
+                    'modal_unlock' => '#unlock_wsModal',
+                    'modal_lock_prj' => '#lock_prjModal',
+                    'modal_unlock_prj' => '#unlock_prjModal'
                 ];
 
 
                 $data = [
                     'breadcrumbs' => $this->getBreadcrumb($request->route()->getName()),
                     'currentRouteName' => Route::currentRouteName(),
-                    'loadDaftarMonDWSFromDB' => $project, // Use the Eloquent model directly
                     'project' => $project,
                     'authenticated_user_data' => $authenticatedUser,
                     'loadDataDailyWS' => $loadDataDailyWS,
@@ -426,5 +427,150 @@ class ProjectsController extends Controller
                 return Session::flash('errors', ['Err[404]: Project not found!']);
             }
         }
+    }
+
+
+
+
+    public function get_prj_4lockunlock(Request $request){
+        $projectID = $request->input('projectID');
+        $daftarProject = Projects_Model::where('id_project', $projectID)->first();
+        // dd($daftarProject->toarray());  //http://100.100.100.58/m-prj/m-monitoring-worksheet/prj/getlockunlock?projectID=PRJ-24-0001
+        if ($daftarProject) {
+            return response()->json([    // Return queried data as a JSON response
+                'project_id'    => $daftarProject->id_project,
+                'project_co'    => $daftarProject->id_karyawan
+            ]);
+        } else {    // Handle the case when the Jabatan_Model with the given jabatanID is not found
+            return response()->json(['error' => 'Project for locking wasn\'t found!'], 404);
+        }
+    }
+
+
+
+
+    public function lock_prj(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'lock-prj_id' => 'required'
+            ],
+            [
+                'lock-prj_id.required' => 'The project_id field is not filled by system!'
+            ]
+        );
+
+        if ($validator->fails()) {
+            Session::flash('errors', $validator->errors()->all());
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $prj = Projects_Model::find($request->input('lock-prj_id'));
+        $currentActualProgress = $this->countProgress($prj);
+        if ($prj) {
+            if (auth()->user()->type == 'Superuser' || $currentActualProgress == 100) {
+                $this->closeProject($prj);
+                Session::flash('success', ['Project locked successfully!']);
+                return redirect()->back();
+            } else {
+                Session::flash('n_errors', ["Can't lock the project because the actual project progress is still at {$currentActualProgress}%!"]);
+                return redirect()->back();
+            }
+        } else {
+            Session::flash('n_errors', ['Err[404]: Failed to lock project, project not found!']);
+            return redirect()->back();
+        }
+    }
+
+    private function closeProject($prj)
+    {
+        $prj->status_project = 'CLOSED';
+        $prj->closed_at_project = Carbon::now();
+        $prj->save();
+
+        $user = auth()->user();
+        $authenticated_user_data = Karyawan_Model::with('daftar_login.karyawan', 'jabatan.karyawan')->find($user->id_karyawan);
+        Session::put('authenticated_user_data', $authenticated_user_data);
+    }
+
+
+    public function unlock_prj(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'unlock-prj_id' => 'required'
+            ],
+            [
+                'unlock-prj_id.required' => 'The project_id field is not filled by system!'
+            ]
+        );
+        if ($validator->fails()) {
+            Session::flash('errors', $validator->errors()->all());
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $prj = Projects_Model::find($request->input('unlock-prj_id'));
+        $currentActualProgress = $this->countProgress($prj);
+        if ($prj) {
+            if (auth()->user()->type == 'Superuser' || auth()->user()->type == 'Supervisor' || $currentActualProgress == 100) {
+                $this->openProject($prj);
+                Session::flash('success', ['Project unlock successfully!']);
+                return redirect()->back();
+            } else {
+                Session::flash('n_errors', ["Can't unlock the project because you have no authority!"]);
+                return redirect()->back();
+            }
+        } else {
+            Session::flash('n_errors', ['Err[404]: Failed to unlock project!']);
+            return redirect()->back();
+        }
+    }
+
+
+    private function openProject($prj)
+    {
+        $prj->status_project = 'OPEN';
+        $prj->closed_at_project = null;
+        $prj->save();
+
+        $user = auth()->user();
+        $authenticated_user_data = Karyawan_Model::with('daftar_login.karyawan', 'jabatan.karyawan')->find($user->id_karyawan);
+        Session::put('authenticated_user_data', $authenticated_user_data);
+    }
+
+
+
+
+    public function countProgress($prj)
+    {
+        $totalActual = 0;
+        foreach ($prj->monitor as $mon) {
+            $qty = $mon['qty'];
+            // Find related tasks where expired_ws is null
+            $relatedTasks = collect($prj->task)->filter(function ($task) use (
+                $mon,
+                $prj,
+            ) {
+                $worksheet = collect($prj->worksheet)->firstWhere(
+                    'id_ws',
+                    $task['id_ws'],
+                );
+                return $task['id_monitoring'] === $mon['id_monitoring'] &&
+                    ($worksheet['expired_at_ws'] ?? null) === null;
+            });
+
+            // Calculate total progress
+            $totalProgress = $relatedTasks->sum('progress_current_task');
+            $up =
+                $relatedTasks->count() > 0
+                ? $totalProgress / $relatedTasks->count()
+                : 0;
+            $total = ($qty * $up) / 100;
+            $totalActual += $total;
+        }
+
+        return $totalActual;
     }
 }

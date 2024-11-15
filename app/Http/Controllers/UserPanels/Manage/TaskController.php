@@ -604,7 +604,7 @@ class TaskController extends Controller
         $margin_right = $this->cmToMm(1.5);
         $margin_bottom = $this->cmToMm(1.5);
         $margin_left = $this->cmToMm(1.5);
-        $baseHeight = 243; // <---- Default 272 for actual print
+        $baseHeight = 228; // <---- Default 272; 228 for actual print
 
         // Get the tasks from the worksheet
         $tasks = $worksheet->task; // Assuming $worksheet->task contains the tasks

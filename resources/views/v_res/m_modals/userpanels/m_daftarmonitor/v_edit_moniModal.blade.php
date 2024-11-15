@@ -34,10 +34,10 @@
 
 
                      <input type="hidden" class="form-control" id="edit-prj_start_date" name="edit-prj_start_date"
-                         placeholder="Date of Prj Started" value={{ $prjmondws->start_project }} />
+                         placeholder="Date of Prj Started" value={{ $project->start_project }} />
                      <input type="hidden" class="form-control" id="edit-prj_deadline_date"
                          name="edit-prj_deadline_date" placeholder="Date of Prj Ended"
-                         value={{ $prjmondws->deadline_project }} />
+                         value={{ $project->deadline_project }} />
                      <div class="col-xl-6 col-md-6 col-12 form-group">
                          <label for="edit-mon_start_end_date">Start-Date to End-Date</label>
                          <input type="text" id="edit-mon_start_end_date" name="edit-mon_start_end_date"

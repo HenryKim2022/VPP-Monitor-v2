@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('na_project');
             $table->dateTime('start_project');
             $table->dateTime('deadline_project');
+            $table->string('status_project')->nullable();
+            $table->dateTime('closed_at_project')->nullable();
             $table->foreignId('id_client')->nullable()->constrained('tb_client', 'id_client');
             $table->foreignId('id_karyawan')->nullable()->constrained('tb_karyawan', 'id_karyawan');
             $table->foreignId('id_team')->nullable()->constrained('tb_eng_team', 'id_team');

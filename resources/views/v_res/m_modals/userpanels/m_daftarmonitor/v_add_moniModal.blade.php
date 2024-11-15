@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel113">Add {{ $prjmondws->id_project }} Monitoring Informations
+                <h5 class="modal-title" id="myModalLabel113">Add {{ $project->id_project }} Monitoring Informations
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -22,7 +22,7 @@
                             tabindex="4" value="{{ $authenticated_user_data->id_karyawan }}"></input>
                         <input type="hidden" class="form-control form-control-merge" id="mon-id_project"
                             name="mon-id_project" placeholder="filled by system" aria-describedby="mon-id_project"
-                            tabindex="4" value="{{ $prjmondws->id_project }}"></input>
+                            tabindex="4" value="{{ $project->id_project }}"></input>
 
                         <div class="col-xl-12 col-md-12 col-12">
                             <div class="form-group">
@@ -59,9 +59,9 @@
 
 
                         <input type="hidden" class="form-control" id="prj-start_date" name="prj-start_date"
-                            placeholder="Date of Prj Started" value={{ $prjmondws->start_project }} />
+                            placeholder="Date of Prj Started" value={{ $project->start_project }} />
                         <input type="hidden" class="form-control" id="prj-deadline_date" name="prj-deadline_date"
-                            placeholder="Date of Prj Ended" value={{ $prjmondws->deadline_project }} />
+                            placeholder="Date of Prj Ended" value={{ $project->deadline_project }} />
 
                         <div class="col-xl-6 col-md-6 col-12 form-group">
                             <label for="mon-start-end-date">Start-Date to End-Date</label>

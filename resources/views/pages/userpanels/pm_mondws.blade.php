@@ -4,7 +4,7 @@
     $cust_date_format = 'ddd, DD MMM YYYY';
     $cust_time_format = 'hh:mm:ss A';
 
-    $prjmondws = $loadDaftarMonDWSFromDB;
+    $project = $project;
     $authenticated_user_data = Session::get('authenticated_user_data');
     $reset_btn = false;
 @endphp
@@ -63,6 +63,25 @@
     @endif --}}
 
     {{-- {{ dd($authenticated_user_data) }} --}}
+
+
+
+    @php
+        $authUserId = $authenticated_user_data->id_karyawan ?? null;
+        $authUserType = auth()->user()->type ?? null;
+        $authUserTeam = $authenticated_user_data->id_team ?? null;
+        $coUserId = $project->id_karyawan ?? null;
+        $engPrjTeam = $project->id_team ?? null;
+
+        // echo 'engPrjTeam: ' . $engPrjTeam . ' ------ ';
+        // echo 'authUserTeam: ' . $authUserTeam . '<br>';
+        // echo 'authUserId: ' . $authUserId . ' ------ ';
+
+    @endphp
+    @php
+        $isProjectOpen = $project->status_project == 'OPEN' ? true : false;
+        $totalActual = 0;
+    @endphp
 
 
 
@@ -210,7 +229,7 @@
                                 {{-- <div class="col-xl-12 col-md-12 col-12">
                                     <div class="card">
                                         <div class="card-body">
-                                            <pre style="color: white">{{ print_r($prjmondws->toArray(), true) }}</pre>
+                                            <pre style="color: white">{{ print_r($project->toArray(), true) }}</pre>
                                             <br>
                                         </div>
                                     </div>
@@ -225,17 +244,17 @@
                                                     <tr>
                                                         <td class="text-nowrap"><strong>Project-No</strong></td>
                                                         <td class="pl-2">: </td>
-                                                        <td>{{ $prjmondws->id_project }}</td>
+                                                        <td>{{ $project->id_project }}</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-nowrap"><strong>Project Name</strong></td>
                                                         <td class="pl-2">: </td>
-                                                        <td>{{ $prjmondws->na_project }}</td>
+                                                        <td>{{ $project->na_project }}</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-nowrap"><strong>Customer</strong></td>
                                                         <td class="pl-2">: </td>
-                                                        <td>{{ $prjmondws->client->na_client }}</td>
+                                                        <td>{{ $project->client->na_client }}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -254,25 +273,37 @@
                                             <table>
                                                 <tbody>
                                                     <tr>
+                                                        @php
+                                                            $teamInfo = '';
+                                                            if ($project->team) {
+                                                                $teamInfo .= $project->team->na_team . ': ';
+                                                                if (
+                                                                    $project->team->karyawans &&
+                                                                    $project->team->karyawans->isNotEmpty()
+                                                                ) {
+                                                                    $teamInfo .= implode(
+                                                                        ', ',
+                                                                        array_column(
+                                                                            $project->team->karyawans->toArray(),
+                                                                            'na_karyawan',
+                                                                        ),
+                                                                    );
+                                                                } else {
+                                                                    $teamInfo .= 'No team members available';
+                                                                }
+                                                            } else {
+                                                                $teamInfo = 'No team information available';
+                                                            }
+                                                        @endphp
                                                         <td colspan="3" class="text-nowrap" data-toggle="tooltip"
                                                             data-popup="tooltip-custom" data-placement="left"
-                                                            class="pull-up"
-                                                            data-original-title="
-                                                            @if ($prjmondws->team) {{ $prjmondws->team->na_team }}:
-                                                                @if ($prjmondws->team->karyawans && $prjmondws->team->karyawans->isNotEmpty())
-                                                                     {{ implode(', ', array_column($prjmondws->team->karyawans->toArray(), 'na_karyawan')) }}
-                                                                @else
-                                                                    No team members available @endif
-@else
-No team information available
-                                                            @endif
-                                                        ">
+                                                            class="pull-up" data-original-title="{{ $teamInfo }}">
                                                             <strong>Engineer Team</strong>
                                                         </td>
                                                         <td class="pl-2">: </td>
                                                         <td>
-                                                            @if ($prjmondws->team)
-                                                                {{ $prjmondws->team->na_team }}
+                                                            @if ($project->team)
+                                                                {{ $project->team->na_team }}
                                                             @else
                                                                 No team
                                                             @endif
@@ -283,7 +314,7 @@ No team information available
                                                                 Coordinator</strong></td>
                                                         <td class="pl-2">: </td>
                                                         <td>
-                                                            {{ $prjmondws->pcoordinator->na_karyawan }}
+                                                            {{ $project->pcoordinator->na_karyawan }}
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -291,8 +322,8 @@ No team information available
                                                         </td>
                                                         <td class="pl-2">: </td>
                                                         <td>
-                                                            @if ($prjmondws->created_at)
-                                                                {{ \Carbon\Carbon::parse($prjmondws->start_project)->isoFormat($cust_date_format) }}
+                                                            @if ($project->created_at)
+                                                                {{ \Carbon\Carbon::parse($project->start_project)->isoFormat($cust_date_format) }}
                                                             @else
                                                                 -
                                                             @endif
@@ -303,8 +334,8 @@ No team information available
                                                         </td>
                                                         <td class="pl-2">: </td>
                                                         <td>
-                                                            @if ($prjmondws->created_at)
-                                                                {{ \Carbon\Carbon::parse($prjmondws->deadline_project)->isoFormat($cust_date_format) }}
+                                                            @if ($project->created_at)
+                                                                {{ \Carbon\Carbon::parse($project->deadline_project)->isoFormat($cust_date_format) }}
                                                             @else
                                                                 -
                                                             @endif
@@ -323,37 +354,159 @@ No team information available
                                 @php
                                     $authUserId = $authenticated_user_data->id_karyawan;
                                     $authUserType = auth()->user()->type;
-                                    $monUserId = $prjmondws->id_karyawan;
+                                    $monUserId = $project->id_karyawan;
                                 @endphp
 
                                 <div class="divider-container">
                                     <div class="divider"></div> <!-- Divider line -->
                                     <div class="button-wrapper">
                                         <div class="nav-item">
-                                            @if (auth()->user()->type === 'Superuser' || auth()->user()->type === 'Supervisor')
-                                                @if ($authUserType == 'Superuser' || $authUserId == $monUserId)
-                                                    @if ($modalData['modal_add_moni'])
-                                                        <button onclick="openModal('{{ $modalData['modal_add_moni'] }}')"
-                                                            class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success add-new-record"
-                                                            style="width: 3rem; height: 3rem; padding: 0;">
+                                            @if ($authUserType === 'Superuser' || $isProjectOpen)
+                                                @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor')
+                                                    @if ($authUserType === 'Superuser' || $authUserId == $coUserId)
+                                                        @if ($modalData['modal_add_moni'])
+                                                            <button
+                                                                onclick="openModal('{{ $modalData['modal_add_moni'] }}')"
+                                                                class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success add-new-record"
+                                                                style="width: 3rem; height: 3rem; padding: 0;"
+                                                                data-toggle="tooltip" data-popup="tooltip-custom"
+                                                                data-placement="bottom" data-original-title="Add Task!">
+                                                                <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                            </button>
+                                                        @endif
+                                                    @else
+                                                        <button
+                                                            class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom" data-original-title="You're Not Authorized!">
                                                             <i class="fas fa-plus-circle fa-xs text-white"></i>
                                                         </button>
                                                     @endif
-                                                @else
-                                                    @if ($modalData['modal_add_moni'])
+                                                @endif
+                                            @else
+                                                @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor')
+                                                    @if ($authUserType === 'Superuser' || $authUserId == $coUserId)
+                                                        @if ($modalData['modal_add_moni'])
+                                                            <button
+                                                                class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                                style="width: 3rem; height: 3rem; padding: 0;"
+                                                                data-toggle="tooltip" data-popup="tooltip-custom"
+                                                                data-placement="bottom"
+                                                                data-original-title="Project Locked by SPV!">
+                                                                <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                            </button>
+                                                        @endif
+                                                    @else
                                                         <button
                                                             class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
-                                                            style="width: 3rem; height: 3rem; padding: 0;">
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom"
+                                                            data-original-title="Project Locked by SPV & You're Not Authorized!">
                                                             <i class="fas fa-plus-circle fa-xs text-white"></i>
                                                         </button>
                                                     @endif
                                                 @endif
                                             @endif
                                         </div>
+                                        {{-- <div class="nav-item">
+                                            @if (auth()->user()->type === 'Superuser' || auth()->user()->type === 'Supervisor')
+                                                @if ($authUserType == 'Superuser' || $authUserId == $monUserId)
+                                                    @if ($modalData['modal_add_moni'])
+                                                        <button onclick="openModal('{{ $modalData['modal_add_moni'] }}')"
+                                                            class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success add-new-record"
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom" data-original-title="Add Task!">
+                                                            <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                        </button>
+                                                    @endif
+                                                @else
+                                                    <button
+                                                        class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                        style="width: 3rem; height: 3rem; padding: 0;">
+                                                        <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                    </button>
+                                                @endif
+                                            @endif
+                                        </div> --}}
+
+                                        <div class="nav-item">
+                                            @php
+                                                $relPrjStat = $project->status_project;
+                                                $blinkBGClass0 = $relPrjStat === 'OPEN' ? 'blink-bg' : '';
+                                            @endphp
+                                            @if ($authUserType === 'Superuser' || $isProjectOpen)
+                                                @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor')
+                                                    @if ($authUserType === 'Superuser' || $authUserId == $coUserId)
+                                                        @if (isset($modalData['modal_lock_prj']))
+                                                            @if ($authUserType === 'Superuser' || ($authUserId == $coUserId && $project->prj_progress_totals() == 100))
+                                                                <button
+                                                                    lock_prj_id_value = "{{ $project->id_project ?: 0 }}"
+                                                                    class="lock-prj-cmd btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger {{ $blinkBGClass0 }}"
+                                                                    style="width: 3rem; height: 3rem; padding: 0;"
+                                                                    data-toggle="tooltip" data-popup="tooltip-custom"
+                                                                    data-placement="bottom"
+                                                                    data-original-title="Lock Project!">
+                                                                    <i class="fas fa-lock-open fa-xs text-white"></i>
+                                                                </button>
+                                                            @endif
+                                                        @endif
+                                                    @else
+                                                        <button
+                                                            class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom"
+                                                            data-original-title="You're Not Authorized!">
+                                                            <i class="fas fa-lock-open fa-xs text-white"></i>
+                                                        </button>
+                                                    @endif
+                                                @else
+                                                    <button
+                                                        class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                        style="width: 3rem; height: 3rem; padding: 0;"
+                                                        data-toggle="tooltip" data-popup="tooltip-custom"
+                                                        data-placement="bottom"
+                                                        data-original-title="You're Not Authorized!">
+                                                        <i class="fas fa-lock fa-xs text-white"></i>
+                                                    </button>
+                                                @endif
+                                            @else
+                                                @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor')
+                                                    @if ($authUserType === 'Superuser' || $authUserId == $coUserId)
+                                                        @if (isset($modalData['modal_unlock_prj']))
+                                                            <button
+                                                                unlock_prj_id_value = "{{ $project->id_project ?: 0 }}"
+                                                                class="unlock-prj-cmd btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success bg-success"
+                                                                style="width: 3rem; height: 3rem; padding: 0;"
+                                                                data-toggle="tooltip" data-popup="tooltip-custom"
+                                                                data-placement="bottom"
+                                                                data-original-title="Project Locked by SPV, Unlock Project!">
+                                                                <i class="fas fa-lock fa-xs text-white"></i>
+                                                            </button>
+                                                        @endif
+                                                    @else
+                                                        <button
+                                                            class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom"
+                                                            data-original-title="Project Locked by SPV & You're Not Authorized!">
+                                                            <i class="fas fa-lock fa-xs text-white"></i>
+                                                        </button>
+                                                    @endif
+                                                @endif
+                                            @endif
+                                        </div>
+
+
                                         <div class="nav-item">
                                             @if (auth()->user()->type === 'Superuser' || auth()->user()->type === 'Supervisor')
                                                 <form class="needs-validation" method="POST"
-                                                    action="{{ route('m.mon.printmon') }}" id="print_moniFORM" novalidate>
+                                                    action="{{ route('m.mon.printmon') }}" id="print_moniFORM"
+                                                    novalidate>
                                                     @csrf
                                                     <input type="hidden" id="print-moni_id" name="print-moni_id" />
                                                     <button
@@ -373,7 +526,7 @@ No team information available
                                 @php
                                     $totalQty = 0;
                                 @endphp
-                                @foreach ($prjmondws->monitor as $mon)
+                                @foreach ($project->monitor as $mon)
                                     @if ($mon->qty)
                                         @php
                                             $totalQty += $mon->qty;
@@ -381,20 +534,20 @@ No team information available
                                     @endif
                                 @endforeach
 
-                                @php
+                                {{-- @php
                                     $totalActual = 0;
-                                @endphp
-                                @if (isset($prjmondws))
-                                    @foreach ($prjmondws->monitor as $mon)
+                                @endphp --}}
+                                @if (isset($project))
+                                    @foreach ($project->monitor as $mon)
                                         @if ($mon['qty'])
                                             @php
                                                 $qty = $mon['qty'];
                                                 // Find related tasks where expired_ws is null
-                                                $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
+                                                $relatedTasks = collect($project->task)->filter(function ($task) use (
                                                     $mon,
-                                                    $prjmondws,
+                                                    $project,
                                                 ) {
-                                                    $worksheet = collect($prjmondws->worksheet)->firstWhere(
+                                                    $worksheet = collect($project->worksheet)->firstWhere(
                                                         'id_ws',
                                                         $task['id_ws'],
                                                     );
@@ -454,8 +607,8 @@ No team information available
                                         @php
                                             $no = 1;
                                         @endphp
-                                        @if ($prjmondws->monitor)
-                                            @foreach ($prjmondws->monitor as $mon)
+                                        @if ($project->monitor)
+                                            @foreach ($project->monitor as $mon)
                                                 <tr>
                                                     <td class="text-center align-middle">{{ $no++ }}</td>
                                                     <td class="text-center align-middle">
@@ -549,16 +702,19 @@ No team information available
                                                         @php
                                                             $total = 0; // Initialize total for this monitoring entry
                                                         @endphp
+
                                                         @if ($mon['qty'])
                                                             @php
                                                                 $qty = $mon['qty'];
+
                                                                 // Find the tasks related to the current monitor where the associated worksheet's expired_ws is null
-$relatedTasks = collect($prjmondws->task)->filter(
-    function ($task) use ($mon, $prjmondws) {
+$relatedTasks = collect($project->task)->filter(
+    function ($task) use ($mon, $project) {
         // Find the related worksheet for the task
         $worksheet = collect(
-            $prjmondws->worksheet,
+            $project->worksheet,
         )->firstWhere('id_ws', $task['id_ws']);
+
         // Check if the task's worksheet expired_ws is null
                                                                         return $task['id_monitoring'] ===
                                                                             $mon['id_monitoring'] &&
@@ -587,8 +743,10 @@ $relatedTasks = collect($prjmondws->task)->filter(
                                                             @endphp
                                                         @endif
 
-                                                        @if ($total != 0)
+                                                        @if ($total != 0 && $total < 100)
                                                             {{ number_format($total, 1) }}%
+                                                        @elseif ($total == 100)
+                                                            {{ number_format($total, 0) }}%
                                                         @else
                                                             {{ number_format($total, 0) }}%
                                                         @endif
@@ -613,6 +771,8 @@ $relatedTasks = collect($prjmondws->task)->filter(
                                     <!-- BEGIN: ResetMonitorModal--> @include('v_res.m_modals.userpanels.m_daftarmonitor.v_reset_moniModal')
                                     <!-- END: ResetMonitorModal-->
                                 @endif
+                                <!-- BEGIN: LockPrjModal--> @include('v_res.m_modals.userpanels.m_daftarproject.v_lock_prjModal') <!-- END: LockPrjModal-->
+                                <!-- BEGIN: UnlockPrjModal--> @include('v_res.m_modals.userpanels.m_daftarproject.v_unlock_prjModal') <!-- END: UnlockPrjModal-->
                             </div>
 
                         </div>
@@ -669,22 +829,12 @@ $relatedTasks = collect($prjmondws->task)->filter(
                             </div>
 
                             <div class="row match-height mb-1 px-1 DIVI-2">
-                                @php
-                                    $authUserId = $authenticated_user_data->id_karyawan;
-                                    $authUserType = auth()->user()->type;
-                                    $authUserTeam = $authenticated_user_data->id_team;
-                                    $engPrjTeam = $prjmondws->id_team;
-                                    // echo 'engPrjTeam: ' . $engPrjTeam . ' ------ ';
-                                    // echo 'authUserTeam: ' . $authUserTeam . '<br>';
-                                    // echo 'authUserId: ' . $authUserId . ' ------ ';
-                                @endphp
-
                                 <div class="divider-container">
                                     @php
                                         // Initialize a variable to track the overall status
                                         $overallStatus = 'CLOSED';
                                         // Check the status of each worksheet
-                                        foreach ($prjmondws->worksheet as $worksheet) {
+                                        foreach ($project->worksheet as $worksheet) {
                                             // Call the checkAllWSStatus method on each worksheet instance
                                             $ws_status = $worksheet->checkAllWSStatus(); // This will return 'OPEN' or 'CLOSED'
 
@@ -785,9 +935,9 @@ $relatedTasks = collect($prjmondws->task)->filter(
 
 
                                     <tbody>
-                                        @if ($prjmondws->worksheet)
+                                        @if ($project->worksheet)
 
-                                            @foreach ($prjmondws->worksheet as $ws)
+                                            @foreach ($project->worksheet as $ws)
                                                 @php
                                                     $isStatusOpen = $ws->status_ws == 'OPEN' ? true : false;
                                                 @endphp
@@ -919,7 +1069,6 @@ $relatedTasks = collect($prjmondws->task)->filter(
                                                                         <i class="fas fa-lock-open fa-shake fa-sm"></i>
                                                                     </button>
                                                                 @endif
-
                                                             @else
                                                                 @if (isset($modalData['modal_unlock']))
                                                                     <button
@@ -929,7 +1078,6 @@ $relatedTasks = collect($prjmondws->task)->filter(
                                                                         <i class="fas fa-user-lock fa-sm"></i>
                                                                     </button>
                                                                 @endif
-
                                                             @endif
                                                         @else
                                                             @php
@@ -969,7 +1117,7 @@ $relatedTasks = collect($prjmondws->task)->filter(
 
                             </div>
 
-                            <div class="row match-height MODAL-2">
+                            <div class="row match-height MODALS-2">
                                 <!-- BEGIN: AddWorksheetModal--> @include('v_res.m_modals.userpanels.m_daftarworksheet.v_add_wsModal') <!-- END: AddWorksheetModal-->
                                 <!-- BEGIN: EditWorksheetModal--> @include('v_res.m_modals.userpanels.m_daftarworksheet.v_edit_wsModal')
                                 <!-- END: EditWorksheetModal-->
@@ -1550,7 +1698,7 @@ $relatedTasks = collect($prjmondws->task)->filter(
                                             ' .info-text');
                                         if (infoText) {
                                             infoText.innerHTML =
-                                            `Are you sure you want to <a class="text-warning">Lock the worksheet for ${response.projectID} with working date *${response.workingDate} that was executed by ${response.namaKaryawan}?</a> This action <a class="text-danger">cannot be undone</a>. Please confirm by clicking "<a class="text-danger">LOCK</a>" below.`; // Update with your desired content
+                                                `Are you sure you want to <a class="text-warning">Lock the worksheet for ${response.projectID} with working date *${response.workingDate} that was executed by ${response.namaKaryawan}?</a> This action <a class="text-danger">cannot be undone</a>. Please confirm by clicking "<a class="text-danger">LOCK</a>" below.`; // Update with your desired content
                                         } else {
                                             console.error(
                                                 "infoText element not found in the specified modal:",
@@ -1608,11 +1756,135 @@ $relatedTasks = collect($prjmondws->task)->filter(
                                             ' .info-text');
                                         if (infoText2) {
                                             infoText2.innerHTML =
-                                            `Are you sure you want to <a class="text-warning">Lock the worksheet for ${response.projectID} with working date *${response.workingDate} that was executed by ${response.namaKaryawan}?</a> This action <a class="text-danger">cannot be undone</a>. Please confirm by clicking "<a class="text-danger">LOCK</a>" below.`; // Update with your desired content
+                                                `Are you sure you want to <a class="text-warning">Lock the worksheet for ${response.projectID} with working date *${response.workingDate} that was executed by ${response.namaKaryawan}?</a> This action <a class="text-danger">cannot be undone</a>. Please confirm by clicking "<a class="text-danger">LOCK</a>" below.`; // Update with your desired content
                                         } else {
                                             console.error(
                                                 "infoText element not found in the specified modal:",
                                                 whichModal2);
+                                        }
+                                    }, 100);
+                                }
+
+
+                            });
+                        }, 800);
+                    });
+                </script>
+            @endif
+
+
+
+
+
+
+
+
+            @if (isset($modalData['modal_lock_prj']))
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        whichModal3 = "lock_prjModal";
+
+                        setTimeout(() => {
+                            $('.lock-prj-cmd').on('click', function() {
+                                var projectID = $(this).attr('lock_prj_id_value');
+
+                                const modalSelector3 = document.querySelector('#' + whichModal3);
+                                const modalToShow3 = new bootstrap.Modal(modalSelector3);
+
+                                $.ajax({
+                                    url: '{{ route('m.ws.getprj4lockunlock') }}',
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Update the CSRF token here
+                                    },
+                                    data: {
+                                        projectID: projectID,
+                                    },
+                                    success: function(response) {
+                                        console.log(response);
+                                        $('#' + whichModal3 + ' #lock-prj_id').val(response
+                                            .project_id);
+                                        setInfoText(response);
+
+                                        modalToShow3.show();
+                                    },
+                                    error: function(error) {
+                                        console.log("Err [JS]:\n");
+                                        console.log(error);
+                                    }
+                                });
+
+
+                                function setInfoText(response) {
+                                    setTimeout(() => {
+                                        const infoText = document.querySelector('#' + whichModal3 +
+                                            ' .info-prj-text');
+                                        if (infoText) {
+                                            infoText.innerHTML =
+                                                `Are you sure you want to <a class="text-warning">Lock the project with ID ${response.project_id}?</a> This action <a class="text-danger">cannot be undone</a>. Please confirm by clicking "<a class="text-danger">LOCK</a>" below.`; // Update with your desired content
+                                        } else {
+                                            console.error(
+                                                "infoText element not found in the specified modal:",
+                                                whichModal3);
+                                        }
+                                    }, 100);
+                                }
+
+                            });
+                        }, 800);
+
+                    });
+                </script>
+            @endif
+
+
+            @if (isset($modalData['modal_unlock_prj']))
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+
+                        setTimeout(() => {
+                            $('.unlock-prj-cmd').on('click', function() {
+                                var projectID = $(this).attr('unlock_prj_id_value');
+
+                                whichModal4 = "unlock_prjModal";
+                                const modalSelector = document.querySelector('#' + whichModal4);
+                                const modalToShow = new bootstrap.Modal(modalSelector);
+
+                                $.ajax({
+                                    url: '{{ route('m.ws.getprj4lockunlock') }}',
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Update the CSRF token here
+                                    },
+                                    data: {
+                                        projectID: projectID,
+                                    },
+                                    success: function(response) {
+                                        console.log(response);
+                                        $('#' + whichModal4 + ' #unlock-prj_id').val(response
+                                            .project_id);
+                                        setInfoText(response);
+
+                                        modalToShow.show();
+                                    },
+                                    error: function(error) {
+                                        console.log("Err [JS]:\n");
+                                        console.log(error);
+                                    }
+                                });
+
+
+                                function setInfoText(response) {
+                                    setTimeout(() => {
+                                        const infoText2 = document.querySelector('#' + whichModal4 +
+                                            ' .info-prj-text');
+                                        if (infoText2) {
+                                            infoText2.innerHTML =
+                                                `Are you sure you want to <a class="text-warning">Unlock the project with ID ${response.project_id}?</a> This action <a class="text-danger">cannot be undone</a>. Please confirm by clicking "<a class="text-danger">LOCK</a>" below.`; // Update with your desired content
+                                        } else {
+                                            console.error(
+                                                "infoText element not found in the specified modal:",
+                                                whichModal4);
                                         }
                                     }, 100);
                                 }

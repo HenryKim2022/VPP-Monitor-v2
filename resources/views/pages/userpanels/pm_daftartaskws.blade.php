@@ -95,11 +95,12 @@
         @php
             $authUserId = $authenticated_user_data->id_karyawan;
             $authUserType = auth()->user()->type;
-            $monUserId = $prjmondws->id_karyawan;
+            $coUserId = $project->id_karyawan;
         @endphp
 
         @php
-            $isStatusOpen = $loadDataWS->status_ws == 'OPEN' ? true : false;
+            $isProjectOpen = $project->status_project == 'OPEN' ? true : false;
+            $isWsStatusOpen = $loadDataWS->status_ws == 'OPEN' ? true : false;
         @endphp
 
         <!-- TableAbsen Card -->
@@ -225,7 +226,7 @@
                         {{-- <div class="col-xl-12 col-md-12 col-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <pre style="color: white">{{ print_r($prjmondws->toArray(), true) }}</pre>
+                                    <pre style="color: white">{{ print_r($project->toArray(), true) }}</pre>
                                     <br>
                                 </div>
                             </div>
@@ -240,7 +241,7 @@
                                             <tr>
                                                 <td class="text-nowrap"><strong>DESCRIPTION</strong></td>
                                                 <td class="pl-2">: </td>
-                                                <td>{{ $prjmondws->id_project }}</td>
+                                                <td>{{ $project->id_project }}</td>
                                             </tr>
                                             <tr>
                                                 <td class="text-nowrap"><strong>CLIENT'S NAME</strong></td>
@@ -300,7 +301,7 @@
                             $authUserId = $authenticated_user_data->id_karyawan;
                             $authUserType = auth()->user()->type;
                             $authUserTeam = $authenticated_user_data->id_team;
-                            $engPrjTeam = $prjmondws->id_team;
+                            $engPrjTeam = $project->id_team;
                             $exeUserId = $loadDataWS->id_karyawan;
                             // echo 'engPrjTeam: ' . $engPrjTeam . ' ------ ';
                             // echo 'authUserTeam: ' . $authUserTeam . '<br>';
@@ -316,46 +317,71 @@
                             <div class="divider"></div> <!-- Divider line -->
                             <div class="button-wrapper">
                                 <div class="nav-item">
-                                    @if ($authUserType === 'Superuser' || $authUserType === 'Engineer')
-
-                                        @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
-                                            {{-- @if (isset($modalData['modal_add'])) --}}
-                                            @if ($ws_status == 'OPEN')
-                                                <button onclick="openModal('{{ $modalData['modal_add'] }}')"
-                                                    class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success add-new-record"
-                                                    style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
-                                                    data-popup="tooltip-custom" data-placement="bottom"
-                                                    data-original-title="Add Task!">
-                                                    <i class="fas fa-plus-circle fa-xs text-white"></i>
-                                                </button>
-                                            @else
-                                                <button
-                                                    class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
-                                                    style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
-                                                    data-popup="tooltip-custom" data-placement="bottom"
-                                                    data-original-title="Worksheet Locked!">
-                                                    <i class="fas fa-plus-circle fa-xs text-white"></i>
-                                                </button>
+                                    @if ($authUserType === 'Superuser' || $isProjectOpen)
+                                        @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
+                                            @if (
+                                                $authUserType === 'Superuser' ||
+                                                    $authUserId == $exeUserId ||
+                                                    ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
+                                                @if ($isWsStatusOpen)
+                                                    <button onclick="openModal('{{ $modalData['modal_add'] }}')"
+                                                        class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success add-new-record"
+                                                        style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
+                                                        data-popup="tooltip-custom" data-placement="bottom"
+                                                        data-original-title="Add Task">
+                                                        <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                    </button>
+                                                @else
+                                                    <button
+                                                        class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                        style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
+                                                        data-popup="tooltip-custom" data-placement="bottom"
+                                                        data-original-title="Worksheet Locked!">
+                                                        <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                    </button>
+                                                @endif
                                             @endif
-                                        @else
-                                            <button
-                                                class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
-                                                style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
-                                                data-popup="tooltip-custom" data-placement="bottom"
-                                                data-original-title="Worksheet Locked!">
-                                                <i class="fas fa-plus-circle fa-xs text-white"></i>
-                                            </button>
+                                        @endif
+                                    @else
+                                        @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
+                                            @if (
+                                                $authUserType === 'Superuser' ||
+                                                    $authUserId == $exeUserId ||
+                                                    ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
+                                                @if ($isWsStatusOpen)
+                                                    <button
+                                                        class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                        style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
+                                                        data-popup="tooltip-custom" data-placement="bottom"
+                                                        data-original-title="Project Locked by SPV & Worksheet Unlocked!">
+                                                        <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                    </button>
+                                                @else
+                                                    <button
+                                                        class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                        style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
+                                                        data-popup="tooltip-custom" data-placement="bottom"
+                                                        data-original-title="Project Locked by SPV & Worksheet Locked by Executor!">
+                                                        <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                    </button>
+                                                @endif
+                                            @endif
                                         @endif
                                     @endif
                                 </div>
+
+
                                 <div class="nav-item">
-                                    @if ($authUserType === 'Superuser' || $authUserType === 'Engineer')
-                                        @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
-                                            @if (isset($modalData['modal_lock']) && $modalData['modal_lock'])
-                                                @if ($ws_status == 'OPEN')
+                                    @if ($authUserType === 'Superuser' || $isProjectOpen)
+                                        @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
+                                            @if (
+                                                $authUserType === 'Superuser' ||
+                                                    $authUserId == $exeUserId ||
+                                                    ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
+                                                @if ($isWsStatusOpen)
                                                     @if (isset($modalData['modal_lock']))
                                                         <button lock_ws_id_value = "{{ $loadDataWS->id_ws ?: 0 }}"
-                                                            class="lock-ws-cmd btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger add-new-record {{ $blinkBGClass }}"
+                                                            class="lock-ws-cmd btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger {{ $blinkBGClass }}"
                                                             style="width: 3rem; height: 3rem; padding: 0;"
                                                             data-toggle="tooltip" data-popup="tooltip-custom"
                                                             data-placement="bottom" data-original-title="Lock Worksheet!">
@@ -364,43 +390,54 @@
                                                     @endif
                                                 @else
                                                     <button
-                                                        class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                        class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
                                                         style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
                                                         data-popup="tooltip-custom" data-placement="bottom"
                                                         data-original-title="Worksheet Locked!">
-                                                        <i class="fas fa-lock-open fa-xs text-white"></i>
+                                                        <i class="fas fa-lock fa-xs text-white"></i>
                                                     </button>
                                                 @endif
-                                            @endif
-                                        @else
-                                            @if ($ws_status == 'OPEN')
-                                                <div>
-                                                    <button
-                                                        class="btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border bg-danger border-danger"
-                                                        style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
-                                                        data-popup="tooltip-custom" data-placement="bottom"
-                                                        data-original-title="Lock Worksheet!">
-                                                        <i class="fas fa-lock-open fa-xs text-white"></i>
-                                                    </button>
-                                                </div>
-                                            @else
-                                                <button
-                                                    class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
-                                                    style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
-                                                    data-popup="tooltip-custom" data-placement="bottom"
-                                                    data-original-title="Worksheet Locked!">
-                                                    <i class="fas fa-lock fa-xs text-white"></i>
-                                                </button>
-                                            @endif
 
+                                            @endif
                                         @endif
-                                    @endif
+                                    @else
+                                        @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
+                                            @if (
+                                                $authUserType === 'Superuser' ||
+                                                    $authUserId == $exeUserId ||
+                                                    ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
+                                                @if ($isWsStatusOpen)
+                                                    @if (isset($modalData['modal_lock']))
+                                                        <button lock_ws_id_value = "{{ $loadDataWS->id_ws ?: 0 }}"
+                                                            class="btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger {{ $blinkBGClass }}"
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom"
+                                                            data-original-title="Project Locked by SPV & Worksheet Unlocked!">
+                                                            <i class="fas fa-lock-open fa-xs text-white"></i>
+                                                        </button>
+                                                    @endif
+                                                @else
+                                                    <button
+                                                        class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                        style="width: 3rem; height: 3rem; padding: 0;"
+                                                        data-toggle="tooltip" data-popup="tooltip-custom"
+                                                        data-placement="bottom"
+                                                        data-original-title="Project Locked by SPV & Worksheet Locked by Executor!">
+                                                        <i class="fas fa-lock fa-xs text-white"></i>
+                                                    </button>
+                                                @endif
 
+                                            @endif
+                                        @endif
+
+                                    @endif
                                 </div>
+
                                 <div class="nav-item">
                                     @if ($ws_status == 'CLOSED')
                                         @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
-                                            {{-- @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId)) --}}
+                                            {{-- @if ($authUserType === 'Superuser' || ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId && $isProjectOpen == true)) --}}
                                             <div class="d-flex justify-content-center align-items-ce d-none">
                                                 <form class="needs-validation" method="POST"
                                                     action="{{ route('m.task.printdomtask') }}" id="print_domtaskFORM"
@@ -416,7 +453,7 @@
                                                     <input type="hidden" id="print-act" name="print-act"
                                                         value="dom" />
                                                     <input type="hidden" id="print-task-title" name="print-task-title"
-                                                        value="{{ $prjmondws->id_project }} {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }} DAILY WORKSHEETS" />
+                                                        value="{{ $project->id_project }} {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }} DAILY WORKSHEETS" />
                                                     <input type="hidden" id="print-ref" name="print-ref"
                                                         value="print" />
 
@@ -442,7 +479,7 @@
                                                     <input type="hidden" id="print-act" name="print-act"
                                                         value="dom" />
                                                     <input type="hidden" id="print-task-title" name="print-task-title"
-                                                        value="{{ $prjmondws->id_project }} {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }} DAILY WORKSHEETS" />
+                                                        value="{{ $project->id_project }} {{ \Carbon\Carbon::parse($loadDataWS->working_date_ws)->isoFormat($cust_date_format) }} DAILY WORKSHEETS" />
                                                     <input type="hidden" id="print-ref" name="print-ref"
                                                         value="pdf" />
 
@@ -496,52 +533,12 @@
 
 
 
-
-
-
-
                     @php
                         $totalActualAtHeader = 0;
                         $totalAtHeader = 0;
-                    @endphp
-                    @foreach ($prjmondws->monitor as $mon)
-                        @if ($mon->qty)
-                            @php
-                                $qty = $mon->qty;
-                                // Find the tasks related to the current monitor where the associated worksheet's expired_ws is null
-$relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
-    $mon,
-    $prjmondws,
-) {
-    // Find the related worksheet for the task
-    $worksheet = collect($prjmondws->worksheet)->firstWhere('id_ws', $task['id_ws']);
-    // Check if the task's worksheet expired_ws is null
-                                    return $task['id_monitoring'] === $mon['id_monitoring'] &&
-                                        ($worksheet['expired_at_ws'] ?? null) === null; // Match tasks by id_monitoring and check expired_ws
-                                });
-
-                                // Calculate the total progress from related tasks
-                                $totalProgress = 0;
-                                foreach ($relatedTasks as $task) {
-                                    $totalProgress += $task->progress_current_task; // Sum up the progress of related tasks
-                                }
-
-                                // Assuming you want to calculate based on the average progress
-                                $up = $relatedTasks->count() > 0 ? $totalProgress / $relatedTasks->count() : 0; // Average progress
-                                $totalAtHeader = ($qty * $up) / 100; // Calculate total percentage
-                                $totalActualAtHeader += $totalAtHeader; // Accumulate to totalActualAtHeader
-                            @endphp
-                        @else
-                            @php
-                                $totalActualAtHeader = 0; // No quantity, total remains 0
-                            @endphp
-                        @endif
-                    @endforeach
-                    @php
                         $totalActual = 0; // Initialize totalActual
+                        $totalActualAtHeader = number_format($project->prj_progress_totals(), 0);
                     @endphp
-
-
                     <table id="daftarTaskTable" class="table table-striped">
                         <thead>
                             <tr>
@@ -551,10 +548,9 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                 <th rowspan="2" class="text-center align-middle">Time</th>
                                 <th rowspan="2" class="text-center">Task</th>
                                 <th rowspan="2" class="text-center">Description</th>
-                                {{-- <th colspan="2" class="text-center">Progress</th> --}}
                                 <th colspan="2"
                                     class="text-center {{ $totalActualAtHeader == 100 ? 'text-success' : ($totalActualAtHeader > 100 ? 'text-danger' : 'text-warning') }}">
-                                    Progress ({{ number_format($totalActualAtHeader, 0) }}%)
+                                    Progress ({{ $totalActualAtHeader }}%)
                                 </th>
                             </tr>
                             <tr>
@@ -573,35 +569,37 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                                     aria-expanded="false">
                                                     <i data-feather="align-justify" class="font-medium-5"></i>
                                                 </button>
+
+                                                {{-- @if ($authUserType === 'Superuser' || $isProjectOpen)
+                                                @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
+                                                    @if ($authUserType === 'Superuser' || $authUserId == $coUserId || ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId)) --}}
                                                 <!-- dropdown menu -->
                                                 <div class="dropdown-menu dropdown-menu-end"
                                                     aria-labelledby="tableActionDropdown">
-                                                    @if (auth()->user()->type === 'Superuser' ||
-                                                            (auth()->user()->type === 'Engineer' && auth()->user()->id_karyawan == $loadDataWS->id_karyawan))
-                                                        <a class="edit-record dropdown-item d-flex align-items-center"
-                                                            edit_task_id_value = "{{ $relDWS->id_task ?: 0 }}"
-                                                            edit_project_id_value = "{{ $relDWS->id_project ?: 0 }}"
-                                                            onclick="openModal('{{ $modalData['modal_edit'] }}')">
-                                                            <i data-feather="edit" class="mr-1"
-                                                                style="color: #28c76f;"></i>
-                                                            Edit
-                                                        </a>
-                                                        @if (auth()->user()->type === 'Superuser' ||
-                                                                (auth()->user()->type === 'Engineer' && auth()->user()->id_karyawan == $loadDataWS->id_karyawan))
-                                                            <a class="delete-record dropdown-item d-flex align-items-center"
-                                                                del_task_id_value = "{{ $relDWS->id_task ?: 0 }}"
-                                                                onclick="openModal('{{ $modalData['modal_delete'] }}')">
-                                                                <i data-feather="trash" class="mr-1"
-                                                                    style="color: #ea5455;"></i>
-                                                                Delete
-                                                            </a>
+
+                                                    @if ($authUserType === 'Superuser' || $isProjectOpen)
+                                                        @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
+                                                            @if (
+                                                                $authUserType === 'Superuser' ||
+                                                                    $authUserId == $exeUserId ||
+                                                                    ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
+                                                                <a class="edit-record dropdown-item d-flex align-items-center"
+                                                                    edit_task_id_value = "{{ $relDWS->id_task ?: 0 }}"
+                                                                    edit_project_id_value = "{{ $relDWS->id_project ?: 0 }}"
+                                                                    onclick="openModal('{{ $modalData['modal_edit'] }}')">
+                                                                    <i data-feather="edit" class="mr-1"
+                                                                        style="color: #28c76f;"></i>
+                                                                    Edit
+                                                                </a>
+                                                                <a class="delete-record dropdown-item d-flex align-items-center"
+                                                                    del_task_id_value = "{{ $relDWS->id_task ?: 0 }}"
+                                                                    onclick="openModal('{{ $modalData['modal_delete'] }}')">
+                                                                    <i data-feather="trash" class="mr-1"
+                                                                        style="color: #ea5455;"></i>
+                                                                    Delete
+                                                                </a>
+                                                            @endif
                                                         @endif
-                                                    @else
-                                                        <a class="dropdown-item d-flex align-items-center">
-                                                            <i data-feather="block" class="mr-1"
-                                                                style="color: #ea5455;"></i>
-                                                            Sorry, You don't have enough authority to manage this data :)
-                                                        </a>
                                                     @endif
                                                 </div>
                                                 <!--/ dropdown menu -->
@@ -660,12 +658,12 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                             // Check if qty is defined and greater than zero
                                             if ($qty) {
                                                 // Find the tasks related to the current monitor where the associated worksheet's expired_ws is null
-    $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
+    $relatedTasks = collect($project->task)->filter(function ($task) use (
         $relDWS,
-        $prjmondws,
+        $project,
     ) {
         // Find the related worksheet for the task
-        $worksheet = collect($prjmondws->worksheet)->firstWhere(
+        $worksheet = collect($project->worksheet)->firstWhere(
             'id_ws',
             $task['id_ws'],
         );
@@ -686,7 +684,7 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                                         ? $totalProgress / $relatedTasks->count()
                                                         : 0; // Average progress
                                                 $total = ($qty * $up) / 100; // Calculate total percentage
-                                                $totalActual += $total; // Accumulate to totalActual
+                                                // $totalActual += $total; // Accumulate to totalActual
                                             }
                                         @endphp
 
@@ -708,7 +706,7 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                         <!-- TABLE FOOTER -->
                         <tfoot>
                             <tr>
-                                <td colspan="{{ $isStatusOpen ? '6' : '5' }}" class="px-1">
+                                <td colspan="{{ $isWsStatusOpen ? '6' : '5' }}" class="px-1">
                                     <strong>
                                         REMARK (CATATAN AKHIR)
                                     </strong>
@@ -743,13 +741,13 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                     $textareaRemarkWS = strip_tags($remarkWS);
                                 @endphp
 
-                                <td colspan="{{ $isStatusOpen ? '6' : '5' }}" rowspan="1" class="p-0 align-middle">
+                                <td colspan="{{ $isWsStatusOpen ? '6' : '5' }}" rowspan="1" class="p-0 align-middle">
                                     <textarea class="remark-textarea w-100 h-fit px-1 m-0 text-left border-0" ws_id_value="{{ $loadDataWS->id_ws }}"
                                         rows="8" {{ $loadDataWS->status_ws == 'OPEN' ? '' : 'disabled' }}>{!! htmlspecialchars($textareaRemarkWS, ENT_QUOTES, 'UTF-8') !!}</textarea>
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="{{ $isStatusOpen ? '4' : '3' }}" rowspan="5" class="px-1">
+                                <td colspan="{{ $isWsStatusOpen ? '4' : '3' }}" rowspan="5" class="px-1">
 
                                     <div class="d-flex flex-col justify-content-around">
                                         <div class="d-flex flex-column align-items-start">
@@ -785,6 +783,9 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                                         $clientNameLength = mb_strlen(
                                                             Str::limit($clientName, 37, '...'),
                                                         );
+                                                        if ($clientNameLength < 38) {
+                                                            $clientNameLength = 37;
+                                                        }
                                                         $clientLabelLength = mb_strlen('(CLIENT) ');
                                                         $totalLength = $clientNameLength * 3 - 2;
                                                         $dotsCount = max(
@@ -857,43 +858,143 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                                 <td colspan="2" class="px-1 text-center align-middle"><strong>Status</strong></td>
                             </tr>
 
-                            @if ($isStatusOpen)
-                                @if ($authUserType === 'Superuser' || $authUserType === 'Engineer')
-                                    @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
-                                        <tr class="lock-ws-cmd cursor-pointer"
-                                            lock_ws_id_value="{{ $loadDataWS->id_ws ?: 0 }}">
-                                            <td colspan="2"
-                                                class="rowlock px-1 text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }}">
-                                                <button lock_ws_id_value = "{{ $loadDataWS->id_ws ?: 0 }}"
-                                                    class="lock-ws-cmd btn mx-1 border-0 d-flex {{ $blinkBGClass }}"
-                                                    style="padding: 0.5rem 1rem; justify-self: center;"
-                                                    data-toggle="tooltip" data-popup="tooltip-custom"
-                                                    data-placement="bottom" data-original-title="Lock Worksheet!">
-                                                    <h3 class="mb-0">
-                                                        <strong>OPEN</strong>
-                                                    </h3>
-                                                </button>
-                                            </td>
-                                        </tr>
+                            @if ($authUserType === 'Superuser' || $isProjectOpen)
+                                @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
+                                    @if (
+                                        $authUserType === 'Superuser' ||
+                                            $authUserId == $exeUserId ||
+                                            ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
+                                        @if ($isWsStatusOpen)
+                                            <tr class="lock-ws-cmd cursor-pointer"
+                                                lock_ws_id_value="{{ $loadDataWS->id_ws ?: 0 }}">
+                                                <td colspan="2" class="rowlock text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }} justify-content-center align-items-center">
+                                                    <button lock_ws_id_value="{{ $loadDataWS->id_ws ?: 0 }}"
+                                                        class="lock-ws-cmd btn w-100 border-0"
+                                                        style="padding: 0.5rem 1rem;" data-toggle="tooltip"
+                                                        data-popup="tooltip-custom" data-placement="bottom"
+                                                        data-original-title="Lock Worksheet!">
+                                                        <h3 class="mb-0"><strong>OPEN</strong></h3>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @else
+                                            <tr>
+                                                <td colspan="2"
+                                                    class="rowlock text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }} justify-content-center align-items-center"
+                                                    style="height: fit-content;">
+                                                    <button
+                                                        class="border-0 d-flex bg-transparent text-white w-100 align-items-center justify-content-center"
+                                                        style="padding: 0.5rem 1rem;" data-toggle="tooltip"
+                                                        data-popup="tooltip-custom" data-placement="bottom"
+                                                        data-original-title="Worksheet Locked!">
+                                                        <h3 class="mb-0"><strong>CLOSED</strong></h3>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @else
+                                        @if ($isWsStatusOpen)
+                                            <tr>
+                                                <td colspan="2"
+                                                    class="rowlock text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }} justify-content-center align-items-center"
+                                                    style="height: fit-content;">
+                                                    <button
+                                                        class="lock-ws-cmd btn border-0 align-items-center justify-content-center"
+                                                        data-toggle="tooltip" data-popup="tooltip-custom"
+                                                        data-placement="bottom"
+                                                        data-original-title="You're Not Authorized!">
+                                                        <h3 class="mb-0"><strong>OPEN</strong></h3>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @else
+                                            <tr>
+                                                <td colspan="2"
+                                                    class="rowlock text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }} justify-content-center align-items-center"
+                                                    style="height: fit-content;">
+                                                    <button
+                                                        class="border-0 d-flex bg-transparent text-white align-items-center justify-content-center w-100"
+                                                        style="padding: 0.5rem 1rem;" data-toggle="tooltip"
+                                                        data-popup="tooltip-custom" data-placement="bottom"
+                                                        data-original-title="Worksheet Locked!">
+                                                        <h3 class="mb-0"><strong>CLOSED</strong></h3>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endif
                                     @endif
                                 @endif
                             @else
-                                <tr>
-                                    <td colspan="2"
-                                        class="rowlock px-1 text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }}">
-                                        <div>
-                                            <button class="mx-1 border-0 d-flex bg-transparent text-white"
-                                                style="padding: 0.5rem 1rem; justify-self: center;" data-toggle="tooltip"
-                                                data-popup="tooltip-custom" data-placement="bottom"
-                                                data-original-title="Worksheet Locked!">
-                                                <h3 class="mb-0">
-                                                    <strong>CLOSED</strong>
-                                                </h3>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
+                                    @if (
+                                        $authUserType === 'Superuser' ||
+                                            $authUserId == $exeUserId ||
+                                            ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
+                                        @if ($isWsStatusOpen)
+                                            <tr class="lock-ws-cmd cursor-pointer"
+                                                lock_ws_id_value="{{ $loadDataWS->id_ws ?: 0 }}">
+                                                <td colspan="2"
+                                                    class="rowlock text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }} justify-content-center align-items-center"
+                                                    style="height: fit-content;">
+                                                    <button lock_ws_id_value="{{ $loadDataWS->id_ws ?: 0 }}"
+                                                        class="lock-ws-cmd btn w-100 border-0 d-flex align-items-center justify-content-center"
+                                                        style="padding: 0.5rem 1rem;" data-toggle="tooltip"
+                                                        data-popup ="tooltip-custom" data-placement="bottom"
+                                                        data-original-title="Project Locked by SPV!">
+                                                        <h3 class="mb-0"><strong>OPEN</strong></h3>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @else
+                                            <tr>
+                                                <td colspan="2"
+                                                    class="rowlock text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }} justify-content-center align-items-center"
+                                                    style="height: fit-content;">
+                                                    <button
+                                                        class="border-0 d-flex bg-transparent text-white align-items-center justify-content-center w-100"
+                                                        style="padding: 0.5rem 1rem;" data-toggle="tooltip"
+                                                        data-popup="tooltip-custom" data-placement="bottom"
+                                                        data-original-title="Project Locked by SPV & Worksheet Locked!">
+                                                        <h3 class="mb-0"><strong>CLOSED</strong></h3>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @else
+                                        @if ($isWsStatusOpen)
+                                            <tr>
+                                                <td colspan="2"
+                                                    class="rowlock text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }} justify-content-center align-items-center"
+                                                    style="height: fit-content;">
+                                                    <button
+                                                        class="lock-ws-cmd btn w-100 border-0 d-flex align-items-center justify-content-center"
+                                                        data-toggle="tooltip" data-popup="tooltip-custom"
+                                                        data-placement="bottom"
+                                                        data-original-title="Project Locked by SPV & You're Not Authorized!">
+                                                        <h3 class="mb-0"><strong>OPEN</strong></h3>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @else
+                                            <tr>
+                                                <td colspan="2"
+                                                    class="rowlock text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }} justify-content-center align-items-center"
+                                                    style="height: fit-content;">
+                                                    <button
+                                                        class="mx-1 border-0 d-flex bg-transparent text-white align-items-center justify-content-center w-100"
+                                                        style="padding: 0.5rem 1rem;" data-toggle="tooltip"
+                                                        data-popup="tooltip-custom" data-placement="bottom"
+                                                        data-original-title="Project Locked by SPV & Worksheet Locked!">
+                                                        <h3 class="mb-0"><strong>CLOSED</strong></h3>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @endif
+                                @endif
                             @endif
+
+
 
 
 
@@ -902,9 +1003,9 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
                             <tr>
                                 <td colspan="2"
                                     class="rowlock px-1 text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }}">
-                                    @if ($isStatusOpen)
+                                    @if ($isWsStatusOpen)
                                         @if ($authUserType === 'Superuser' || $authUserType === 'Engineer')
-                                            @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
+                                            @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId && $isProjectOpen == true))
                                                 @if (isset($modalData['modal_lock']))
                                                     <button lock_ws_id_value = "{{ $loadDataWS->id_ws ?: 0 }}"
                                                         class="lock-ws-cmd btn mx-1 border-0 d-flex {{ $blinkBGClass }}"
@@ -954,7 +1055,7 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
         <!-- BEGIN: ResetTaskModal--> @include('v_res.m_modals.userpanels.m_daftartask.v_reset_taskModal') <!-- END: ResetTaskModal-->
     @endif
 
-    @if ($isStatusOpen)
+    @if ($isWsStatusOpen)
         <!-- BEGIN: LockWSModal--> @include('v_res.m_modals.userpanels.m_daftarworksheet.v_lock_wsModal') <!-- END: LockWSModal-->
     @else
         <!-- BEGIN: UnlockWSModal--> @include('v_res.m_modals.userpanels.m_daftarworksheet.v_unlock_wsModal') <!-- END: UnlockWSModal-->
@@ -1250,94 +1351,123 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
     </script>
 
 
-    @if ($authUserType === 'Superuser' || $authUserType === 'Engineer')
-        @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
-            <script>
-                $(document).ready(function() {
-                    // Function to handle AJAX request
-                    function sendRemarkUpdate() {
-                        var remarkText = $('.remark-textarea').val();
-                        var wsId = $('.remark-textarea').attr('ws_id_value'); // Get the worksheet ID
 
-                        console.log(wsId);
+    @if ($authUserType === 'Superuser' || $isWsStatusOpen)
+        @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
+            @if (
+                $authUserType === 'Superuser' ||
+                    ($authUserId == $exeUserId || ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId)))
+                <script>
+                    $(document).ready(function() {
+                        // Function to handle AJAX request
+                        function sendRemarkUpdate() {
+                            var remarkText = $('.remark-textarea').val();
+                            var wsId = $('.remark-textarea').attr('ws_id_value'); // Get the worksheet ID
 
-                        $.ajax({
-                            url: '{{ route('m.ws.remark.edit') }}',
-                            type: 'POST',
-                            data: {
-                                id_ws: wsId,
-                                remarkText: remarkText,
-                                _token: '{{ csrf_token() }}' // CSRF token for security
-                            },
-                            success: function(response) {
-                                if (response != null && response.message) {
-                                    jsonToastReceiver(response
-                                        .message); // Pass response.message instead of response
+                            console.log(wsId);
+
+                            $.ajax({
+                                url: '{{ route('m.ws.remark.edit') }}',
+                                type: 'POST',
+                                data: {
+                                    id_ws: wsId,
+                                    remarkText: remarkText,
+                                    _token: '{{ csrf_token() }}' // CSRF token for security
+                                },
+                                success: function(response) {
+                                    if (response != null && response.message) {
+                                        jsonToastReceiver(response
+                                            .message); // Pass response.message instead of response
+                                    }
+
+                                    console.log('Remark updated successfully:', response);
+                                },
+                                error: function(xhr, status, error) {
+                                    if (xhr.responseJSON != null && xhr.responseJSON.message) {
+                                        jsonToastReceiver(xhr.responseJSON
+                                            .message); // Pass response.message instead of response
+                                    }
+                                    console.error('Error updating remark:', error);
                                 }
+                            });
+                        }
 
-                                console.log('Remark updated successfully:', response);
-                            },
-                            error: function(xhr, status, error) {
-                                if (xhr.responseJSON != null && xhr.responseJSON.message) {
-                                    jsonToastReceiver(xhr.responseJSON
-                                        .message); // Pass response.message instead of response
+                        // Keydown event for Ctrl + Enter or Up Arrow + Enter
+                        $('.remark-textarea').on('keydown', function(event) {
+                            // Check if Enter key is pressed
+                            if (event.key === 'Enter') {
+                                // Check if Ctrl key is pressed or Up Arrow key was pressed
+                                if (event.ctrlKey || (event.originalEvent.key === 'ArrowUp')) {
+                                    event.preventDefault(); // Prevent the default action (e.g., adding a new line)
+                                    sendRemarkUpdate(); // Call the function to send AJAX request
                                 }
-                                console.error('Error updating remark:', error);
                             }
                         });
-                    }
 
-                    // Keydown event for Ctrl + Enter or Up Arrow + Enter
-                    $('.remark-textarea').on('keydown', function(event) {
-                        // Check if Enter key is pressed
-                        if (event.key === 'Enter') {
-                            // Check if Ctrl key is pressed or Up Arrow key was pressed
-                            if (event.ctrlKey || (event.originalEvent.key === 'ArrowUp')) {
-                                event.preventDefault(); // Prevent the default action (e.g., adding a new line)
-                                sendRemarkUpdate(); // Call the function to send AJAX request
-                            }
-                        }
+                        // Blur event for leaving the textarea
+                        $('.remark-textarea').on('blur', function() {
+                            // Send AJAX request when the textarea loses focus
+                            sendRemarkUpdate();
+                        });
                     });
-
-                    // Blur event for leaving the textarea
-                    $('.remark-textarea').on('blur', function() {
-                        // Send AJAX request when the textarea loses focus
-                        sendRemarkUpdate();
-                    });
-                });
-            </script>
+                </script>
+            @endif
         @endif
     @endif
 
-    @if ($isStatusOpen)
+
+
+    {{-- <script>
+        // v_res/m_modals/userpanels/m_daftarproject/v_lock_prjModal.blade.php
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalId = 'lock_prjModal';
+            const modalSelector = document.getElementById(modalId);
+            const modalToShow = new bootstrap.Modal(modalSelector);
+            const targetedModalForm = document.querySelector('#' + modalId + ' #lock_prjModalFORM');
+            $('button').on('click', '.lock-ws-cmd', function(event) {
+                var wsID = $(this).attr('lock_ws_id_value');
+               console.log(wsID);
+
+
+            });
+        });
+    </script> --}}
+
+
+
+    @if ($isWsStatusOpen)
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 whichModal = "lock_wsModal";
                 const modalSelector = document.querySelector('#' + whichModal);
-                const modalToShow = new bootstrap.Modal(modalSelector);
 
-                setTimeout(() => {
-                    $('.lock-ws-cmd').on('click', function() {
-                        var wsID = $(this).attr('lock_ws_id_value');
-                        $('#' + whichModal + ' #lock-ws_id').val(wsID);
-                        setInfoText_v2_1();
+                if (modalSelector) {
+                    const modalToShow = new bootstrap.Modal(modalSelector);
 
-                        modalToShow.show();
-                    });
-                }, 800);
+                    setTimeout(() => {
+                        $('.lock-ws-cmd').on('click', function() {
+                            console.log("CLICKED");
+                            var wsID = $(this).attr('lock_ws_id_value');
+                            $('#' + whichModal + ' #lock-ws_id').val(wsID);
+                            setInfoText_v2_1();
 
-                function setInfoText_v2_1() {
-                    const infoText = document.querySelector('#' + whichModal + ' .info-text');
-                    const projectId = "{{ $loadDataWS->id_project }}";
-                    const workingDate = "{{ $loadDataWS->working_date_ws() }}";
-                    const employeeName = "{{ $loadDataWS->karyawan->na_karyawan }}";
+                            modalToShow.show();
+                        });
+                    }, 800);
 
-                    infoText.innerHTML = `
-                        Are you sure you want to
-                        <a class="text-warning">Lock the worksheet for ${projectId} with working date *${workingDate} that was executed by ${employeeName}?</a>
-                        This action <a class="text-danger">cannot be undone</a>.
-                        Please confirm by clicking "<a class="text-danger">LOCK</a>" below.
-                    `;
+                    function setInfoText_v2_1() {
+                        const infoText = document.querySelector('#' + whichModal + ' .info-text');
+                        const projectId = "{{ $loadDataWS->id_project }}";
+                        const workingDate = "{{ $loadDataWS->working_date_ws() }}";
+                        const employeeName = "{{ $loadDataWS->karyawan->na_karyawan }}";
+
+                        infoText.innerHTML = `
+                            Are you sure you want to
+                            <a class="text-warning">Lock the worksheet for ${projectId} with working date *${workingDate} that was executed by ${employeeName}?</a>
+                            This action <a class="text-danger">cannot be undone</a>.
+                            Please confirm by clicking "<a class="text-danger">LOCK</a>" below.
+                        `;
+                    }
                 }
             });
         </script>
@@ -1346,32 +1476,36 @@ $relatedTasks = collect($prjmondws->task)->filter(function ($task) use (
             document.addEventListener('DOMContentLoaded', function() {
                 whichModal = "unlock_wsModal";
                 const modalSelector = document.querySelector('#' + whichModal);
-                const modalToShow = new bootstrap.Modal(modalSelector);
 
-                setTimeout(() => {
-                    $('.unlock-ws-cmd').on('click', function() {
-                        var wsID = $(this).attr('unlock_ws_id_value');
-                        $('#' + whichModal + ' #unlock-ws_id').val(wsID);
-                        setInfoText_v2_2();
+                if (modalSelector) {
+                    const modalToShow = new bootstrap.Modal(modalSelector);
 
-                        modalToShow.show();
-                    });
+                    setTimeout(() => {
+                        $('.unlock-ws-cmd').on('click', function() {
+                            var wsID = $(this).attr('unlock_ws_id_value');
+                            $('#' + whichModal + ' #unlock-ws_id').val(wsID);
+                            setInfoText_v2_2();
 
-                }, 800);
+                            modalToShow.show();
+                        });
 
-                function setInfoText_v2_2() {
-                    const infoText = document.querySelector('#' + whichModal + ' .info-text');
-                    const projectId = "{{ $loadDataWS->id_project }}";
-                    const workingDate = "{{ $loadDataWS->working_date_ws() }}";
-                    const employeeName = "{{ $loadDataWS->karyawan->na_karyawan }}";
+                    }, 800);
 
-                    infoText.innerHTML = `
+                    function setInfoText_v2_2() {
+                        const infoText = document.querySelector('#' + whichModal + ' .info-text');
+                        const projectId = "{{ $loadDataWS->id_project }}";
+                        const workingDate = "{{ $loadDataWS->working_date_ws() }}";
+                        const employeeName = "{{ $loadDataWS->karyawan->na_karyawan }}";
+
+                        infoText.innerHTML = `
                         Are you sure you want to
                         <a class="text-warning">Lock the worksheet for ${projectId} with working date *${workingDate} that was executed by ${employeeName}?</a>
                         This action <a class="text-danger">cannot be undone</a>.
                         Please confirm by clicking "<a class="text-danger">UNLOCK</a>" below.
                     `;
+                    }
                 }
+
             });
         </script>
     @endif

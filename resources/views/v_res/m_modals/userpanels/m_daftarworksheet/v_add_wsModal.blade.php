@@ -4,7 +4,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content position-relative">
             <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel113">Add {{ $prjmondws->id_project }} Worksheet Informations
+                <h5 class="modal-title" id="myModalLabel113">Add {{ $project->id_project }} Worksheet Informations
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -20,7 +20,7 @@
                             tabindex="4" value="{{ auth()->user()->id_karyawan }}"></input>
                         <input type="hidden" class="form-control form-control-merge" id="ws-id_project"
                             name="ws-id_project" placeholder="filled by system" aria-describedby="ws-id_project"
-                            tabindex="4" value="{{ $prjmondws->id_project }}"></input>
+                            tabindex="4" value="{{ $project->id_project }}"></input>
 
                         <div class="col-xl-6 col-md-6 col-12">
                             <div class="form-group">

@@ -148,6 +148,10 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/m-prj/m-monitoring-worksheet/prj/getlockunlock', [ProjectsController::class, 'get_prj_4lockunlock'])->name('m.ws.getprj4lockunlock');
+    Route::post('/m-prj/m-monitoring-worksheet/prj/getlockunlock', [ProjectsController::class, 'get_prj_4lockunlock'])->name('m.ws.getprj4lockunlock');
+    Route::post('/m-prj/m-monitoring-worksheet/prj/lock', [ProjectsController::class, 'lock_prj'])->name('m.prj.status.lock');
+    Route::post('/m-prj/m-monitoring-worksheet/prj/unlock', [ProjectsController::class, 'unlock_prj'])->name('m.prj.status.unlock');
     Route::post('/m-prj/m-monitoring-worksheet/ws/add', [WorksheetController::class, 'add_ws'])->name('m.ws.add');
     Route::post('/m-prj/m-monitoring-worksheet/ws/delete', [WorksheetController::class, 'delete_ws'])->name('m.ws.del');
     Route::post('/m-prj/m-monitoring-worksheet/ws/reset', [WorksheetController::class, 'reset_ws'])->name('m.ws.reset');
