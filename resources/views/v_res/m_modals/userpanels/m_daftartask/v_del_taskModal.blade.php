@@ -20,7 +20,7 @@
                          </h6>
                      </div>
 
-                     <input type="hidden" id="del_task_id" name="del_task_id" value="" />
+                     <input type="hidden" id="del_task_id" name="del_task_id" value="" @readonly(true) />
                      <div class="modal-footer w-100 px-0 py-1">
                          <div class="col-12 text-center">
                              <div class="d-flex flex-col justify-content-end">

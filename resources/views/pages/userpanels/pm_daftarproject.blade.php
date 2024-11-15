@@ -258,6 +258,7 @@ $relatedTasks = collect($project->task)->filter(function ($task) use (
                                     </td>
 
                                     <td>
+
                                         @if ($project->karyawan && $project->team)
                                             @if ($project->id_project)
                                                 <div data-toggle="tooltip" data-popup="tooltip-custom"
@@ -293,8 +294,39 @@ $relatedTasks = collect($project->task)->filter(function ($task) use (
                                         {{ $project->client !== null ? $project->client->na_client : '-' }}</td>
                                     <td class="{{ $isCondFullfilled ? 'text-white' : '' }}">
                                         {{ $project->karyawan !== null ? $project->karyawan->na_karyawan : '-' }}</td>
+
                                     <td class="text-center align-middle {{ $isCondFullfilled ? 'text-white' : '' }}">
-                                        {{ $project->team !== null ? $project->team->na_team : '-' }}</td>
+                                        @php
+                                            $teamInfo = '';
+                                            if ($project->team) {
+                                                $teamInfo .= $project->team->na_team . ': ';
+                                                if (
+                                                    $project->team->karyawans &&
+                                                    $project->team->karyawans->isNotEmpty()
+                                                ) {
+                                                    $teamInfo .= implode(
+                                                        ', ',
+                                                        array_column(
+                                                            $project->team->karyawans->toArray(),
+                                                            'na_karyawan',
+                                                        ),
+                                                    );
+                                                } else {
+                                                    $teamInfo .= 'No team members available';
+                                                }
+                                            } else {
+                                                $teamInfo = 'No team information available';
+                                            }
+                                        @endphp
+
+                                        <div data-toggle="tooltip"
+                                            data-popup="tooltip-custom" data-placement="left"
+                                            class="pull-up" data-original-title="{{ $teamInfo }}">
+                                            {{ $project->team !== null ? $project->team->na_team : '-' }}
+
+                                        </div>
+
+                                    </td>
                                     <td class="text-center align-middle {{ $isCondFullfilled ? 'text-white' : '' }}">
                                         @if ($project->monitor->isNotEmpty())
                                             @if ($project->prjstatus_beta() == 'FINISH' || $totalActual == 100)

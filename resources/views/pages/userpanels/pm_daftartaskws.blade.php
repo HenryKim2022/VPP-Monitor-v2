@@ -101,6 +101,7 @@
         @php
             $isProjectOpen = $project->status_project == 'OPEN' ? true : false;
             $isWsStatusOpen = $loadDataWS->status_ws == 'OPEN' ? true : false;
+            $blinkBGClass = $isWsStatusOpen == true ? 'blink-bg' : '';
         @endphp
 
         <!-- TableAbsen Card -->
@@ -317,122 +318,212 @@
                             <div class="divider"></div> <!-- Divider line -->
                             <div class="button-wrapper">
                                 <div class="nav-item">
-                                    @if ($authUserType === 'Superuser' || $isProjectOpen)
-                                        @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
-                                            @if (
-                                                $authUserType === 'Superuser' ||
-                                                    $authUserId == $exeUserId ||
-                                                    ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
-                                                @if ($isWsStatusOpen)
-                                                    <button onclick="openModal('{{ $modalData['modal_add'] }}')"
-                                                        class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success add-new-record"
-                                                        style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
-                                                        data-popup="tooltip-custom" data-placement="bottom"
-                                                        data-original-title="Add Task">
-                                                        <i class="fas fa-plus-circle fa-xs text-white"></i>
-                                                    </button>
-                                                @else
-                                                    <button
-                                                        class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
-                                                        style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
-                                                        data-popup="tooltip-custom" data-placement="bottom"
-                                                        data-original-title="Worksheet Locked!">
-                                                        <i class="fas fa-plus-circle fa-xs text-white"></i>
-                                                    </button>
-                                                @endif
-                                            @endif
-                                        @endif
-                                    @else
-                                        @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
-                                            @if (
-                                                $authUserType === 'Superuser' ||
-                                                    $authUserId == $exeUserId ||
-                                                    ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
-                                                @if ($isWsStatusOpen)
-                                                    <button
-                                                        class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
-                                                        style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
-                                                        data-popup="tooltip-custom" data-placement="bottom"
-                                                        data-original-title="Project Locked by SPV & Worksheet Unlocked!">
-                                                        <i class="fas fa-plus-circle fa-xs text-white"></i>
-                                                    </button>
-                                                @else
-                                                    <button
-                                                        class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
-                                                        style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
-                                                        data-popup="tooltip-custom" data-placement="bottom"
-                                                        data-original-title="Project Locked by SPV & Worksheet Locked by Executor!">
-                                                        <i class="fas fa-plus-circle fa-xs text-white"></i>
-                                                    </button>
-                                                @endif
-                                            @endif
-                                        @endif
-                                    @endif
-                                </div>
-
-
-                                <div class="nav-item">
-                                    @if ($authUserType === 'Superuser' || $isProjectOpen)
-                                        @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
-                                            @if (
-                                                $authUserType === 'Superuser' ||
-                                                    $authUserId == $exeUserId ||
-                                                    ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
-                                                @if ($isWsStatusOpen)
-                                                    @if (isset($modalData['modal_lock']))
-                                                        <button lock_ws_id_value = "{{ $loadDataWS->id_ws ?: 0 }}"
-                                                            class="lock-ws-cmd btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger {{ $blinkBGClass }}"
+                                    <div class="d-flex justify-content-center align-items-ce d-none">
+                                        <!-- Add WS -->
+                                        @if ($authUserType === 'Superuser' || $isProjectOpen)
+                                            @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
+                                                @if (
+                                                    $authUserType === 'Superuser' ||
+                                                        $authUserId == $exeUserId ||
+                                                        ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
+                                                    @if ($isWsStatusOpen)
+                                                        <button onclick="openModal('{{ $modalData['modal_add'] }}')"
+                                                            class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success add-new-record"
                                                             style="width: 3rem; height: 3rem; padding: 0;"
                                                             data-toggle="tooltip" data-popup="tooltip-custom"
-                                                            data-placement="bottom" data-original-title="Lock Worksheet!">
-                                                            <i class="fas fa-lock-open fa-xs text-white"></i>
+                                                            data-placement="bottom" data-original-title="Add Task">
+                                                            <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                        </button>
+                                                    @else
+                                                        <button
+                                                            class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom" data-original-title="Worksheet Locked!">
+                                                            <i class="fas fa-plus-circle fa-xs text-white"></i>
                                                         </button>
                                                     @endif
                                                 @else
-                                                    <button
-                                                        class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
-                                                        style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
-                                                        data-popup="tooltip-custom" data-placement="bottom"
-                                                        data-original-title="Worksheet Locked!">
-                                                        <i class="fas fa-lock fa-xs text-white"></i>
-                                                    </button>
+                                                    @if ($isWsStatusOpen)
+                                                        <button
+                                                            class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom"
+                                                            data-original-title="You're Not Authorized!">
+                                                            <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                        </button>
+                                                    @else
+                                                        <button
+                                                            class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom"
+                                                            data-original-title="Worksheet Locked & You're Not Authorized!">
+                                                            <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                        </button>
+                                                    @endif
                                                 @endif
-
                                             @endif
-                                        @endif
-                                    @else
-                                        @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
-                                            @if (
-                                                $authUserType === 'Superuser' ||
-                                                    $authUserId == $exeUserId ||
-                                                    ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
-                                                @if ($isWsStatusOpen)
-                                                    @if (isset($modalData['modal_lock']))
-                                                        <button lock_ws_id_value = "{{ $loadDataWS->id_ws ?: 0 }}"
-                                                            class="btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger {{ $blinkBGClass }}"
+                                        @else
+                                            @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
+                                                @if (
+                                                    $authUserType === 'Superuser' ||
+                                                        $authUserId == $exeUserId ||
+                                                        ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
+                                                    @if ($isWsStatusOpen)
+                                                        <button
+                                                            class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
                                                             style="width: 3rem; height: 3rem; padding: 0;"
                                                             data-toggle="tooltip" data-popup="tooltip-custom"
                                                             data-placement="bottom"
                                                             data-original-title="Project Locked by SPV & Worksheet Unlocked!">
-                                                            <i class="fas fa-lock-open fa-xs text-white"></i>
+                                                            <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                        </button>
+                                                    @else
+                                                        <button
+                                                            class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom"
+                                                            data-original-title="Project Locked by SPV & Worksheet Locked by Executor!">
+                                                            <i class="fas fa-plus-circle fa-xs text-white"></i>
                                                         </button>
                                                     @endif
                                                 @else
-                                                    <button
-                                                        class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
-                                                        style="width: 3rem; height: 3rem; padding: 0;"
-                                                        data-toggle="tooltip" data-popup="tooltip-custom"
-                                                        data-placement="bottom"
-                                                        data-original-title="Project Locked by SPV & Worksheet Locked by Executor!">
-                                                        <i class="fas fa-lock fa-xs text-white"></i>
-                                                    </button>
+                                                    @if ($isWsStatusOpen)
+                                                        <button
+                                                            class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom"
+                                                            data-original-title="Project Locked by SPV & You're Not Authorized!">
+                                                            <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                        </button>
+                                                    @else
+                                                        <button
+                                                            class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom"
+                                                            data-original-title="Project Locked by SPV & You're Not Authorized!">
+                                                            <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                        </button>
+                                                    @endif
                                                 @endif
-
                                             @endif
                                         @endif
+                                        <!-- LOCK & UNLOCK -->
+                                        @if ($authUserType === 'Superuser' || $isProjectOpen)
+                                            @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
+                                                @if (
+                                                    $authUserType === 'Superuser' ||
+                                                        $authUserId == $exeUserId ||
+                                                        ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
+                                                    @if ($isWsStatusOpen)
+                                                        @if (isset($modalData['modal_lock']))
+                                                            <button lock_ws_id_value = "{{ $loadDataWS->id_ws ?: 0 }}"
+                                                                class="lock-ws-cmd btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger {{ $blinkBGClass }}"
+                                                                style="width: 3rem; height: 3rem; padding: 0;"
+                                                                data-toggle="tooltip" data-popup="tooltip-custom"
+                                                                data-placement="bottom"
+                                                                data-original-title="Lock Worksheet!">
+                                                                <i class="fas fa-lock-open fa-xs text-white"></i>
+                                                            </button>
+                                                        @endif
+                                                    @else
+                                                        <button
+                                                            class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom"
+                                                            data-original-title="Worksheet Locked!">
+                                                            <i class="fas fa-lock fa-xs text-white"></i>
+                                                        </button>
+                                                    @endif
+                                                @else
+                                                    @if ($isWsStatusOpen)
+                                                        @if (isset($modalData['modal_lock']))
+                                                            <button
+                                                                class="btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger {{ $blinkBGClass }}"
+                                                                style="width: 3rem; height: 3rem; padding: 0;"
+                                                                data-toggle="tooltip" data-popup="tooltip-custom"
+                                                                data-placement="bottom"
+                                                                data-original-title="You're Not Authorized!">
+                                                                <i class="fas fa-lock-open fa-xs text-white"></i>
+                                                            </button>
+                                                        @endif
+                                                    @else
+                                                        <button
+                                                            class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success"
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom"
+                                                            data-original-title="You're Not Authorized!">
+                                                            <i class="fas fa-lock fa-xs text-white"></i>
+                                                        </button>
+                                                    @endif
+                                                @endif
+                                            @endif
+                                        @else
+                                            @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
+                                                @if (
+                                                    $authUserType === 'Superuser' ||
+                                                        $authUserId == $exeUserId ||
+                                                        ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
+                                                    @if ($isWsStatusOpen)
+                                                        @if (isset($modalData['modal_lock']))
+                                                            <button lock_ws_id_value = "{{ $loadDataWS->id_ws ?: 0 }}"
+                                                                class="btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger {{ $blinkBGClass }}"
+                                                                style="width: 3rem; height: 3rem; padding: 0;"
+                                                                data-toggle="tooltip" data-popup="tooltip-custom"
+                                                                data-placement="bottom"
+                                                                data-original-title="Project Locked by SPV & Worksheet Unlocked!">
+                                                                <i class="fas fa-lock-open fa-xs text-white"></i>
+                                                            </button>
+                                                        @endif
+                                                    @else
+                                                        <button
+                                                            class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom"
+                                                            data-original-title="Project Locked by SPV & Worksheet Locked by Executor!">
+                                                            <i class="fas fa-lock fa-xs text-white"></i>
+                                                        </button>
+                                                    @endif
+                                                @else
+                                                    @if ($isWsStatusOpen)
+                                                        @if (isset($modalData['modal_lock']))
+                                                            <button
+                                                                class="btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger {{ $blinkBGClass }}"
+                                                                style="width: 3rem; height: 3rem; padding: 0;"
+                                                                data-toggle="tooltip" data-popup="tooltip-custom"
+                                                                data-placement="bottom"
+                                                                data-original-title="Project Locked by SPV & You're Not Authorized!">
+                                                                <i class="fas fa-lock-open fa-xs text-white"></i>
+                                                            </button>
+                                                        @endif
+                                                    @else
+                                                        <button
+                                                            class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                            style="width: 3rem; height: 3rem; padding: 0;"
+                                                            data-toggle="tooltip" data-popup="tooltip-custom"
+                                                            data-placement="bottom"
+                                                            data-original-title="Project Locked by SPV & You're Not Authorized!">
+                                                            <i class="fas fa-lock fa-xs text-white"></i>
+                                                        </button>
+                                                    @endif
 
-                                    @endif
+                                                @endif
+                                            @endif
+
+                                        @endif
+                                    </div>
                                 </div>
+
+
+
 
                                 <div class="nav-item">
                                     @if ($ws_status == 'CLOSED')
@@ -536,9 +627,50 @@
                     @php
                         $totalActualAtHeader = 0;
                         $totalAtHeader = 0;
-                        $totalActual = 0; // Initialize totalActual
-                        $totalActualAtHeader = number_format($project->prj_progress_totals(), 0);
+                        $tempActualUnlocked = 0;
+                        $tempActualLocked = 0;
+                        $refnum = 0;
+
+                        foreach ($loadDataWS['task'] as $index => $relDWS) {
+                            $total = 0; // Initialize total for this monitoring entry
+                            $qty = $relDWS->monitor->qty;
+
+                            // Check if qty is defined and greater than zero
+                            if ($qty) {
+                                // Find the tasks related to the current monitor where the associated worksheet's expired_ws is null
+        $relatedTasks = collect($project->task)->filter(function ($task) use (
+            $relDWS,
+            $project,
+        ) {
+            // Find the related worksheet for the task
+            $worksheet = collect($project->worksheet)->firstWhere('id_ws', $task['id_ws']);
+            // Check if the task's worksheet expired_ws is null
+                                    return $task['id_monitoring'] === $relDWS->id_monitoring &&
+                                        ($worksheet['expired_at_ws'] ?? null) === null; // Match tasks by id_monitoring and check expired_ws
+                                });
+
+                                // Calculate the total progress from related tasks
+                                $totalProgress = 0;
+                                foreach ($relatedTasks as $task) {
+                                    $totalProgress += $task->progress_current_task; // Sum up the progress of related tasks
+                                }
+
+                                // Assuming you want to calculate based on the average progress
+                                $up = $relatedTasks->count() > 0 ? $totalProgress / $relatedTasks->count() : 0; // Average progress
+                                $total = ($qty * $up) / 100; // Calculate total percentage
+                                $tempActualUnlocked += $relDWS->progress_current_task;
+                                $tempActualLocked += $total; // Accumulate to totalActual
+                                $refnum = $index + 1;
+                            }
+                        }
+
+                        if ($isWsStatusOpen){
+                            $totalActualAtHeader = number_format($tempActualUnlocked, 1);
+                        }else{
+                        $totalActualAtHeader = number_format($tempActualLocked / $refnum, 1);
+                        }
                     @endphp
+
                     <table id="daftarTaskTable" class="table table-striped">
                         <thead>
                             <tr>
@@ -549,7 +681,7 @@
                                 <th rowspan="2" class="text-center">Task</th>
                                 <th rowspan="2" class="text-center">Description</th>
                                 <th colspan="2"
-                                    class="text-center {{ $totalActualAtHeader == 100 ? 'text-success' : ($totalActualAtHeader > 100 ? 'text-danger' : 'text-warning') }}">
+                                    class="{{ $blinkClass }} text-center {{ $totalActualAtHeader == 100 ? 'text-success' : ($totalActualAtHeader > 100 ? 'text-danger' : 'text-warning') }}">
                                     Progress ({{ $totalActualAtHeader }}%)
                                 </th>
                             </tr>
@@ -559,7 +691,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($loadDataWS['task'] as $relDWS)
+                            @php
+                                $lastTaskId = null;
+                                $rowspanCount = 0;
+                                $rowspanData = []; // Array to hold rowspan data
+                            @endphp
+
+
+                            @foreach ($loadDataWS['task'] as $index => $relDWS)
                                 <tr>
                                     @if ($loadDataWS->status_ws === 'OPEN')
                                         <td>
@@ -650,7 +789,8 @@
                                         {{ $total }}%
                                     </td> --}}
 
-                                    <td class="text-center align-middle">
+                                    <td class="text-center align-middle"
+                                        rowspan="{{ $rowspanData[$relDWS->id_task] ?? 1 }}">
                                         @php
                                             $total = 0; // Initialize total for this monitoring entry
                                             $qty = $relDWS->monitor->qty;
@@ -669,7 +809,7 @@
         );
         // Check if the task's worksheet expired_ws is null
                                                     return $task['id_monitoring'] === $relDWS->id_monitoring &&
-                                                        ($worksheet['expired_ws'] ?? null) === null; // Match tasks by id_monitoring and check expired_ws
+                                                        ($worksheet['expired_at_ws'] ?? null) === null; // Match tasks by id_monitoring and check expired_ws
                                                 });
 
                                                 // Calculate the total progress from related tasks
@@ -688,12 +828,13 @@
                                             }
                                         @endphp
 
-                                        {{ number_format($total, 0) }}% <!-- Display total with 2 decimal places -->
+                                        {{ number_format($total, 1) }}% <!-- Display total with 2 decimal places -->
                                     </td>
 
                                     <td class="text-center align-middle">
                                         @if ($relDWS->progress_current_task != null || $relDWS->progress_current_task != 0)
-                                            {{ $relDWS->progress_current_task }}%
+                                            {{-- {{ $relDWS->progress_current_task }}% --}}
+                                            {{ number_format($relDWS->progress_current_task, 1) }}%
                                         @else
                                             0%
                                         @endif
@@ -867,7 +1008,8 @@
                                         @if ($isWsStatusOpen)
                                             <tr class="lock-ws-cmd cursor-pointer"
                                                 lock_ws_id_value="{{ $loadDataWS->id_ws ?: 0 }}">
-                                                <td colspan="2" class="rowlock text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }} justify-content-center align-items-center">
+                                                <td colspan="2"
+                                                    class="rowlock text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }} justify-content-center align-items-center">
                                                     <button lock_ws_id_value="{{ $loadDataWS->id_ws ?: 0 }}"
                                                         class="lock-ws-cmd btn w-100 border-0"
                                                         style="padding: 0.5rem 1rem;" data-toggle="tooltip"
@@ -931,16 +1073,15 @@
                                             $authUserId == $exeUserId ||
                                             ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
                                         @if ($isWsStatusOpen)
-                                            <tr class="lock-ws-cmd cursor-pointer"
-                                                lock_ws_id_value="{{ $loadDataWS->id_ws ?: 0 }}">
+                                            <tr class="cursor-pointer" lock_ws_id_value="{{ $loadDataWS->id_ws ?: 0 }}">
                                                 <td colspan="2"
                                                     class="rowlock text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }} justify-content-center align-items-center"
                                                     style="height: fit-content;">
                                                     <button lock_ws_id_value="{{ $loadDataWS->id_ws ?: 0 }}"
-                                                        class="lock-ws-cmd btn w-100 border-0 d-flex align-items-center justify-content-center"
+                                                        class="btn w-100 border-0 d-flex align-items-center justify-content-center"
                                                         style="padding: 0.5rem 1rem;" data-toggle="tooltip"
                                                         data-popup ="tooltip-custom" data-placement="bottom"
-                                                        data-original-title="Project Locked by SPV!">
+                                                        data-original-title="Project Locked by SPV & Worksheet Unlocked!">
                                                         <h3 class="mb-0"><strong>OPEN</strong></h3>
                                                     </button>
                                                 </td>
@@ -967,7 +1108,7 @@
                                                     class="rowlock text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }} justify-content-center align-items-center"
                                                     style="height: fit-content;">
                                                     <button
-                                                        class="lock-ws-cmd btn w-100 border-0 d-flex align-items-center justify-content-center"
+                                                        class="btn w-100 border-0 d-flex align-items-center justify-content-center"
                                                         data-toggle="tooltip" data-popup="tooltip-custom"
                                                         data-placement="bottom"
                                                         data-original-title="Project Locked by SPV & You're Not Authorized!">
@@ -981,10 +1122,10 @@
                                                     class="rowlock text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }} justify-content-center align-items-center"
                                                     style="height: fit-content;">
                                                     <button
-                                                        class="mx-1 border-0 d-flex bg-transparent text-white align-items-center justify-content-center w-100"
+                                                        class="mx-0 border-0 d-flex bg-transparent text-white align-items-center justify-content-center w-100"
                                                         style="padding: 0.5rem 1rem;" data-toggle="tooltip"
                                                         data-popup="tooltip-custom" data-placement="bottom"
-                                                        data-original-title="Project Locked by SPV & Worksheet Locked!">
+                                                        data-original-title="Project Locked by SPV & You're Not Authorized!">
                                                         <h3 class="mb-0"><strong>CLOSED</strong></h3>
                                                     </button>
                                                 </td>
@@ -994,45 +1135,6 @@
                                 @endif
                             @endif
 
-
-
-
-
-
-                            {{--
-                            <tr>
-                                <td colspan="2"
-                                    class="rowlock px-1 text-center {{ $blinkBGClass != '' ? $blinkBGClass : 'bg-success' }}">
-                                    @if ($isWsStatusOpen)
-                                        @if ($authUserType === 'Superuser' || $authUserType === 'Engineer')
-                                            @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId && $isProjectOpen == true))
-                                                @if (isset($modalData['modal_lock']))
-                                                    <button lock_ws_id_value = "{{ $loadDataWS->id_ws ?: 0 }}"
-                                                        class="lock-ws-cmd btn mx-1 border-0 d-flex {{ $blinkBGClass }}"
-                                                        style="padding: 0.5rem 1rem; justify-self: center;"
-                                                        data-toggle="tooltip" data-popup="tooltip-custom"
-                                                        data-placement="bottom" data-original-title="Lock Task!">
-                                                        <h3 class="mb-0">
-                                                            <strong>OPEN</strong>
-                                                        </h3>
-                                                    </button>
-                                                @endif
-                                            @endif
-                                        @endif
-                                    @else
-                                        <div>
-                                            <button class="mx-1 border-0 d-flex bg-transparent text-white"
-                                                style="padding: 0.5rem 1rem; justify-self: center;">
-                                                <h3 class="mb-0">
-                                                    <strong>CLOSED</strong>
-                                                </h3>
-                                            </button>
-                                        </div>
-
-                                    @endif
-
-                                </td>
-                            </tr> --}}
                         </tfoot>
 
                     </table>
@@ -1333,23 +1435,26 @@
 
 
 
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            whichModal = "delete_taskModal";
-            const modalSelector = document.querySelector('#' + whichModal);
-            const modalToShow = new bootstrap.Modal(modalSelector);
+            whichDelModal = "delete_taskModal";
+            const modalDelSelector = document.querySelector('#' + whichDelModal);
 
-            setTimeout(() => {
-                $('.delete-record').on('click', function() {
-                    var taskID = $(this).attr('del_task_id_value');
-                    $('#' + whichModal + ' #del_task_id').val(taskID);
-                    modalToShow.show();
-                });
-            }, 800);
+            if (modalDelSelector) {
+                const modalToShow = new bootstrap.Modal(modalDelSelector);
+
+                setTimeout(() => {
+                    $('.dropdown-menu').on('click', '.delete-record', function(event) {
+                        console.log("CLICKED");
+                        var taskID = $(this).attr('del_task_id_value');
+                        $('#' + whichDelModal + ' #del_task_id').val(taskID);
+                        modalToShow.show();
+                    });
+                }, 800);
+
+            }
         });
     </script>
-
 
 
     @if ($authUserType === 'Superuser' || $isWsStatusOpen)

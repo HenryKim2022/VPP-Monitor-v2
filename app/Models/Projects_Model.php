@@ -96,6 +96,24 @@ class Projects_Model extends Model
         return $totalActual;
     }
 
+    public function prj_progress_totals_unlockedtask()
+    {
+        $totalActual = 0;
+        if ($this->monitor->isNotEmpty()) {
+            foreach ($this->monitor as $monitor) {
+                if ($monitor->qty) {
+                    foreach ($monitor->tasks as $task) {
+                        $up = $task->unlocked_last_task_progress_update($monitor->id_monitoring);
+                        $total = ($monitor->qty * $up) / 100;
+                        $totalActual += $total;
+                    }
+                }
+            }
+        }
+
+        return $totalActual;
+    }
+
 
 
     public function task()

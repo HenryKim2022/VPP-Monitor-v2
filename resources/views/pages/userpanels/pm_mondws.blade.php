@@ -441,7 +441,7 @@
                                                 @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor')
                                                     @if ($authUserType === 'Superuser' || $authUserId == $coUserId)
                                                         @if (isset($modalData['modal_lock_prj']))
-                                                            @if ($authUserType === 'Superuser' || ($authUserId == $coUserId && $project->prj_progress_totals() == 100))
+                                                            @if ($authUserType === 'Superuser' || ($authUserId == $coUserId && $project->prj_progress_totals() >= 100))
                                                                 <button
                                                                     lock_prj_id_value = "{{ $project->id_project ?: 0 }}"
                                                                     class="lock-prj-cmd btn mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger {{ $blinkBGClass0 }}"
@@ -850,7 +850,56 @@ $relatedTasks = collect($project->task)->filter(
                                     <div class="divider"></div> <!-- Divider line -->
                                     <div class="button-wrapper">
                                         <div class="nav-item">
-                                            @if ($authUserType === 'Superuser' || $authUserType === 'Engineer')
+                                            @if ($authUserType === 'Superuser' || $isProjectOpen)
+                                                @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
+                                                    @if ($authUserType === 'Superuser' || $coUserId == $authUserId || $authUserTeam == $engPrjTeam)
+                                                        @if ($modalData['modal_add_ws'])
+                                                            <button onclick="openModal('{{ $modalData['modal_add_ws'] }}')"
+                                                                class="btn bg-success mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-success add-new-record"
+                                                                style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
+                                                                data-popup="tooltip-custom" data-placement="bottom"
+                                                                data-original-title="Add Worksheet">
+                                                                <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                            </button>
+                                                        @endif
+                                                    @else
+                                                        <button
+                                                            class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                            style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
+                                                            data-popup="tooltip-custom" data-placement="bottom"
+                                                            data-original-title="You're Not Authorized!">
+                                                            <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                        </button>
+                                                    @endif
+                                                @endif
+                                            @else
+                                                @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
+                                                    @if ($authUserType === 'Superuser' || $authUserTeam == $engPrjTeam)
+                                                        @if ($modalData['modal_add_ws'])
+                                                            <button
+                                                                class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                                style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
+                                                                data-popup="tooltip-custom" data-placement="bottom"
+                                                                data-original-title="Project Locked by SPV!">
+                                                                <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                            </button>
+                                                        @endif
+                                                    @else
+                                                        <button
+                                                            class="btn bg-danger mx-1 d-inline-block rounded-circle d-flex justify-content-center align-items-center border border-danger"
+                                                            style="width: 3rem; height: 3rem; padding: 0;" data-toggle="tooltip"
+                                                            data-popup="tooltip-custom" data-placement="bottom"
+                                                            data-original-title="Project Locked by SPV & You're Not Authorized!">
+                                                            <i class="fas fa-plus-circle fa-xs text-white"></i>
+                                                        </button>
+                                                    @endif
+                                                @endif
+
+                                            @endif
+
+
+
+                                            {{-- @if ($authUserType === 'Superuser' || $authUserType === 'Engineer')
                                                 @if ($authUserType === 'Superuser' || $engPrjTeam == $authUserTeam)
                                                     @if ($modalData['modal_add_ws'])
                                                         <button onclick="openModal('{{ $modalData['modal_add_ws'] }}')"
@@ -872,7 +921,7 @@ $relatedTasks = collect($project->task)->filter(
                                                     style="width: 3rem; height: 3rem; padding: 0;">
                                                     <i class="fas fa-plus-circle fa-xs text-white"></i>
                                                 </button>
-                                            @endif
+                                            @endif --}}
                                         </div>
                                         <div class="nav-item">
                                             @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
@@ -974,10 +1023,11 @@ $relatedTasks = collect($project->task)->filter(
                                                                     Navigate
                                                                 </a>
 
-                                                                @if ($ws->status_ws == 'OPEN')
-                                                                    @if ($authUserType === 'Superuser' || !$isExpired)
-                                                                        @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
-                                                                            @if ($authUserType == 'Superuser' || $ws->status_ws == 'OPEN')
+
+                                                                @if ($authUserType === 'Superuser' || $isProjectOpen)
+                                                                    @if ($authUserType === 'Superuser' || $authUserType === 'Supervisor' || $authUserType === 'Engineer')
+                                                                        @if ($authUserType === 'Superuser' || $authUserId == $exeUserId || ($authUserTeam == $engPrjTeam && $authUserId == $exeUserId))
+                                                                           @if ($isStatusOpen && !$isExpired)
                                                                                 @if (isset($modalData['modal_edit_ws']))
                                                                                     <a class="edit-record-ws dropdown-item d-flex align-items-center"
                                                                                         edit_ws_id_value = "{{ $ws->id_ws ?: 0 }}"
@@ -990,11 +1040,57 @@ $relatedTasks = collect($project->task)->filter(
                                                                                         Edit
                                                                                     </a>
                                                                                 @endif
+
+                                                                                @if ($authUserType === 'Superuser')
+                                                                                    @if (isset($modalData['modal_delete_ws']))
+                                                                                        <a class="delete-record-ws dropdown-item d-flex align-items-center"
+                                                                                            del_ws_id_value = "{{ $ws->id_ws ?: 0 }}"
+                                                                                            onclick="openModal('{{ $modalData['modal_delete_ws'] }}')">
+                                                                                            <i data-feather="trash" class="mr-1"
+                                                                                            style="color: #ea5455;"></i>
+                                                                                            Delete
+                                                                                        </a>
+                                                                                    @endif
+                                                                                @endif
+
+                                                                           @endif
+                                                                        @endif
+                                                                    @endif
+                                                                @endif
+
+
+{{--
+                                                                @if ($ws->status_ws == 'OPEN')
+                                                                    @if ($authUserType === 'Superuser' || !$isExpired)
+                                                                        @if ($authUserType === 'Superuser' || $authUserTeam === $engPrjTeam)
+                                                                            @if ($authUserType == 'Superuser' || $ws->status_ws == 'OPEN')
+                                                                                @if (isset($modalData['modal_edit_ws']))
+                                                                                    <a class="edit-record-ws dropdown-item d-flex align-items-center"
+                                                                                        edit_ws_id_value = "{{ $ws->id_ws ?: 0 }}"
+                                                                                        edit_ws_prj_id_value = "{{ $ws->id_project }}"
+                                                                                        edit_ws_kar_id_value = "{{ $ws->id_karyawan }}"
+                                                                                        onclick="openModal('{{ $modalData['modal_edit_ws'] }}')">
+                                                                                        <i data-feather="edit"
+                                                                                            class="mr-1"
+                                                                                            style="color: #28c76f;"></i>
+                                                                                        Edit
+                                                                                    </a>
+
+                                                                                @endif
+                                                                                @if (isset($modalData['modal_delete_ws']))
+                                                                                    <a class="delete-record-ws dropdown-item d-flex align-items-center"
+                                                                                        del_ws_id_value = "{{ $ws->id_ws ?: 0 }}"
+                                                                                        onclick="openModal('{{ $modalData['modal_delete_ws'] }}')">
+                                                                                        <i data-feather="trash" class="mr-1"
+                                                                                        style="color: #ea5455;"></i>
+                                                                                        Delete
+                                                                                    </a>
+                                                                                @endif
                                                                             @endif
                                                                         @endif
                                                                     @endif
                                                                     @if (!$isExpired)
-                                                                        @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
+                                                                        @if ($authUserType === 'Superuser' || $authUserTeam === $engPrjTeam)
                                                                             @if ($authUserType == 'Superuser' || $ws->status_ws == 'OPEN')
                                                                                 <a class="delete-record-ws dropdown-item d-flex align-items-center"
                                                                                     del_ws_id_value = "{{ $ws->id_ws ?: 0 }}"
@@ -1008,7 +1104,7 @@ $relatedTasks = collect($project->task)->filter(
                                                                     @endif
                                                                 @elseif ($ws->status_ws == 'CLOSED')
                                                                     @if (!$isExpired)
-                                                                        @if ($authUserType === 'Superuser' || ($authUserTeam === $engPrjTeam && $authUserId == $exeUserId))
+                                                                        @if ($authUserType === 'Superuser' || $authUserTeam === $engPrjTeam)
                                                                             @if ($authUserType == 'Superuser' || $ws->status_ws == 'OPEN')
                                                                                 @if (isset($modalData['modal_edit_ws']))
                                                                                     <a class="edit-record-ws dropdown-item d-flex align-items-center"
@@ -1025,7 +1121,7 @@ $relatedTasks = collect($project->task)->filter(
                                                                             @endif
                                                                         @endif
                                                                     @endif
-                                                                @endif
+                                                                @endif --}}
                                                             </div>
                                                             <!--/ dropdown menu -->
                                                         </div>
@@ -1756,7 +1852,7 @@ $relatedTasks = collect($project->task)->filter(
                                             ' .info-text');
                                         if (infoText2) {
                                             infoText2.innerHTML =
-                                                `Are you sure you want to <a class="text-warning">Lock the worksheet for ${response.projectID} with working date *${response.workingDate} that was executed by ${response.namaKaryawan}?</a> This action <a class="text-danger">cannot be undone</a>. Please confirm by clicking "<a class="text-danger">LOCK</a>" below.`; // Update with your desired content
+                                                `Are you sure you want to <a class="text-warning">Lock the worksheet for ${response.projectID} with working date *${response.workingDate} that was executed by ${response.namaKaryawan}?</a> This action <a class="text-danger">cannot be undone</a>. Please confirm by clicking "<a class="text-danger">UNLOCK</a>" below.`; // Update with your desired content
                                         } else {
                                             console.error(
                                                 "infoText element not found in the specified modal:",

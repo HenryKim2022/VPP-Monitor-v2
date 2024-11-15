@@ -135,6 +135,8 @@ class TaskController extends Controller
         }
 
 
+
+
         // Check worksheet expiry
         $isWorksheetExpired = DaftarWS_Model::where('id_ws', $request->input('ws-id_ws'))
             ->where('id_project', $request->input('ws-id_project'))
@@ -404,18 +406,19 @@ class TaskController extends Controller
         if ($task) {
             $taskCategory = $task->monitor->category; // Store the monitor->category before deleting the task
             $taskTime = $task->start_time_task; // Store the monitor->category before deleting the task
+
             $task->delete();
 
             $user = auth()->user();
             $authenticated_user_data = Karyawan_Model::with('daftar_login.karyawan', 'jabatan.karyawan')->find($user->id_karyawan);
             Session::put('authenticated_user_data', $authenticated_user_data);
 
-            Session::flash('success', ['Task deletion with work-time *' . $taskTime . 'for task *' . $taskCategory . ' was successful!']);
+            Session::flash('success', ["Task deletion with work-time *$taskTime for task *$taskCategory was successful!"]);
         } else {
             $errorMessage = 'Err[404]: Task deletion was failed!';
-            if ($task && $task->monitor->category) {
-                $errorMessage = 'Err[404]: Task deletion with work-time *' . $task->start_time_task . 'for task *' . $task->monitor->category . ' was failed!';
-            }
+            // if ($task && $task->monitor->category) {
+            // $errorMessage = 'Err[404]: Task deletion with work-time *' . $task->start_time_task . 'for task *' . $task->monitor->category . ' was failed!';
+            // }
             Session::flash('n_errors', [$errorMessage]);
         }
 
@@ -701,4 +704,7 @@ class TaskController extends Controller
             ]);
         }
     }
+
+
+
 }

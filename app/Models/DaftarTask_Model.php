@@ -39,27 +39,51 @@ class DaftarTask_Model extends Model
     }
 
 
+    // // // public function last_task_progress_update($id_monitoring)
+    // // // {
+    // // //     return $this->where('id_monitoring', $id_monitoring)
+    // // //         ->orderBy('updated_at', 'desc')
+    // // //         ->value('progress_current_task');
+    // // // }
+
+
     // // public function last_task_progress_update($id_monitoring)
     // // {
     // //     return $this->where('id_monitoring', $id_monitoring)
-    // //         ->orderBy('updated_at', 'desc')
-    // //         ->value('progress_current_task');
+    // //         ->whereNull('deleted_at')
+    // //         ->sum('progress_current_task');
     // // }
-
 
     // public function last_task_progress_update($id_monitoring)
     // {
     //     return $this->where('id_monitoring', $id_monitoring)
-    //         ->whereNull('deleted_at')
+    //         ->whereNull('deleted_at') // Exclude soft-deleted records
+    //         ->whereHas('worksheet', function ($query) {
+    //             $query->whereNull('expired_at_ws'); // Check if expired_at_ws is null
+    //         })
     //         ->sum('progress_current_task');
     // }
+
 
     public function last_task_progress_update($id_monitoring)
     {
         return $this->where('id_monitoring', $id_monitoring)
             ->whereNull('deleted_at') // Exclude soft-deleted records
             ->whereHas('worksheet', function ($query) {
-                $query->whereNull('expired_at_ws'); // Check if expired_at_ws is null
+                $query->whereNull('expired_at_ws') // Check if expired_at_ws is null
+                    ->where('status_ws', 'CLOSED'); // Check if status_ws is 'CLOSED'
+            })
+            ->sum('progress_current_task');
+    }
+
+
+    public function unlocked_last_task_progress_update($id_monitoring)
+    {
+        return $this->where('id_monitoring', $id_monitoring)
+            ->whereNull('deleted_at') // Exclude soft-deleted records
+            ->whereHas('worksheet', function ($query) {
+                $query->whereNull('expired_at_ws') // Check if expired_at_ws is null
+                    ->where('status_ws', 'OPEN'); // Check if status_ws is 'CLOSED'
             })
             ->sum('progress_current_task');
     }
@@ -71,7 +95,4 @@ class DaftarTask_Model extends Model
             ->whereNull('deleted_at') // Exclude soft-deleted records
             ->exists(); // Check if any record exists
     }
-
-
-
 }
